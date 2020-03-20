@@ -15,7 +15,7 @@ from DNNFunctions import *
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 def gen_data(N):
-    x = np.linspace(1.,50,N)
+    x = np.linspace(1.,300,N)
     y = np.asarray([steamTable.hV_t(k) for k in x])
     return x,y
 
@@ -35,7 +35,7 @@ tf_dict_train = {x_tf : np.reshape(x,(N,1)),
                  y_data_tf : np.reshape(y_data,(N,1))}
 
 N = 10000    
-t,hL_data = gen_data(N)
+x,y_data = gen_data(N)
 tf_dict_valid = {x_tf : np.reshape(x,(N,1)),
                  y_data_tf : np.reshape(y_data,(N,1))}
 
@@ -61,7 +61,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-3)
 train_op_Adam = optimizer_Adam.minimize(Loss) 
 
 # Lancement de la session
@@ -99,10 +99,10 @@ while it<itmin and loss_value>tolAdam:
 
 
 
-yguess,xguess = sess.run([x_tf,Model],tf_dict_train)
+xguess,yguess = sess.run([x_tf,Model],tf_dict_train)
 
 plt.figure()
-plt.plot(xguess[:,0],xguess[:,0],label='Model')
+plt.plot(xguess[:,0],yguess[:,0],label='Model')
 plt.plot(x,y_data,label='data')
 plt.legend()
 
