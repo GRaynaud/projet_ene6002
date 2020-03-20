@@ -74,38 +74,31 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     return txVide     
 
 
-def C0_tf(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
+def C0_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,txVide):
     '''
     Retourne le coefficient de corrélation 
     Ne fait appel qu'à des fonctions de base tensorflow
     '''
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
-
-    if Re_g > Re_l or Re_g < 0 :
-        Re = Re_g
-    else :
-            Re = Re_l
     
-    A1 = 1 / (np.exp(-Re/60000) + 1)
-    B1 = np.min(0.8,A1)
+    Re = tf.where(tf.math.logical_or(tf.less(Re_g, Re_l), tf.less(Re_g,0.)), Re_g, Re_l)
+    
+    A1 = 1. / (tf.exp(-Re/60000.) + 1.)
+    B1 = tf.minimum(0.8,A1)
     r = (1 + 1.57 * rho_g / rho_l) / (1 - B1)
-    K0 = B1 + (1 - B1) * np.power(rho_g / rho_l, 0.25)
+    K0 = B1 + (1 - B1) * tf.pow(rho_g / rho_l, 0.25)
     C1 = 4 * p_crit**2 / (p * (p_crit - p))
+    
+    L1 = tf.where(tf.less(80.,C1*txVide),1.,1.-tf.exp(-C1*txVide))
 
-    if C1*txVide > 80 :
-        L1 = 1
-    else :
-        L1 = 1 - np.exp(-C1*txVide)
-
-    if C1>80 :
-        L2 = 1
-    else :
-        L2 = 1 - np.exp(-C1)   
+    L2 = tf.where(tf.less(80.,C1), 1., 1 - tf.exp(-C1))
     
     L_cor = L1 / L2
-    C0 = L_cor / (K0 + (1 - K0) * np.power(txVide,r))   
     
+    C0 = L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))   
+    
+    return C0
 
 
 
