@@ -122,7 +122,10 @@ def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     return phi2
 
 def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
-    
+    '''
+    Retourne le coefficient de correlation de Friedel pour uné coulement diphasique
+    Compatible avec tensorflow
+    '''
     rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
     We = G**2 * D / sigma / rho_h #Nombre de Weber
     Fr = G**2 / g / D / rho_h**2  #Nombre de Froude
