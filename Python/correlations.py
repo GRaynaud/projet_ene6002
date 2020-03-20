@@ -68,7 +68,7 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
         C4 = 1 / (1 - np.exp(-C8))
     
     Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * np.power(1 - txVide, K1) * C2 * C3 * C4   
-    txVide = jg / (C0 * j + Vgj)
+    txVide = np.power(rho_g / G * (1 - x) / x * Vgj + C0 *(rho_g / rho_l * (1 - x) / x + 1),1) #a verifier pour le 1/G (tu as mis G_l dans le TeX)
     
     return txVide     
 
