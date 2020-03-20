@@ -41,7 +41,6 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
         L2 = 1 - np.exp(-C1)   
     
     L_cor = L1 / L2
-
     C0 = L_cor / (K0 + (1 - K0) * np.power(txVide,r))   
     
 # Calcul de Vgj
@@ -69,7 +68,24 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
         C4 = 1 / (1 - np.exp(-C8))
     
     Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * np.power(1 - txVide, K1) * C2 * C3 * C4   
-
     txVide = jg / (C0 * j + Vgj)
     
     return txVide     
+
+def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
+    
+    rho_h = np.power(x / rho_g + (1 - x) / rho_l,1)
+    We = G**2 * D / sigma / rho_h #Nombre de Weber
+    Fr = G**2 / g / D / rho_h**2  #Nombre de Froude
+    H = np.power(rho_g / rho_l,0.91) * np.power(mu_g / mu_l,0.19) * np.power(1 - mu_g / mu_l,0.7)
+    F = np.power(x,0.78)*np.power(1-x,0.224)
+    E = np.power(1-x,2) + x**2 * rho_l * frictionFac(G,D,mu_g) / rho_g / frictionFac(G,D,mu_l)
+    phi2 = E + 3.24 * F * H / (np.power(Fr,0.045) * np.power(We,0.035))
+    
+    return phi2
+    
+def frictionFac (G,D,mu):
+    
+    Cf = 1.325 / np.power((np.log (1e-6/3.7)+5.74/np.power(G * D / mu, 0.9)),2)
+
+    return Cf     
