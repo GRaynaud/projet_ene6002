@@ -74,11 +74,14 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     return txVide     
 
 
-def C0_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,txVide):
+def chexal_tf(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
-    Retourne le coefficient de corrélation 
+    Retourne le taux de vide 
+    Apres avoir calcule le C0 et V_gj
     Ne fait appel qu'à des fonctions de base tensorflow
     '''
+    # Calcul de C0
+    
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
     
@@ -98,8 +101,32 @@ def C0_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,txVide):
     
     C0 = L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))   
     
-    return C0
+    # Calcul de Vgj    
+        
+    K1_2 = tf.minimum(0.65, 0.5*tf.exp(tf.abs(Re_g)/4000.))
+    K1 = tf.where(tf.less(Re_g,0.), K1_2, B1)
 
+    C5 = tf.sqrt(150 * rho_g / rho_l)
+    C6 = C5 / (1 - C5)
+
+    C2 = tf.where(tf.less(C5,1), 1./(1.-tf.exp(-C6)), 1.)
+
+    C3 = tf.maximum(0.5,2.*tf.exp(-Re_l/60000.))
+    C7 = tf.pow(D2/D,0.6)
+    C8 = C7 / (1. - C7)  
+
+    if C7 >= 1 :
+        C4 = 1
+    else :
+        C4 = 1 / (1 - np.exp(-C8))
+    
+    Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * np.power(1 - txVide, K1) * C2 * C3 * C4 
+    
+    
+    
+    txVide = 1./((rho_g*(1.-x))/(G_l*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
+
+    return txVide  
 
 
 def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
