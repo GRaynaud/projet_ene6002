@@ -14,6 +14,7 @@ from pyXSteam.XSteam import XSteam
 import tensorflow as tf
 import pickle
 import DNNFunctions as DNN
+import correlations
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 #####################################################################
@@ -148,19 +149,51 @@ def x_z(z):
     return DNN.neural_net(z,w_x,b_x,layers_fn_x)
 
 
-# epsilon = f(x) --> Equation derivee du drift flux model
-V_gj =  ...
-C_O = ...
-rho_g = rhoV_p(P_z)
-rho_l = rhoL_p(P_z) #--> est-ce qu on les fait dépendre de z aussi ?
+# eps = f(z) à déterminer
 
-eps_z = 1./((rho_g*(1.-x_z))/(G_l*x_z)*V_gj + C_0*(rho_l/rho_g*(1-x_z)/x_z+1.))
+layers_eps = [1,40,1]
+layers_fn_eps = [tf.tanh]
+w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
+
+def eps_z(z):
+    return DNN.neural_net(z,w_eps,b_eps,layers_fn_eps)
+
 
 #####################################################################
 #######################  Equations du PB  ###########################
 #####################################################################
 
+
+def loss_txVide_DriftFluxModel(z):
+    '''
+    Retrourne l'écart quadratique moyen entre 
+    la valeur devinée du taux de vide et celle
+    calculée à posteriori avec le Drift Flux Model
+    et la correlation de 
+    '''
+    P = P_z(z)
+    x = x_z(z)
+    eps = eps_z(z)
+    
+    rho_g = rhoV_p(P_z)
+    rho_l = rhoL_p(P_z) #--> est-ce qu on les fait dépendre de z aussi ?
+    
+    mu_g =
+    mu_l =
+    sigma =
+    
+    eps_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
+    
+    err = eps_z_guess - eps
+    
+    return tf.reduce_mean(tf.square(err))
+
 def loss_energy_equation(z):
+    '''
+    Retourne l'erreur quadratoique moyen sur
+    le bilan d'énergie avec les valeurs 
+    de titre et de pression devinées
+    '''
     P = P_z(z)
     x = x_z(z)
     A = hL_p(P)+x*(hV_p(P)-hL_p(P))
@@ -171,4 +204,58 @@ def loss_energy_equation(z):
     return tf.reduce_mean(tf.square(err))
     
     
-def loss_pressure_equation():
+def loss_pressure_equation(z):
+    '''
+    Retourne l'erreur quadratique moyenne entre 
+    le gradient de pression calculé avec le DNN et 
+    celui obtenu avec le facteur de correlation de Fridel
+    '''
+    P = P_z(z)
+    x = x_z(z)
+    eps = eps_z(z)
+    
+    rho_g = rhoV_p(P_z)
+    rho_l = rhoL_p(P_z) #--> est-ce qu on les fait dépendre de z aussi ?
+    
+    mu_g =
+    mu_l =
+    sigma =
+    
+    phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
+    
+    dp_dz_l0 = 
+    
+    dP_dz = tf.gradients(P,z)[0]
+    
+    err = dP_dz - phi2*dp_dz_l0
+    return tf.reduce_mean(tf.square(err))
+
+
+
+#####################################################################
+#######################  Fns Coûts du PB  ###########################
+#####################################################################
+# Construction de l'erreur que l'on cherche à minimiser
+    
+Loss =    loss_txVide_DriftFluxModel(z_tf) \
+        + loss_energy_equation(z_tf) \
+        + loss_pressure_equation(z_tf)
+        
+    
+#####################################################################
+###########################  Optimiseurs  ###########################
+#####################################################################
+# Declaration et parametrage des optimiseurs        
+        
+        
+        
+        
+        
+        
+#####################################################################
+#########################  Entrainement  ############################
+#####################################################################  
+        
+        
+
+        
