@@ -1,0 +1,75 @@
+\section{Question 1\label{section:ex1}}
+
+Afin de retrouver la forme souhaitée pour l'intégrale de conservation de l'énergie dans un volume géométrique, partons avec la forme intégrée vue en cours :
+\begin{equation}
+    \frac{d}{d\tau}\iiint_{V(\tau)} \varPsi dV = -\iint_{A(\tau)} \varPsi \left(\Vec{v}-\Vec{v_s} \right)\vec{dA} - \iint_{A(\tau)} \rttensor{J}_{\varPsi} \vec{dA} + \iiint_{V(\tau)} S_{\varPsi} dV
+\end{equation}
+
+Qui pour la conservation de l'énergie s'applique avec :
+\begin{equation}
+    \left\{
+    \begin{array}{r c l}
+    \varPsi &=& \rho \left(u+\frac{1}{2} \vec{v}.\vec{v} \right) \\[1ex]
+    \rttensor{J}_{\varPsi} &=& \vec{q''} + \left(p\rttensor{I} - \rttensor{\sigma}  \right).\vec{v}  \\[1ex]
+    S_{\varPsi} &=& \rho \vec{g}.\vec{v} + \dot{q}''' \\[1ex]
+    \end{array}
+    \right.
+\end{equation}
+Ce qui peut s'écrire comme :
+\begin{equation}
+\begin{split}
+    \frac{d}{d\tau}\iiint_{V(\tau)} \rho \left(u+\frac{1}{2} \vec{v}.\vec{v} \right) dV = &-\iint_{A(\tau)} \rho \left(u+\frac{1}{2} \vec{v}.\vec{v} \right) \left(\Vec{v}-\Vec{v_s} \right).\vec{dA} - \iint_{A(\tau)} \vec{q''}.\vec{dA}\\ &- \iint_{A(\tau)} \left(p\rttensor{I} - \rttensor{\sigma}  \right)\vec{v} .\vec{dA} + \iiint_{V(\tau)} \rho \vec{g}.\vec{v} ~ dV + \iiint_{V(\tau)}\dot{q}''' dV
+\end{split}
+\end{equation}
+
+Définissons maintenant l'accélération gravitationnelle $\vec{g}$ comme le gradient d'une fonction $\phi$. On a alors :
+\begin{equation}
+    \vec{g} = - \vec{\nabla}\phi
+\end{equation}
+
+Concentrons nous sur le terme qui fait apparaître l'accélération, il devient :
+\begin{align}
+     \rho \vec{g}.\vec{v} &= -\rho \vec{v}.\vec{\nabla}\phi\\
+                         &= -\vec{\nabla}\left(\rho \vec{v} \phi \right) + \phi \vec{\nabla}\left(\rho \vec{v} \right)
+\end{align}
+De plus on a l'équation locale de la conservation de la masse qui nous donne :
+\begin{align}
+    \frac{\partial \rho}{\partial \tau} +&\vec{\nabla}\left(\rho \vec{v} \right) = 0 \\
+    \Rightarrow & \vec{\nabla}\left(\rho \vec{v} \right) = -\frac{\partial \rho}{\partial \tau}
+\end{align}
+On peut donc écrire :
+\begin{align}
+    \rho \vec{g}.\vec{v} &=  -\vec{\nabla}\left(\rho \vec{v} \phi \right) - \phi\frac{\partial \rho}{\partial \tau}\\
+    & = -\vec{\nabla}\left(\rho \vec{v} \phi \right) - \frac{\partial \rho \phi}{\partial \tau}
+\end{align}
+
+\emph{En considérant $\phi$ indépendant de $\tau$}\\ \par
+On peut alors intégrer cette dernière relation sur le volume total $V(\tau)$ :
+\begin{equation}
+    \iiint_{V(\tau)} \rho \vec{g}.\vec{v} dV = -\overbrace{\iiint_{V(\tau)} \vec{\nabla}.\left(\rho \vec{v} \phi \right)dV}^{\text{\circled{1}}} - \overbrace{\iiint_{V(\tau)} \frac{\partial \rho \phi}{\partial \tau} dV}^{\text{\circled{2}}}
+    \label{eq_1}
+\end{equation}
+Il est donc possible d'appliquer :
+\begin{itemize}
+\item Le théorème de Gauss sur \circled{1} :
+\begin{equation}
+    - \iiint_{V(\tau)} \vec{\nabla}.\left(\rho \vec{v} \phi \right)dV = - \iint_{A(\tau)} \rho \vec{v} \phi .\vec{dA}
+\end{equation}
+\item Le théorème général de Reynolds sur \circled{2} :
+\begin{equation}
+    -\iiint_{V(\tau)} \frac{\partial \rho \phi}{\partial \tau} dV = -\frac{d}{d\tau}\iiint_{V(\tau)} \rho \phi dV + \iint_{A(\tau)} \rho \vec{v_s} \phi .\vec{dA}
+\end{equation}
+\end{itemize}
+Le terme de l'équation (\ref{eq_1}) devient alors :
+\begin{equation}
+    \iiint_{V(\tau)} \rho \vec{g}.\vec{v} dV = - \iint_{A(\tau)} \rho \vec{v} \phi .\vec{dA} -\frac{d}{d\tau}\iiint_{V(\tau)} \rho \phi dV + \iint_{A(\tau)} \rho \vec{v_s} \phi .\vec{dA}
+\end{equation}
+Et en arrangeant l'équation de la conservation de l'énergie on obtient :
+\begin{equation}
+\boxed{
+\begin{split}
+    \frac{d}{d\tau}\iiint_{V(\tau)} \rho \left(u+\frac{1}{2} \vec{v}.\vec{v}+ \phi \right) dV = &-\iint_{A(\tau)} \rho \left(u+\frac{1}{2} \vec{v}.\vec{v} + \phi \right) \left(\Vec{v}-\Vec{v_s} \right).\vec{dA} - \iint_{A(\tau)} \vec{q''} .\vec{dA}\\ &- \iint_{A(\tau)} \left(p\rttensor{I} - \rttensor{\sigma}  \right)\vec{v}. \vec{dA} + \iiint_{V(\tau)}\dot{q}''' dV
+\end{split}
+}
+\end{equation}
+

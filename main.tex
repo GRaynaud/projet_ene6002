@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage[hmargin=0.75in, vmargin=1in]{geometry}
+\geometry{letterpaper}
+\usepackage[T1]{fontenc} 
+\usepackage[utf8]{inputenc} 
+\usepackage[french]{babel}
+\usepackage{graphicx} % Support for including images
+\usepackage{hyperref} % Support for hyperlinks
+\hypersetup{hidelinks = true}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\sisetup{
+    round-mode = figures,
+    round-precision    = 3           ,
+    scientific-notation = true
+    }
+\usepackage{float}
+\usepackage{cancel}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{comment} 
+\usepackage{minted}
+\renewcommand{\thesection}{\arabic{section}}
+\newcommand*{\rttensor}[1]{\bar{\bar{#1}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+\newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
+%------------------------------------------------------------------
+% TITLE
+%------------------------------------------------------------------
+\title{
+\centerline{\includegraphics[width=0.4\textwidth]{images/poly}}
+\vspace{0.5 cm}
+Projet \\
+\vspace{1cm}
+ENE6002
+\large  \\
+Thermohydraulique des systèmes diphasiques \\ 
+\Huge-\\
+\normalsize Polytechnique Montréal
+  }
+
+\author{
+    \begin{minipage}{.46\textwidth}
+        \begin{center}
+            Thomas \textsc{Charpentier} - 2036024\\
+            \texttt{thomas.charpentier@polymtl.ca}
+        \end{center}
+    \end{minipage}%
+    \hfill\vrule\hfill
+    \begin{minipage}{0.46\textwidth}
+        \begin{center}
+            Gaétan \textsc{Raynaud} - 2022063\\
+            \texttt{gaetan.raynaud@polymtl.ca}
+        \end{center}
+    \end{minipage}
+}    
+
+\date{\today}
+
+
+%------------------------------------------------------------------
+% DOCUMENT START HERE
+%------------------------------------------------------------------
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\input{sections/ex1.tex}
+\newpage
+%\input{sections/ex2.tex}
+%\newpage
+%\input{sections/ex3.tex}
+%\newpage
+%\input{sections/ex4.tex}
+
+%\newpage
+%\input{sections/annexes.tex}
+
+% References
+%\bibliographystyle{plain}
+%\bibliography{references}
+\end{document}

@@ -1,0 +1,63 @@
+\section{Question 2\label{section:ex2}}
+
+On considère l'écoulement d'un mélange diphasique dans un coude. On considère la section de l'écoulement constante. De plus, on fait implicitement l'hypothèse que l'écoulement est localement suivant la normale à chacune des sections de passage.\\
+
+On rappelle les hypothèses suivantes :
+\begin{itemize}
+    \item \textbf{H1} : L'écoulement dans le coude est permanent (\textbf{H1.1}), uniforme (\textbf{H1.2}) et adiabatique (\textbf{H1.3})
+    \item \textbf{H2} : On négligera les frottements en paroi (\textbf{H2.1}) ainsi que les forces volumiques (\textbf{H2.2})
+     \item \textbf{H3} : La pression du gaz est égal à la pression du liquide : $P_L = P_G = P$
+\end{itemize}
+
+\subsection{Conservation de la masse}
+
+En utilisant l'équation (8.5) des notes de cours :
+\begin{equation}
+    \overbrace{\cancel{\pder{\tau}{\rho_m}}}^{H1.1} + \pder{z}{G} = 0
+\end{equation}
+
+Soit un flux massique $G=cte$ le long du cylindre (fût-il courbe), que l'on réécrit en développant les termes :
+
+\begin{equation}
+    (1-\varepsilon_1)\rho_{L1}v_{L1} + \varepsilon_1 \rho_{G1}v_{G1} = (1-\varepsilon_2)\rho_{L2}v_{L2} + \varepsilon_2 \rho_{G2}v_{G2}
+\end{equation}
+
+On fait ici l'hypothèse que le coefficient de corrélation entre les quantités moyennées peut être pris égal à 1.
+
+\subsection{Bilan de quantité de mouvement}
+
+On effectue un bilan de quantité de mouvement sur le fluide contenu dans le coude, c'est-à-dire dans le volume délimité par les murs latéraux ainsi que les surfaces 1 (entrée) et 2 (sortie). \\
+
+D'après l'hypothèse H1.1, la variation temporelle locale de quantité de mouvement dans le coude est nulle. On peut donc en conclure que l'ensemble des efforts extérieurs au système balance la différence de quantité de mouvement entre l'entrée et la sortie.\\
+
+La quantité de mouvement entrante est égale à :
+\begin{equation}
+    \sum_{k=L,G} A\varepsilon_{1k}\rho_{1k} v_{1k}^2 \hat{j}
+\end{equation}
+
+Et de même pour celle sortante portée par $-\hat{i}$.\\
+
+Les efforts extérieurs à prendre en compte  sont :
+
+\begin{itemize}
+    \item les forces de pression sur les faces entrantes et sortantes $A \left(P_1 \hat{j} - P_2 \hat{i}\right)$
+    \item La force exercée par les parois du coude sur le fluide (qui sont des efforts de pression en paroi) $\vec{F}_{c\rightarrow f}$
+    \item les frottements en parois qui sont négligés
+    \item Le poids que l'on néglige
+\end{itemize}
+
+Finalement :
+\begin{equation}
+    -\sum_k A\varepsilon_{1k}\rho_{1k} v_{1k}^2 \hat{j} + \sum_k A\varepsilon_2\rho_{2k} v_{2k}^2 (-\hat{i}) = \vec{F}_{c\rightarrow f} + A\left( P_1 \hat{j} + P_2 \hat{i} \right) 
+\end{equation}
+
+En utilisant la conservation de la masse, on pourrait écrire plus simplement les efforts exercés par l'écoulement sur le coude $\vec{F}_{f\rightarrow c}$ en utilisant le volume spécifique de la quantité de mouvement. Néanmoins pour ne pas alourdir les notations, on conclura avec :
+
+\begin{equation}
+\boxed{
+\begin{split}
+        \vec{F}_{f\rightarrow c} = - \vec{F}_{c \rightarrow f} = & A\left[ \varepsilon_1\rho_{G1}v_{G1}^2 + (1-\varepsilon_1)\rho_{L1}v_{L1}^2 -P_1 \right] \hat{j} \\
+          & +  A \left[\varepsilon_2 \rho_{G2}v_{G2}^2 + (1-\varepsilon_2)\rho_{L2}v_{L2}^2  - P_2 \right] \hat{i}
+\end{split}
+}
+\end{equation}
