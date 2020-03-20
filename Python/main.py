@@ -72,7 +72,7 @@ def hL_p(p_input_tf):
     return DNN.neural_net(p_input_tf,w_hL_p,b_hL_p,layers_fn)
 
 def hV_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_hV_p,b_hV_p,layers_fn)
+    return DNN.neural_net(p_input_tf,w_hV_p,b_hV_p,[tf.nn.elu])
 
 def rhoV_p(p_input_tf):
     return DNN.neural_net(p_input_tf,w_rhoV_p,b_rhoV_p,layers_fn)

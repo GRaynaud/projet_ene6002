@@ -41,7 +41,7 @@ tf_dict_valid = {x_tf : np.reshape(x,(N,1)),
 
 
 layers = [1,40,1]
-layers_fn = [tf.tanh,tf.tanh]
+layers_fn = [tf.nn.elu,tf.tanh]
 
 w_tsat_p, b_tsat_p = initialize_NN(layers)
 
@@ -63,6 +63,8 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
 
 optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-3)
 train_op_Adam = optimizer_Adam.minimize(Loss) 
+optimizer_Adam2 = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5)
+train_op_Adam2 = optimizer_Adam2.minimize(Loss) 
 
 # Lancement de la session
 
@@ -93,6 +95,16 @@ while it<itmin and loss_value>tolAdam:
         loss_validation = sess.run(tf.reduce_mean(Loss),tf_dict_valid)
         print('Adam it %e - Training Loss :  %.3e - Valid loss : %.3e' % (it, loss_value, loss_validation))
     it += 1
+    
+it=it
+itmin = 1e5
+while (it-it0)<itmin and loss_value>tolAdam:
+    sess.run(train_op_Adam2, tf_dict_train)
+    loss_value = sess.run(Loss, tf_dict_train)
+    if it%100 == 0:
+        loss_validation = sess.run(tf.reduce_mean(Loss),tf_dict_valid)
+        print('Adam it %e - Training Loss :  %.3e - Valid loss : %.3e' % (it, loss_value, loss_validation))
+    it += 1
 
 
 # Validation
@@ -114,5 +126,5 @@ print('Loss valid : %.3e' % (loss_validation))
 
 # Sauvegarde
 str_layers_fluid = [str(j) for j in layers]
-filename = 'Models/hV_p_'+'_'.join(str_layers_fluid) +'_tanh.DNN'
+filename = 'Models/hV_p_'+'_'.join(str_layers_fluid) +'_elu.DNN'
 save_DNN(w_tsat_p,b_tsat_p,filename,sess)
