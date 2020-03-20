@@ -14,30 +14,30 @@ from DNNFunctions import *
 
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
-def gen_data_p_t(N_p):
-    p = np.linspace(1.,50,N_p)
-    t = np.asarray([steamTable.tsat_p(k) for k in p])
-    return p,t
+def gen_data(N):
+    x = np.linspace(1.,50,N)
+    y = np.asarray([steamTable.hV_t(k) for k in x])
+    return x,y
 
 #p_tf = tf.constant(p,dtype=tf.float32,shape=[len(p),1])
 #tsat_data_tf = tf.constant(tsat_data,dtype=tf.float32,shape=[len(tsat_data),1])
 #
     
-p_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
-tsat_data_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
+x_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
+y_data_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
 # Données d'entrainement
     
     
-N_p = 1000    
-p,tsat_data = gen_data_p_t(N_p)
+N = 1000    
+x,y_data = gen_data(N)
 
-tf_dict_train = {p_tf : np.reshape(p,(N_p,1)),
-                 tsat_data_tf : np.reshape(tsat_data,(N_p,1))}
+tf_dict_train = {x_tf : np.reshape(x,(N,1)),
+                 y_data_tf : np.reshape(y_data,(N,1))}
 
-N_p = 10000    
-p,tsat_data = gen_data_p_t(N_p)
-tf_dict_valid = {p_tf : np.reshape(p,(N_p,1)),
-                 tsat_data_tf : np.reshape(tsat_data,(N_p,1))}
+N = 10000    
+t,hL_data = gen_data(N)
+tf_dict_valid = {x_tf : np.reshape(x,(N,1)),
+                 y_data_tf : np.reshape(y_data,(N,1))}
 
 
 layers = [1,40,1]
@@ -45,11 +45,11 @@ layers_fn = [tf.tanh,tf.tanh]
 
 w_tsat_p, b_tsat_p = initialize_NN(layers)
 
-Model_Tsat_p = neural_net(p_tf,w_tsat_p,b_tsat_p,layers_fn)
+Model = neural_net(x_tf,w_tsat_p,b_tsat_p,layers_fn)
 
 # Erreur
 
-Loss = tf.reduce_mean(tf.square(Model_Tsat_p - tsat_data_tf))
+Loss = 1e4*tf.reduce_mean(tf.square(Model - y_data_tf))/tf.reduce_mean(tf.square(y_data_tf))
 
 # Optimiseur
 
@@ -99,11 +99,11 @@ while it<itmin and loss_value>tolAdam:
 
 
 
-pguess,tguess = sess.run([p_tf,Model_Tsat_p],tf_dict_train)
+yguess,xguess = sess.run([x_tf,Model],tf_dict_train)
 
 plt.figure()
-plt.plot(pguess[:,0],tguess[:,0],label='Model')
-plt.plot(p,tsat_data,label='data')
+plt.plot(xguess[:,0],xguess[:,0],label='Model')
+plt.plot(x,y_data,label='data')
 plt.legend()
 
 # Erreur validation
@@ -113,6 +113,6 @@ print('Loss valid : %.3e' % (loss_validation))
 
 
 # Sauvegarde
-
-filename = 'Models/Tsat_p_1_40_1_tanh.DNN'
+str_layers_fluid = [str(j) for j in layers]
+filename = 'Models/hV_t_'+'_'.join(str_layers_fluid) +'_tanh.DNN'
 save_DNN(w_tsat_p,b_tsat_p,filename,sess)
