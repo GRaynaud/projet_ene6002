@@ -20,8 +20,8 @@ def restore_NN_as_constant(layers,filename_restore,name_nn=''):
     Data = pickle.load(file)
     file.close()
     for l in range(0,num_layers-1):
-        W = tf.Constant(Data[0][l], dtype=tf.float32, shape=[layers[l], layers[l+1]],name = 'weights_'+name_nn+str(l))
-        b = tf.Constant(Data[1][l], dtype=tf.float32, name ='biases_'+name_nn+str(l))
+        W = tf.constant(Data[0][l], dtype=tf.float32, shape=[layers[l], layers[l+1]],name = 'weights_'+name_nn+str(l))
+        b = tf.constant(Data[1][l], dtype=tf.float32, name ='biases_'+name_nn+str(l))
         weights.append(W)
         biases.append(b)        
     return weights, biases
