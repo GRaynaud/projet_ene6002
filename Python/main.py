@@ -28,6 +28,8 @@ L_c = 1.8 #m
 T_e = 184.0 #°C
 P_s = 20.3 #bars
 
+q = P_th / (np.pi * D*L_c)
+
 #####################################################################
 ###################### Imports tensorflow ###########################
 #####################################################################
@@ -51,22 +53,32 @@ sess.run(init)
 
 # Import
 filename_tsat_p = 'Models/Tsat_p_1_40_1_tanh.DNN'
-filename_hL_t = 'Models/hL_t_1_40_1_tanh.DNN'
-filename_hV_t = 'Models/hV_t_1_40_1_tanh.DNN'
+filename_hL_p = 'Models/hL_p_1_40_1_tanh.DNN'
+filename_hV_p = 'Models/hV_p_1_40_1_tanh.DNN'
+filename_rhoV_p = 'Models/rhoV_p_1_40_1_tanh.DNN'
+filename_rhoL_p = 'Models/rhoL_p_1_40_1_tanh.DNN'
 layers = [1,40,1]
 layers_fn = [tf.tanh, tf.tanh, tf.tanh]
 w_tsat_p, b_tsat_p = DNN.restore_NN_as_constant(layers,filename_tsat_p)
-w_hL_t,b_hL_t = DNN.restore_NN_as_constant(layers,filename_hL_t)
-w_hV_t,b_hV_t = DNN.restore_NN_as_constant(layers,filename_hV_t)
+w_hL_p,b_hL_p = DNN.restore_NN_as_constant(layers,filename_hL_p)
+w_hV_p,b_hV_p = DNN.restore_NN_as_constant(layers,filename_hV_p)
+w_rhoV_p,b_rhoV_p = DNN.restore_NN_as_constant(layers,filename_rhoV_p)
+w_rhoL_p,b_rhoL_p = DNN.restore_NN_as_constant(layers,filename_rhoL_p)
 
 def Tsat_p(p_input_tf):
     return DNN.neural_net(p_input_tf,w_tsat_p,b_tsat_p,layers_fn)
 
-def hL_t(t_input_tf):
-    return DNN.neural_net(t_input_tf,w_hL_t,b_hL_t,layers_fn)
+def hL_p(p_input_tf):
+    return DNN.neural_net(p_input_tf,w_hL_p,b_hL_p,layers_fn)
 
-def hV_t(t_input_tf):
-    return DNN.neural_net(t_input_tf,w_hV_t,b_hV_t,layers_fn)
+def hV_p(p_input_tf):
+    return DNN.neural_net(p_input_tf,w_hV_p,b_hV_p,layers_fn)
+
+def rhoV_p(p_input_tf):
+    return DNN.neural_net(p_input_tf,w_rhoV_p,b_rhoV_p,layers_fn)
+
+def rhoL_p(p_input_tf):
+    return DNN.neural_net(p_input_tf,w_rhoL_p,b_rhoL_p,layers_fn)
 
 # Vérification
 
@@ -119,7 +131,8 @@ layers_P = [1,40,1]
 layers_fn_P = [tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
-P_z = DNN.neural_net(z_tf,w_P,b_P,layers_fn_P)
+def P_z(z):
+ return DNN.neural_net(z,w_P,b_P,layers_fn_P)
 
 # T = f(P) @ saturation --> Hypothèse à vérifier
 
@@ -131,14 +144,15 @@ layers_x = [1,40,1]
 layers_fn_x = [tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
-x_z = DNN.neural_net(z_tf,w_x,b_x,layers_fn_x)
+def x_z(z):
+    return DNN.neural_net(z,w_x,b_x,layers_fn_x)
 
 
 # epsilon = f(x) --> Equation derivee du drift flux model
 V_gj =  ...
 C_O = ...
-rho_g = ...
-rho_l = ... --> est-ce qu on les fait dépendre de z aussi ?
+rho_g = rhoV_p(P_z)
+rho_l = rhoL_p(P_z) #--> est-ce qu on les fait dépendre de z aussi ?
 
 eps_z = 1./((rho_g*(1.-x_z))/(G_l*x_z)*V_gj + C_0*(rho_l/rho_g*(1-x_z)/x_z+1.))
 
@@ -146,6 +160,15 @@ eps_z = 1./((rho_g*(1.-x_z))/(G_l*x_z)*V_gj + C_0*(rho_l/rho_g*(1-x_z)/x_z+1.))
 #######################  Equations du PB  ###########################
 #####################################################################
 
-def loss_energy_equation():
+def loss_energy_equation(z):
+    P = P_z(z)
+    x = x_z(z)
+    A = hL_p(P)+x*(hV_p(P)-hL_p(P))
+    
+    dA_dz = tf.gradients(A,z)[0]
+    
+    err = dA_dz - 4.*q/(D*G)
+    return tf.reduce_mean(tf.square(err))
+    
     
 def loss_pressure_equation():

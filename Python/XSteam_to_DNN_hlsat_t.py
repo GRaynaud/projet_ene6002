@@ -16,7 +16,7 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 def gen_data(N):
     x = np.linspace(1.,50.,N)
-    y = np.asarray([steamTable.rhoL_p(k) for k in x])
+    y = np.asarray([steamTable.hV_p(k) for k in x])
     return x,y
 
 #p_tf = tf.constant(p,dtype=tf.float32,shape=[len(p),1])
@@ -61,7 +61,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-3)
 train_op_Adam = optimizer_Adam.minimize(Loss) 
 
 # Lancement de la session
@@ -114,5 +114,5 @@ print('Loss valid : %.3e' % (loss_validation))
 
 # Sauvegarde
 str_layers_fluid = [str(j) for j in layers]
-filename = 'Models/rhoL_p_'+'_'.join(str_layers_fluid) +'_tanh.DNN'
+filename = 'Models/hV_p_'+'_'.join(str_layers_fluid) +'_tanh.DNN'
 save_DNN(w_tsat_p,b_tsat_p,filename,sess)
