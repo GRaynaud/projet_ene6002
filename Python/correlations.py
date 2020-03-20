@@ -74,7 +74,7 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     return txVide     
 
 
-def chexal_tf(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
+def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
     Retourne le taux de vide 
     Apres avoir calcule le C0 et V_gj
@@ -114,15 +114,12 @@ def chexal_tf(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C3 = tf.maximum(0.5,2.*tf.exp(-Re_l/60000.))
     C7 = tf.pow(D2/D,0.6)
     C8 = C7 / (1. - C7)  
-
-    if C7 >= 1 :
-        C4 = 1
-    else :
-        C4 = 1 / (1 - np.exp(-C8))
     
-    Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * np.power(1 - txVide, K1) * C2 * C3 * C4 
+    C4 = tf.where(tf.less(1.,C7), 1./(1.-tf.exp(-C8)), 1.)
     
+    Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
     
+    G_l = (1-x)*G
     
     txVide = 1./((rho_g*(1.-x))/(G_l*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
 
