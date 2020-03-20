@@ -7,6 +7,7 @@ Created on Fri Mar 20 15:05:58 2020
 """
 
 import numpy as np
+import tensorflow as tf
 #Constantes et dimensions
 D2 = 0.091 #m
 p_crit = 221.2 #bars
@@ -72,6 +73,42 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     
     return txVide     
 
+
+def C0_tf(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
+    '''
+    Retourne le coefficient de corrélation 
+    Ne fait appel qu'à des fonctions de base tensorflow
+    '''
+    Re_g = x * G * D / mu_g
+    Re_l = (1-x) * G * D / mu_l
+
+    if Re_g > Re_l or Re_g < 0 :
+        Re = Re_g
+    else :
+            Re = Re_l
+    
+    A1 = 1 / (np.exp(-Re/60000) + 1)
+    B1 = np.min(0.8,A1)
+    r = (1 + 1.57 * rho_g / rho_l) / (1 - B1)
+    K0 = B1 + (1 - B1) * np.power(rho_g / rho_l, 0.25)
+    C1 = 4 * p_crit**2 / (p * (p_crit - p))
+
+    if C1*txVide > 80 :
+        L1 = 1
+    else :
+        L1 = 1 - np.exp(-C1*txVide)
+
+    if C1>80 :
+        L2 = 1
+    else :
+        L2 = 1 - np.exp(-C1)   
+    
+    L_cor = L1 / L2
+    C0 = L_cor / (K0 + (1 - K0) * np.power(txVide,r))   
+    
+
+
+
 def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     
     rho_h = np.power(x / rho_g + (1 - x) / rho_l,1)
@@ -83,9 +120,31 @@ def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     phi2 = E + 3.24 * F * H / (np.power(Fr,0.045) * np.power(We,0.035))
     
     return phi2
+
+def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
+    
+    rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
+    We = G**2 * D / sigma / rho_h #Nombre de Weber
+    Fr = G**2 / g / D / rho_h**2  #Nombre de Froude
+    H = tf.pow(rho_g / rho_l,0.91) * tf.pow(mu_g / mu_l,0.19) * tf.pow(1 - mu_g / mu_l,0.7)
+    F = tf.pow(x,0.78)*tf.pow(1-x,0.224)
+    E = tf.pow(1-x,2) + x**2 * rho_l * frictionFac_tf(G,D,mu_g) / rho_g / frictionFac_tf(G,D,mu_l)
+    phi2 = E + 3.24 * F * H / (tf.pow(Fr,0.045) * tf.pow(We,0.035))
+    
+    return phi2
     
 def frictionFac (G,D,mu):
     
     Cf = 1.325 / np.power((np.log (1e-6/3.7)+5.74/np.power(G * D / mu, 0.9)),2)
 
     return Cf     
+
+def frictionFac_tf(G,D,mu):
+    '''
+    Retourne le facteur de friction
+    Compatible TensorFlow
+    Utilise une rugosité xi/D = 1e-6
+    '''
+    Cf = 1.325 / tf.pow((tf.log (1e-6/3.7)+5.74/tf.pow(G * D / mu, 0.9)),2)
+
+    return Cf  
