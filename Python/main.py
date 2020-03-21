@@ -223,23 +223,27 @@ def loss_pressure_equation(z):
     rho_g = rhoV_p(P_z)
     rho_l = rhoL_p(P_z) #--> est-ce qu on les fait dépendre de z aussi ?
     
+    rho_m = eps*rho_g + (1.-eps)*rho_l
+    
     mu_g =
     mu_l =
     sigma =
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
-    dp_dz_l0 = 
+    mu = x*mu_g + (1-x)*mu_l # eq (10.11) modele de Chicchitti et al, 1960
+    f_tp = 0.316/tf.pow(GD/mu,0.25) # eq (10.13)
+    dp_dz_l0 = f_tp*0.5*(G**2)/(rho_m*D #eq (10.8)
     
+    G2vp = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
+    dp_acc = tf.gradients(G2vp,z)[0] # eq (10.20) terme 2
     
-    dp_acc =
-    
-    dp_grav =
+    dp_grav = rho_m*g # eq (10.17)
     
     dP_dz = tf.gradients(P,z)[0]
     
     
-    err = dP_dz - phi2*dp_dz_l0 + + 
+    err = dP_dz - phi2*dp_dz_l0 - dp_grav - dp_acc # Attention aux signes des termes
     
     return tf.reduce_mean(tf.square(err))
 
