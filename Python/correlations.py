@@ -140,7 +140,7 @@ def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
 
 def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     '''
-    Retourne le coefficient de correlation de Friedel pour uné coulement diphasique
+    Retourne le coefficient de correlation de Friedel pour un écoulement diphasique
     Compatible avec tensorflow
     '''
     rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
