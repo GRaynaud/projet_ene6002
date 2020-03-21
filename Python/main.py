@@ -35,10 +35,10 @@ q = P_th / (np.pi * D*L_c)
 ###################### Imports tensorflow ###########################
 #####################################################################
 
-p_tf   = tf.placeholder(dtype=tf.float32,shape=[None,1])
-t_tf   = tf.placeholder(dtype=tf.float32,shape=[None,1])
+#p_tf   = tf.placeholder(dtype=tf.float32,shape=[None,1])
+#t_tf   = tf.placeholder(dtype=tf.float32,shape=[None,1])
 z_tf   = tf.placeholder(dtype=tf.float32,shape=[None,1])
-eps_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
+#eps_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
 
 
 
@@ -55,9 +55,10 @@ sess.run(init)
 # Import
 filename_tsat_p = 'Models/Tsat_p_1_40_1_tanh.DNN'
 filename_hL_p = 'Models/hL_p_1_40_1_tanh.DNN'
-filename_hV_p = 'Models/hV_p_1_40_1_tanh.DNN'
+filename_hV_p = 'Models/hV_p_1_40_1_elu.DNN'
 filename_rhoV_p = 'Models/rhoV_p_1_40_1_tanh.DNN'
 filename_rhoL_p = 'Models/rhoL_p_1_40_1_tanh.DNN'
+filename_st_p = 'Models/st_p_1_40_1_elu.DNN'
 layers = [1,40,1]
 layers_fn = [tf.tanh, tf.tanh, tf.tanh]
 w_tsat_p, b_tsat_p = DNN.restore_NN_as_constant(layers,filename_tsat_p)
@@ -65,6 +66,7 @@ w_hL_p,b_hL_p = DNN.restore_NN_as_constant(layers,filename_hL_p)
 w_hV_p,b_hV_p = DNN.restore_NN_as_constant(layers,filename_hV_p)
 w_rhoV_p,b_rhoV_p = DNN.restore_NN_as_constant(layers,filename_rhoV_p)
 w_rhoL_p,b_rhoL_p = DNN.restore_NN_as_constant(layers,filename_rhoL_p)
+w_st_p,b_st_p = DNN.restore_NN_as_constant(layers,filename_st_p)
 
 def Tsat_p(p_input_tf):
     return DNN.neural_net(p_input_tf,w_tsat_p,b_tsat_p,layers_fn)
@@ -80,6 +82,10 @@ def rhoV_p(p_input_tf):
 
 def rhoL_p(p_input_tf):
     return DNN.neural_net(p_input_tf,w_rhoL_p,b_rhoL_p,layers_fn)
+
+def st_p(p_input_tf):
+    return DNN.neural_net(p_input_tf,w_st_p,b_st_p,[tf.nn.elu])
+
 
 # Vérification
 
@@ -225,9 +231,16 @@ def loss_pressure_equation(z):
     
     dp_dz_l0 = 
     
+    
+    dp_acc =
+    
+    dp_grav =
+    
     dP_dz = tf.gradients(P,z)[0]
     
-    err = dP_dz - phi2*dp_dz_l0
+    
+    err = dP_dz - phi2*dp_dz_l0 + + 
+    
     return tf.reduce_mean(tf.square(err))
 
 
