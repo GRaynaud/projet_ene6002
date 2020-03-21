@@ -16,8 +16,8 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 def gen_data(N): # Pour mélange diphasique à saturation --> viscosité
     x = np.linspace(1.,50.,N)
-    hL_p = np.asarray([steamTable.hL_p(k) for k in x])
-    y = np.asarray([steamTable.my_ph(x[k],hL_p[k]) for k in range(len(x))])
+    hL_p = np.asarray([steamTable.hV_p(k) for k in x])
+    y = 1e5*np.asarray([steamTable.my_ph(x[k],hL_p[k]) for k in range(len(x))])
     return x,y
 
 
@@ -48,7 +48,7 @@ tf_dict_valid = {x_tf : np.reshape(x,(N,1)),
                  y_data_tf : np.reshape(y_data,(N,1))}
 
 
-layers = [1,5,1]
+layers = [1,10,1]
 layers_fn = [tf.nn.elu]
 
 w_tsat_p, b_tsat_p = initialize_NN(layers)
@@ -69,7 +69,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-3)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4)
 train_op_Adam = optimizer_Adam.minimize(Loss) 
 optimizer_Adam2 = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-6)
 train_op_Adam2 = optimizer_Adam2.minimize(Loss) 
@@ -95,17 +95,17 @@ loss_value = sess.run(Loss,tf_dict_train)
 
 tolAdam = 1e-5
 it=0
-#itmin = 1e5
-#while it<itmin and loss_value>tolAdam:
-#    sess.run(train_op_Adam, tf_dict_train)
-#    loss_value = sess.run(Loss, tf_dict_train)
-#    if it%100 == 0:
-#        loss_validation = sess.run(tf.reduce_mean(Loss),tf_dict_valid)
-#        print('Adam it %e - Training Loss :  %.3e - Valid loss : %.3e' % (it, loss_value, loss_validation))
-#    it += 1
+itmin = 5e4
+while it<itmin and loss_value>tolAdam:
+    sess.run(train_op_Adam, tf_dict_train)
+    loss_value = sess.run(Loss, tf_dict_train)
+    if it%100 == 0:
+        loss_validation = sess.run(tf.reduce_mean(Loss),tf_dict_valid)
+        print('Adam it %e - Training Loss :  %.3e - Valid loss : %.3e' % (it, loss_value, loss_validation))
+    it += 1
     
 it0=it
-itmin = 1e5
+itmin = 5e4
 while (it-it0)<itmin and loss_value>tolAdam:
     sess.run(train_op_Adam2, tf_dict_train)
     loss_value = sess.run(Loss, tf_dict_train)
@@ -134,5 +134,5 @@ print('Loss valid : %.3e' % (loss_validation))
 
 # Sauvegarde
 str_layers_fluid = [str(j) for j in layers]
-filename = 'Models/myL_p_'+'_'.join(str_layers_fluid) +'_elu.DNN'
+filename = 'Models/1e5xmyV_p_'+'_'.join(str_layers_fluid) +'_elu.DNN'
 save_DNN(w_tsat_p,b_tsat_p,filename,sess)

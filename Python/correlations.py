@@ -82,6 +82,8 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
     # Calcul de C0
     
+    ones = 0.*txVide + 1.
+    
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
     
@@ -93,9 +95,12 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     K0 = B1 + (1 - B1) * tf.pow(rho_g / rho_l, 0.25)
     C1 = 4 * p_crit**2 / (p * (p_crit - p))
     
-    L1 = tf.where(tf.less(80.,C1*txVide),1.,1.-tf.exp(-C1*txVide))
-
-    L2 = tf.where(tf.less(80.,C1), 1., 1 - tf.exp(-C1))
+    boolean_L1 = tf.less(80.*ones,C1*txVide)
+    L1 = tf.where(boolean_L1,ones,1.-tf.exp(-C1*txVide))
+#    L1 = tf.where(tf.less(80.*ones,C1*txVide),ones,1.-tf.exp(-C1*txVide))
+    
+    boolean_L2 = tf.less(80.*ones,C1)
+    L2 = tf.where(boolean_L2, ones, 1. - tf.exp(-C1))
     
     L_cor = L1 / L2
     
@@ -109,19 +114,19 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C5 = tf.sqrt(150 * rho_g / rho_l)
     C6 = C5 / (1 - C5)
 
-    C2 = tf.where(tf.less(C5,1), 1./(1.-tf.exp(-C6)), 1.)
+    C2 = tf.where(tf.less(C5,ones), 1./(1.-tf.exp(-C6)), ones)
 
-    C3 = tf.maximum(0.5,2.*tf.exp(-Re_l/60000.))
-    C7 = tf.pow(D2/D,0.6)
+    C3 = tf.maximum(0.5*ones,2.*tf.exp(-Re_l/60000.))
+    C7 = tf.pow(D2/D,0.6)*ones
     C8 = C7 / (1. - C7)  
     
-    C4 = tf.where(tf.less(1.,C7), 1./(1.-tf.exp(-C8)), 1.)
+    boolean_C4 = tf.less(ones,C7)
+    C4 = tf.where(boolean_C4, 1./(1.-tf.exp(-C8)), ones)
     
     Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
     
-    G_l = (1-x)*G
     
-    txVide = 1./((rho_g*(1.-x))/(G_l*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
+    txVide = 1./(rho_g/(G*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
 
     return txVide  
 
