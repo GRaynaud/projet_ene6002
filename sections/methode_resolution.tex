@@ -1,0 +1,71 @@
+\section{Méthode de résolution}
+
+Les différentes équations dont on dispose afin de résoudre ce problème sont :
+
+des équations d'état lors que le mélange est à saturation :
+\begin{align}
+    T_{sat} &= T_{sat}(P) \\
+    h_{l,sat} &= h_{l,sat}(T) = h_{l,sat}(P) \\
+    h_{v,sat} &= h_{v,sat}(T) = h_{v,sat}(P)
+\end{align}
+
+Des lois de comportement, notamment pour calculer la perte de pression
+\begin{equation}
+     -\pder[p]{z} = \left(\pder[p]{z} \right)_{a} + \left(\pder[p]{z} \right)_{f} + \left(\pder[p]{z} \right)_{g}
+\end{equation}
+
+Que l'on peut écrire comme :
+\begin{equation}
+    -\pder[p]{z} = \underbrace{\left[\overbrace{\cancel{\frac{\partial}{\partial \tau} G}}^{\text{Ecoul. permanent}}+\frac{\partial}{\partial z} G^{2} v^{\prime}\right]}_{\text{Acceleration}}+\underbrace{\frac{4 \tau_{w}}{D}}_{\text{Frottements}}+\underbrace{\rho_{m} g}_{\text{Gravitation}}
+%    -\pder[p]{z} = \phi_{l0}^2 \times \left( \pder[p]{z} \right)_{1\varphi}
+\end{equation}
+
+Avec :
+\begin{equation}
+    v^{\prime}=\frac{x^{2}}{\varepsilon \rho_{v}}+\frac{(1-x)^{2}}{(1-\varepsilon) \rho_{l}}
+\end{equation}
+
+Le terme de frottement pouvant être écrit comme la perte de pression (par frottement) si l'écoulement était seulement liquide et une correction le \og multiplicateur diphasique \fg{}. Ce dernier sera obtenu par la corrélation de \textsc{Friedel}.
+\begin{equation}
+    \left(\pder[p]{z} \right)_{f} = f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2
+\end{equation}
+
+Le facteur de frottement $f$ est défini par :
+\begin{equation}
+    f = 0.316 \left[\text{Re}_L\right]^{-0.25} = 0.316 \left[\frac{(1-x)G D}{\mu_l}\right]^{-0.25} 
+\end{equation}
+
+Une relation entre le taux de vide moyen $\varepsilon$ et le titre de l'écoulement $x$ provenant du modèle à vitesses séparées. Il est accompagné de lois de comportements pour fixer les constantes de corrélation :
+\begin{equation}
+        \frac{1}{\varepsilon} = \frac{\rho_g}{\hat{x} G} <V_{gj}>_{2g} + C_0\left(\frac{\rho_g}{\rho_l}\frac{1-\hat{x}}{\hat{x}} + 1\right) 
+\end{equation}
+\begin{align*}
+         C_0 &\textnormal{ fonction des paramètres de l'écoulement}\\
+        <V_{gj}>_{2g} &\textnormal{ fonction des paramètres de l'écoulement}   
+\end{align*}
+
+Des lois de conservation, notamment de la masse :
+\begin{equation}
+    \pder[G]{z} = 0
+\end{equation}
+
+et de l'énergie du mélange :
+\begin{equation}
+    \pder{z} \left[ h_{l,sat}(T_{(z)})+x_{(z)}h_{vl,sat}(T_{(z)})\right] = \frac{4}{DG}q''
+\end{equation}
+
+où $q''$ est le flux de chaleur ajouté en paroi obtenu en supposant la puissance thermique $P_{th}$ apportée uniformément répartie sur la longueur chauffée $L_x$ du cylindre : $q'' = \frac{P_{th}}{\pi DL_c}$.\\ \par
+On peut donc écrire la perte de pression que nous allons évaluer comme :
+\begin{equation}
+     -\pder[p]{z} = G^2\pder{z}\left[\frac{x^{2}}{\varepsilon \rho_{v}}+\frac{(1-x)^{2}}{(1-\varepsilon) \rho_{l}} \right] + f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2 + \rho_m g
+\end{equation}
+
+Comme nous négligeons la zone où l'ébullition est sous-refroidie (\textbf{H1}), il nous faut calculer l'endroit où le fluide est à température de saturation. On peut écrire que la puissance nécessaire pour y arriver est :
+\begin{equation}
+    \dot{Q}_{sat} = \dot{m} Cp \Delta T
+\end{equation}
+Le terme $Cp$ pouvant être pris pour de l'eau à saturation, et le terme $\Delta T$ correspond à la différence entre la température de saturation du fluide à la pression donnée et la température d'entrée.\\ 
+Comme on considère que la conduite est chauffée uniformément, le rapport entre puissance nécessaire pour arriver à saturation et puissance totale thermique ajoutée $P_{th}$ est égale au rapport entre $L_{sat}$ et longueur totale chauffée $L_c$. On a alors :
+\begin{equation}
+    L_{sat}= \frac{ \dot{Q}_{sat}\times L_c}{P_{th}}
+\end{equation}

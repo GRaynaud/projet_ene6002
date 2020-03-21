@@ -26,7 +26,8 @@
 \newcommand*{\rttensor}[1]{\bar{\bar{#1}}}
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
-\newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
+\newcommand\pder[2][]{\ensuremath{\frac{\partial#1}{\partial#2}}} 
+\newcommand\pdder[2][]{\ensuremath{\frac{\partial^2 #1}{\partial#2^2}}} 
 %------------------------------------------------------------------
 % TITLE
 %------------------------------------------------------------------
@@ -70,7 +71,7 @@ Thermohydraulique des systèmes diphasiques \\
 \newpage
 \input{sections/pres.tex}
 \newpage
-%\input{sections/ex2.tex}
+\input{sections/methode_resolution.tex}
 %\newpage
 %\input{sections/ex3.tex}
 %\newpage
