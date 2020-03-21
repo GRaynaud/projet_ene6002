@@ -153,7 +153,10 @@ layers_fn_P = [tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
 def P_z(z):
-    return DNN.neural_net(z,w_P,b_P,layers_fn_P)
+    p_z_temp = DNN.neural_net(z,w_P,b_P,layers_fn_P)
+    pmin = z*0. + P_s*0.8
+    pmax = z*0 + P_s*1.2
+    return tf.minimum(pmax,tf.maximum(pmin,p_z_temp))
 
 # T = f(P) @ saturation --> Hypothèse à vérifier
 
@@ -166,7 +169,10 @@ layers_fn_x = [tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
 def x_z(z):
-    return DNN.neural_net(z,w_x,b_x,layers_fn_x)
+    x_z_temp = DNN.neural_net(z,w_x,b_x,layers_fn_x)
+    ones = 0.*z + 1. - 1e-2
+    zeroes = 0.*z + 1e-2
+    return tf.minimum(ones,tf.maximum(zeroes,x_z_temp))
 
 
 # eps = f(z) à déterminer
@@ -176,7 +182,10 @@ layers_fn_eps = [tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
-    return DNN.neural_net(z,w_eps,b_eps,layers_fn_eps)
+    eps_z_temp = DNN.neural_net(z,w_eps,b_eps,layers_fn_eps)
+    ones = 0.*z + 1. - 1e-2
+    zeroes = 0.*z + 1e-2
+    return tf.minimum(ones,tf.maximum(zeroes,eps_z_temp))
 
 
 #####################################################################
@@ -221,7 +230,7 @@ def loss_energy_equation(z):
     dA_dz = tf.gradients(A,z)[0]
     
     err = dA_dz - 4.*q/(D*G)
-    return tf.reduce_mean(tf.square(err))
+    return tf.reduce_mean(tf.square(1e-6*err))
     
     
 def loss_pressure_equation(z):
@@ -245,9 +254,9 @@ def loss_pressure_equation(z):
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
-    mu = x*mu_g + (1-x)*mu_l # eq (10.11) modele de Chicchitti et al, 1960
-    f_tp = 0.316/tf.pow(G*D/mu,0.25) # eq (10.13)
-    dp_dz_l0 = f_tp*0.5*(G**2)/(rho_m*D) #eq (10.8)
+    
+    f= 0.316*tf.pow((1-x)*G*D/mu_l,-0.25) # eq (10.13)
+    dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
     G2vp = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
     dp_acc = tf.gradients(G2vp,z)[0] # eq (10.20) terme 2
@@ -259,7 +268,7 @@ def loss_pressure_equation(z):
     
     err = dP_dz - phi2*dp_dz_l0 - dp_grav - dp_acc # Attention aux signes des termes --> A VERIFIER !!!
     
-    return tf.reduce_mean(tf.square(err))
+    return tf.reduce_mean(tf.square(1e-3*err))
 
 
 def loss_BC():
@@ -268,14 +277,14 @@ def loss_BC():
     Entrée : T = T_e (°C) à z = z_e
     Sortie : P = P_s (bar) à z = z_s
     '''
-    z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
+    #z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
     z_s_tf = z_s*tf.ones(shape=[1,1],dtype=tf.float32)
     
-    P_e_guess = P_z(z_e_tf)
-    T_e_guess = Tsat_p(P_e_guess)
+    #P_e_guess = P_z(z_e_tf)
+    #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
     
-    err = tf.square(T_e_guess - T_e) + tf.square(P_s_guess - P_s)
+    err = tf.square(P_s_guess - P_s) #+ tf.square(T_e_guess - T_e) + 
     return tf.reduce_mean(err)
 
 
@@ -284,14 +293,14 @@ def loss_BC():
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
-Loss =  1e-10*(  loss_txVide_DriftFluxModel(z_tf) \
+Loss =  loss_txVide_DriftFluxModel(z_tf) \
         + loss_energy_equation(z_tf) \
         + loss_pressure_equation(z_tf) \
-        + loss_BC()) # Nan sur loss_txVide... et loss_pressure...
+        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)-0.5)) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.2 + (0.8-0.2)*(z_tf-z_e)/(z_s-z_e)) )) \
-            + tf.reduce_mean(tf.square( P_z(z_tf) - ( steamTable.psat_t(T_e) + (P_s-steamTable.psat_t(T_e))*(z_tf-z_e)/(z_s-z_e) ) ))
+            + tf.reduce_mean(tf.square( P_z(z_tf) - P_s ))
             
 
 
@@ -317,7 +326,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-6)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4,epsilon=1e-7)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
         
@@ -365,10 +374,10 @@ print('Loss value : %.3e' % (loss_value))
 
 tolAdam = 1e-5
 it=0
-itmin = 5e4
+itmin = 1e5
 while it<itmin and loss_value>tolAdam:
     sess.run(train_op_Adam, tf_dict_train)
     loss_value = sess.run(Loss, tf_dict_train)
-    if it%100 == 0:
+    if it%1 == 0:
         print('Adam it %e - Training Loss :  %.3e' % (it, loss_value))
     it += 1

@@ -148,13 +148,17 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     Retourne le coefficient de correlation de Friedel pour un écoulement diphasique
     Compatible avec tensorflow
     '''
+    ones = 0.*x + 1.
+    
     rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
     We = G**2 * D / sigma / rho_h #Nombre de Weber
     Fr = G**2 / g / D / rho_h**2  #Nombre de Froude
     H = tf.pow(rho_g / rho_l,0.91) * tf.pow(mu_g / mu_l,0.19) * tf.pow(1 - mu_g / mu_l,0.7)
     F = tf.pow(x,0.78)*tf.pow(1-x,0.224)
     E = tf.pow(1-x,2) + x**2 * rho_l * frictionFac_tf(G,D,mu_g) / rho_g / frictionFac_tf(G,D,mu_l)
-    phi2 = E + 3.24 * F * H / (tf.pow(Fr,0.045) * tf.pow(We,0.035))
+    phi2_xinf1 = E + 3.24 * F * H / (tf.pow(Fr,0.045) * tf.pow(We,0.035))
+    
+    phi2 = tf.where(tf.less(x,ones),phi2_xinf1,E)
     
     return phi2
     
