@@ -153,6 +153,7 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     Compatible avec tensorflow
     '''
     ones = 0.*x + 1.
+    zeroes = 0.*x
     
     rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
     We = G**2 * D / sigma / rho_h #Nombre de Weber
@@ -162,7 +163,9 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     E = tf.pow(1-x,2) + x**2 * rho_l * frictionFac_tf(G,D,mu_g) / rho_g / frictionFac_tf(G,D,mu_l)
     phi2_xinf1 = E + 3.24 * F * H / (tf.pow(Fr,0.045) * tf.pow(We,0.035))
     
-    phi2 = tf.where(tf.less(x,ones),phi2_xinf1,E)
+    condition_phi2 = tf.math.logical_and( tf.less(x,ones) , tf.less(zeroes,x) ) # Vérifie que 0 < x < 1 sinon F --> NaN
+    
+    phi2 = tf.where(condition_phi2,phi2_xinf1,E)
     
     return phi2
     

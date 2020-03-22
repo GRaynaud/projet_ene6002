@@ -337,7 +337,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4,epsilon=1e-8)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-6)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
         
@@ -375,10 +375,10 @@ optimizer_preinit.minimize(sess,
 #####################################################################  
 print('Debut de l\'entrainement')
 
-optimizer.minimize(sess,
-                fetches = [Loss],
-                feed_dict = tf_dict_train,
-                loss_callback = DNN.callback)
+#optimizer.minimize(sess,
+#                fetches = [Loss],
+#                feed_dict = tf_dict_train,
+#                loss_callback = DNN.callback)
 
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
@@ -392,3 +392,18 @@ while it<itmin and loss_value>tolAdam:
     if it%100 == 0:
         print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
     it += 1
+    
+    
+    
+    
+
+
+if False:
+    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+    p
+    eps
+    x
+    z
+    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_txVide_DriftFluxModel(z_tf),tf_dict_train) ]
+    np.min(x),np.max(x)
+    np.min(eps),np.max(eps) 
