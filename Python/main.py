@@ -154,9 +154,10 @@ w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
 def P_z(z):
     p_z_temp = DNN.neural_net(z,w_P,b_P,layers_fn_P)
-    pmin = z*0. + P_s*0.8
-    pmax = z*0 + P_s*1.2
-    return tf.minimum(pmax,tf.maximum(pmin,p_z_temp))
+#    pmin = z*0. + P_s*0.8
+#    pmax = z*0 + P_s*1.2
+#    return tf.minimum(pmax,tf.maximum(pmin,p_z_temp))
+    return p_z_temp
 
 # T = f(P) @ saturation --> Hypothèse à vérifier
 
@@ -170,9 +171,10 @@ w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
 def x_z(z):
     x_z_temp = DNN.neural_net(z,w_x,b_x,layers_fn_x)
-    ones = 0.*z + 1. - 1e-2
-    zeroes = 0.*z + 1e-2
-    return tf.minimum(ones,tf.maximum(zeroes,x_z_temp))
+#    ones = 0.*z + 1. - 1e-2
+#    zeroes = 0.*z + 1e-2
+#    return tf.minimum(ones,tf.maximum(zeroes,x_z_temp))
+    return x_z_temp
 
 
 # eps = f(z) à déterminer
@@ -183,9 +185,10 @@ w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
     eps_z_temp = DNN.neural_net(z,w_eps,b_eps,layers_fn_eps)
-    ones = 0.*z + 1. - 1e-2
-    zeroes = 0.*z + 1e-2
-    return tf.minimum(ones,tf.maximum(zeroes,eps_z_temp))
+#    ones = 0.*z + 1. - 1e-2
+#    zeroes = 0.*z + 1e-2
+#    return tf.minimum(ones,tf.maximum(zeroes,eps_z_temp))
+    return eps_z_temp
 
 
 #####################################################################
@@ -211,9 +214,9 @@ def loss_txVide_DriftFluxModel(z):
     mu_l = muL_p(P)
     sigma = st_p(P)
     
-    eps_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
+    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
     
-    err = eps_z_guess - eps
+    err = x_z_guess - x
     
     return tf.reduce_mean(tf.square(err))
 
@@ -239,6 +242,8 @@ def loss_pressure_equation(z):
     le gradient de pression calculé avec le DNN et 
     celui obtenu avec le facteur de correlation de Fridel
     '''
+    ones = 0.*z + 1.
+    
     P = P_z(z)
     x = x_z(z)
     eps = eps_z(z)
@@ -255,10 +260,12 @@ def loss_pressure_equation(z):
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
     
-    f= 0.316*tf.pow((1-x)*G*D/mu_l,-0.25) # eq (10.13)
+    f= tf.where(tf.less(x,ones), 0.316*tf.pow((1-x)*G*D/mu_l,-0.25), 0.316*tf.pow(x*G*D/mu_g,-0.25)) # eq (10.13) --> A verifier dans le cas x>1
     dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
-    G2vp = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
+    G2vp_boneps = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
+    G2vp_eps0 =  # Valeur de G²v' quand eps <= 0
+    G2vp_eps1 =  # Valeur de G²v' quand eps >= 1
     dp_acc = tf.gradients(G2vp,z)[0] # eq (10.20) terme 2
     
     dp_grav = rho_m*g # eq (10.17)
@@ -326,7 +333,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4,epsilon=1e-7)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-4,epsilon=1e-8)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
         
@@ -364,10 +371,10 @@ optimizer_preinit.minimize(sess,
 #####################################################################  
 print('Debut de l\'entrainement')
 
-#optimizer.minimize(sess,
-#                fetches = [Loss],
-#                feed_dict = tf_dict_train,
-#                loss_callback = DNN.callback)
+optimizer.minimize(sess,
+                fetches = [Loss],
+                feed_dict = tf_dict_train,
+                loss_callback = DNN.callback)
 
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
@@ -378,6 +385,6 @@ itmin = 1e5
 while it<itmin and loss_value>tolAdam:
     sess.run(train_op_Adam, tf_dict_train)
     loss_value = sess.run(Loss, tf_dict_train)
-    if it%1 == 0:
-        print('Adam it %e - Training Loss :  %.3e' % (it, loss_value))
+    if it%100 == 0:
+        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
     it += 1

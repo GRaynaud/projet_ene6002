@@ -76,7 +76,7 @@ def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 
 def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
-    Retourne le taux de vide 
+    Retourne le titre
     Apres avoir calcule le C0 et V_gj
     Ne fait appel qu'à des fonctions de base tensorflow
     '''
@@ -126,9 +126,13 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
     
     
-    txVide = 1./(rho_g/(G*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
-
-    return txVide  
+#    txVide = 1./(rho_g/(G*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
+#
+#    return txVide  
+    
+    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ) 
+    
+    return xguess
 
 
 def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
