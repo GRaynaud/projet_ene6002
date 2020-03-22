@@ -243,6 +243,7 @@ def loss_pressure_equation(z):
     celui obtenu avec le facteur de correlation de Fridel
     '''
     ones = 0.*z + 1.
+    zeroes = 0.*z
     
     P = P_z(z)
     x = x_z(z)
@@ -264,8 +265,11 @@ def loss_pressure_equation(z):
     dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
     G2vp_boneps = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
-    G2vp_eps0 =  # Valeur de G²v' quand eps <= 0
-    G2vp_eps1 =  # Valeur de G²v' quand eps >= 1
+    G2vp_eps0 =  (G**2)*tf.square(1-x)/((1-eps)*rho_l)  # Valeur de G²v' quand eps <= 0
+    G2vp_eps1 =  (G**2) * tf.square(x)/(eps*rho_g) # Valeur de G²v' quand eps >= 1
+    
+    G2vp = tf.where(tf.less(zeroes,eps) , tf.where(tf.less(eps,ones), G2vp_boneps, G2vp_eps1) , G2vp_eps0 )
+    
     dp_acc = tf.gradients(G2vp,z)[0] # eq (10.20) terme 2
     
     dp_grav = rho_m*g # eq (10.17)
@@ -275,7 +279,7 @@ def loss_pressure_equation(z):
     
     err = dP_dz - phi2*dp_dz_l0 - dp_grav - dp_acc # Attention aux signes des termes --> A VERIFIER !!!
     
-    return tf.reduce_mean(tf.square(1e-3*err))
+    return tf.reduce_mean(tf.square(err))
 
 
 def loss_BC():

@@ -130,7 +130,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 #
 #    return txVide  
     
-    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ) 
+    xguess = tf.where(tf.less(txVide,ones), txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), ones)
     
     return xguess
 
