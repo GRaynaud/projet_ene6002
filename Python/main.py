@@ -196,7 +196,7 @@ def eps_z(z):
 #####################################################################
 
 
-def loss_txVide_DriftFluxModel(z):
+def loss_DriftFluxModel(z):
     '''
     Retrourne l'écart quadratique moyen entre 
     la valeur devinée du taux de vide et celle
@@ -232,8 +232,8 @@ def loss_energy_equation(z):
     
     dA_dz = tf.gradients(A,z)[0]
     
-    err = dA_dz - 4.*q/(D*G)
-    return tf.reduce_mean(tf.square(1e-6*err))
+    err = dA_dz/q - 4./(D*G)
+    return tf.reduce_mean(tf.square(err))
     
     
 def loss_pressure_equation(z):
@@ -242,8 +242,8 @@ def loss_pressure_equation(z):
     le gradient de pression calculé avec le DNN et 
     celui obtenu avec le facteur de correlation de Fridel
     '''
-    ones = 0.*z + 1.
-    zeroes = 0.*z
+    ones = 0.*z + 1. - 1e-4
+    zeroes = 0.*z + 1e-4
     
     P = P_z(z)
     x = x_z(z)
@@ -252,7 +252,8 @@ def loss_pressure_equation(z):
     rho_g = rhoV_p(P)
     rho_l = rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
     
-    rho_m = eps*rho_g + (1.-eps)*rho_l
+    condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
+    rho_m = tf.where( condition_rho_m, eps*rho_g + (1.-eps)*rho_l, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
     
     mu_g = muV_p(P)
     mu_l = muL_p(P)
@@ -265,12 +266,17 @@ def loss_pressure_equation(z):
     dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
     G2vp_boneps = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
-    G2vp_eps0 =  (G**2)*tf.square(1-x)/((1-eps)*rho_l)  # Valeur de G²v' quand eps <= 0
-    G2vp_eps1 =  (G**2) * tf.square(x)/(eps*rho_g) # Valeur de G²v' quand eps >= 1
+    G2vp_eps0 =  (G**2)/rho_l  # Valeur de G²v' quand eps <= 0
+    G2vp_eps1 =  (G**2)/rho_g  # Valeur de G²v' quand eps >= 1
     
-    G2vp = tf.where(tf.less(zeroes,eps) , tf.where(tf.less(eps,ones), G2vp_boneps, G2vp_eps1) , G2vp_eps0 )
+#    G2vp = tf.where(tf.less(zeroes,eps) , tf.where(tf.less(eps,ones), G2vp_boneps, G2vp_eps1) , G2vp_eps0 )
     
-    dp_acc = tf.gradients(G2vp,z)[0] # eq (10.20) terme 2
+    dp_acc_boneps = tf.gradients(G2vp_boneps,z)[0] # eq (10.20) terme 2
+    dp_acc_eps0 = tf.gradients(G2vp_eps0,z)[0]
+    dp_acc_eps1 = tf.gradients(G2vp_eps1,z)[0]
+    
+    dp_acc = tf.where(tf.less(zeroes,eps), tf.where(tf.less(eps,ones), dp_acc_boneps, dp_acc_eps1) , dp_acc_eps0 )
+    
     
     dp_grav = rho_m*g # eq (10.17)
     
@@ -304,10 +310,10 @@ def loss_BC():
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
-Loss =  loss_txVide_DriftFluxModel(z_tf) \
-        + loss_energy_equation(z_tf) \
-        + loss_pressure_equation(z_tf) \
-        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
+Loss =  loss_pressure_equation(z_tf) + loss_BC() \
+#        + loss_DriftFluxModel(z_tf) \
+#        + loss_energy_equation(z_tf) \
+#        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)-0.5)) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.2 + (0.8-0.2)*(z_tf-z_e)/(z_s-z_e)) )) \
@@ -383,13 +389,22 @@ print('Debut de l\'entrainement')
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 1e-5
+tolAdam = 4e5
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
-    sess.run(train_op_Adam, tf_dict_train)
+#    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+    grads = optimizer_Adam.compute_gradients(Loss)
+    grads_value = sess.run(grads, tf_dict_train)
+    mingrads = np.min(np.asarray([np.min(k) for k in grads_value]))
+    if mingrads != mingrads:
+        print('Pb --> Nan in grads')
+        break
+    else:
+        sess.run(train_op_Adam, tf_dict_train)
+#    optimizer_Adam.apply_gradients(grads)
     loss_value = sess.run(Loss, tf_dict_train)
-    if it%100 == 0:
+    if it%1 == 0:
         print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
     it += 1
     
@@ -397,13 +412,13 @@ while it<itmin and loss_value>tolAdam:
     
     
 
-
 if False:
     z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+    np.min(p),np.max(p),np.min(eps),np.max(eps),np.min(x),np.max(x)
     p
     eps
     x
     z
-    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_txVide_DriftFluxModel(z_tf),tf_dict_train) ]
+    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_DriftFluxModel(z_tf),tf_dict_train) ]
     np.min(x),np.max(x)
     np.min(eps),np.max(eps) 

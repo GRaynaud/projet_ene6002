@@ -82,12 +82,13 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
     # Calcul de C0
     
-    ones = 0.*txVide + 1.
+    ones = 0.*txVide + 1. - 1e-4
+    zeroes = 0.*txVide + 1e-4
     
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
     
-    Re = tf.where(tf.math.logical_or(tf.less(Re_g, Re_l), tf.less(Re_g,0.)), Re_g, Re_l)
+    Re = tf.where(tf.math.logical_or(tf.less(Re_g, Re_l), tf.less(Re_g,zeroes)), Re_g, Re_l)
     
     A1 = 1. / (tf.exp(-Re/60000.) + 1.)
     B1 = tf.minimum(0.8,A1)
@@ -104,12 +105,12 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     
     L_cor = L1 / L2
     
-    C0 = L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))   
+    C0 = tf.where(tf.less(zeroes,txVide), L_cor / (K0 + (1 - K0) * tf.pow(txVide,r)), zeroes)   # Si eps<0 --> C0 = 0
     
     # Calcul de Vgj    
         
-    K1_2 = tf.minimum(0.65, 0.5*tf.exp(tf.abs(Re_g)/4000.))
-    K1 = tf.where(tf.less(Re_g,0.), K1_2, B1)
+    K1_2 = tf.minimum(0.65*ones, 0.5*tf.exp(tf.abs(Re_g)/4000.))
+    K1 = tf.where(tf.less(Re_g,zeroes), K1_2, B1)
 
     C5 = tf.sqrt(150 * rho_g / rho_l)
     C6 = C5 / (1 - C5)
@@ -152,8 +153,8 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     Retourne le coefficient de correlation de Friedel pour un écoulement diphasique
     Compatible avec tensorflow
     '''
-    ones = 0.*x + 1.
-    zeroes = 0.*x
+    ones = 0.*x + 1. - 1e-4
+    zeroes = 0.*x + 1e-4
     
     rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
     We = G**2 * D / sigma / rho_h #Nombre de Weber
