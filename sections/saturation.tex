@@ -1,0 +1,119 @@
+\section{Zone de saturation\label{section:sat}}
+Comme nous négligeons la zone où l'ébullition est sous-refroidie (\textbf{H1}), il nous faut calculer l'endroit où le fluide est à température de saturation. Cela correspond d'ailleurs à l'endroit où le titre thermodynamique devient nul. Pour cela plusieurs méthodes sont possibles.
+
+
+\subsection{Puissance chauffage}
+On peut écrire que la puissance nécessaire pour arriver à la température de saturation en partant de la température d'entrée dépend du flux massique et de la capacité thermique massique de l'eau :
+\begin{equation}
+    \dot{Q}_{sat} = \dot{m} Cp \Delta T
+\end{equation}
+Le terme $Cp$ pouvant être pris pour de l'eau à saturation à la pression de sortie (la variation est faible pour un $\Delta T$ de cet ordre de grandeur), et le terme $\Delta T$ correspond à la différence entre la température de saturation du fluide à la pression donnée et la température d'entrée.\\ 
+Comme on considère que la conduite est chauffée uniformément, le rapport entre puissance nécessaire pour arriver à saturation et puissance totale thermique ajoutée $P_{th}$ est égale au rapport entre $L_{sat}$ et longueur totale chauffée $L_c$. On a alors :
+\begin{equation}
+    L_{sat}= \frac{ \dot{Q}_{sat}\times L_c}{P_{th}}
+\end{equation}
+
+\subsection{Différence enthalpie}
+Dans les notes de cours, on peut trouver à la page 181, une expression qui nous donne $L_{SC}$, la longueur \emph{subcooled}. Elle s'écrit comme :
+\begin{equation}
+ L_{s c} = \left(h_{l, s a t} - h_{i}\right)\frac{\dot{m}}{\pi D q_{w}^{\prime \prime}} 
+\end{equation}
+Cette équation prend mieux en compte les variations des propriétés du fluide avec la température.
+\\
+Le terme $q_{w}^{\prime \prime}$ correspondant à la puissance de chauffage par unité de surface sur le tube :
+\begin{equation}
+    q_{w}^{\prime \prime} = \frac{P}{S_{\text{paroi}}} = \frac{P}{\pi D L }
+\end{equation}
+On peut maintenant s'intéresser aux valeurs prises par les deux termes d'enthalpies.\\ \par
+L'enthalpie à saturation $h_{l, s a t}$ est simple à trouver, il s'agit de prendre l'enthalpie à saturation pour la pression de sortie donnée. La perte de pression que l'on cherche à quantifier est trop faible pour pour faire apparaître des variations notables dans la valeur de l'enthalpie à saturation.\\ \par
+Pour ce qui est de l'enthalpie d'entrée $h_{i}$, l'hypothèse \textbf{H4} nous indique d'utiliser l'enthalpie à saturation pour cette température.\\
+Notons qu'il est possible de travailler avec la \og vraie \fg{} enthalpie en utilisant la température d'entrée et pression corrigée avec la perte de pression expérimentale.
+\subsection{Comparaison des méthodes}
+Comme nous avons les données pour 2 expériences, nous allons pouvoir comparer les deux méthodes.
+Rappelons les différentes valeurs caractéristiques pour ces dernières.
+\begin{table}[H]
+\caption{Paramètres pour les deux expériences}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{Diamètre} (\si{m}) & \num{13.4e-3} & \num{22.9e-3} \\
+          \textbf{Longueur chauffée} (\si{m}) & 1.8 & 1.8 \\
+          \textbf{Puissance thermique} (\si{kW}) & 250 & 151,8 \\
+          \textbf{Débit massique} (\si{kg/s})& \num{0,64} & \num{0.47} \\
+          \textbf{Température entrée} (\si{\celsius})& 184 & 215.3 \\
+          \textbf{Pression sortie} (\si{bar})& 20.3 & 42.1 \\
+        \bottomrule  
+    \end{tabular}
+    \label{donnes}
+\end{table}
+
+On peut déterminer des valeurs pour $Cp$ de l'eau à saturation basés sur la pression de sortie, ainsi que la température de saturation. On a alors :
+\begin{table}[H]
+\caption{$Cp$ et $T_{sat}$ pour les deux expériences}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{Cp} (\si{kJ/kg K}) & \num{4.575} & \num{4,901} \\
+          \textbf{Température de saturation} (\si{\celsius}) & 212.1 & 253.3 \\
+        \bottomrule  
+    \end{tabular}
+    \label{donnes}
+\end{table}
+
+On trouve alors $\dot{Q}_{sat}$ et on en déduit la longueur nécessaire pour atteindre un titre nul.
+\begin{table}[H]
+\caption{Puissance et longueur sous-refroidie pour les deux expériences}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{Puissance nécessaire} $\dot{Q}_{sat}$ (\si{kW}) & 81.7 & 77.6 \\
+          \textbf{Longueur sous-refroidie} $L_{sc}$ (\si{m}) & 0.59 & 0.92 \\
+        \bottomrule  
+    \end{tabular}
+    \label{donnes}
+\end{table}
+
+On peut maintenant passer à la seconde méthode avec les enthalpies. On a :
+\begin{table}[H]
+\caption{Enthalpies pour les deux expériences}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{Enthalpie saturation} $h_{l,sat}$ (\si{kJ/kg}) & 912 & 1102 \\
+          \textbf{Enthalpie entrée} $h_{i}$ (\si{kJ/kg}) & 781.5 & 922 \\
+          \textbf{Enthalpie entrée corrigée} $h_{i,cor}$ (\si{kJ/kg}) &  &  \\          
+        \bottomrule  
+    \end{tabular}
+    \label{donnes}
+\end{table}
+
+Après application numérique on a alors :
+\begin{table}[H]
+\caption{Longueurs sous-refroidie pour les deux expériences}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{Longueur sous-refroidie} $L_{sc}$ (\si{m}) & 0.60 & 1.00 \\
+          \textbf{Longueur sous-refroidie corrigée} $L_{sc,cor}$ (\si{m}) &  &  \\
+        \bottomrule  
+    \end{tabular}
+    \label{donnes}
+\end{table}
+
+On remarque que les résultats avec les deux méthodes donnent des valeurs du même ordre de grandeur, ce qui confirme que les deux méthodes comparent bien les mêmes choses. De plus les résultats pour les enthalpies, qu'ils soient corrigés ou non sont très proche. L'hypothèse \textbf{H4} semble donc cohérente.\\ \par
+La différence des résultats entre les deux méthodes est que dans la première, on ne prend pas en compte du changement des propriétés thermiques ($Cp$) du fluide dans la conduite et on travaille seulement avec la valeur à saturation. Il pourrait être plus intéressant de moyenner avec la valeur à l'entrée ou bien de faire une intégrale en considérant que le gradient de température est constant dans la conduite.
