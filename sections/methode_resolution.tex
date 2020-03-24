@@ -60,18 +60,8 @@ On peut donc écrire la perte de pression que nous allons évaluer comme :
 \begin{equation}
      -\pder[p]{z} = G^2\pder{z}\left[\frac{x^{2}}{\varepsilon \rho_{v}}+\frac{(1-x)^{2}}{(1-\varepsilon) \rho_{l}} \right] + f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2 + \rho_m g
 \end{equation}
-\subsection{Zone de saturation\label{subs:sat}}
-Comme nous négligeons la zone où l'ébullition est sous-refroidie (\textbf{H1}), il nous faut calculer l'endroit où le fluide est à température de saturation. On peut écrire que la puissance nécessaire pour y arriver est :
-\begin{equation}
-    \dot{Q}_{sat} = \dot{m} Cp \Delta T
-\end{equation}
-Le terme $Cp$ pouvant être pris pour de l'eau à saturation, et le terme $\Delta T$ correspond à la différence entre la température de saturation du fluide à la pression donnée et la température d'entrée.\\ 
-Comme on considère que la conduite est chauffée uniformément, le rapport entre puissance nécessaire pour arriver à saturation et puissance totale thermique ajoutée $P_{th}$ est égale au rapport entre $L_{sat}$ et longueur totale chauffée $L_c$. On a alors :
-\begin{equation}
-    L_{sat}= \frac{ \dot{Q}_{sat}\times L_c}{P_{th}}
-\end{equation}
-\par
+
 \subsection{Fonctionnement du programme}
-Dans notre étude, nous connaissons seulement la pression de sortie et la température d'entrée. La section \ref{subs:sat} nous a permis de trouver la position à laquelle le fluide est à saturation. C'est à partir de cette zone que la perte de pression va avoir lieu. \\ \par
-Dans un premier temps on initialise la perte de pression comme nulle (ie. la pression d'entrée est égale à la pression de sortie) et on réalise les calculs avec les différentes corrélations. \\
-Comme on connaît la pression de sortie, on ajoute le $\Delta P$ trouvé à la première itération à la pression d'entrée et on itère jusqu'à avoir une différence entre les itérations $i$ et $i+1$ suffisamment petite.
+\textcolor{red}{Dans notre étude, nous connaissons seulement la pression de sortie et la température d'entrée. La section \ref{subs:sat} nous a permis de trouver la position à laquelle le fluide est à saturation. C'est à partir de cette zone que la perte de pression va avoir lieu.} \\ \par
+\textcolor{red}{Dans un premier temps on initialise la perte de pression comme nulle (ie. la pression d'entrée est égale à la pression de sortie) et on réalise les calculs avec les différentes corrélations.} \\
+\textcolor{red}{Comme on connaît la pression de sortie, on ajoute le $\Delta P$ trouvé à la première itération à la pression d'entrée et on itère jusqu'à avoir une différence entre les itérations $i$ et $i+1$ suffisamment petite.}
