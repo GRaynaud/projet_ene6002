@@ -389,26 +389,45 @@ print('Debut de l\'entrainement')
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 4e5
+tolAdam = 7e5
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
 #    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-    grads = optimizer_Adam.compute_gradients(Loss)
-    grads_value = sess.run(grads, tf_dict_train)
-    mingrads = np.min(np.asarray([np.min(k) for k in grads_value]))
-    if mingrads != mingrads:
-        print('Pb --> Nan in grads')
-        break
-    else:
-        sess.run(train_op_Adam, tf_dict_train)
+#    grads = optimizer_Adam.compute_gradients(Loss)
+#    grads_value = sess.run(grads, tf_dict_train)
+#    mingrads = np.min(np.asarray([np.min(k) for k in grads_value]))
+#    if mingrads != mingrads:
+#        print('Pb --> Nan in grads')
+#        break
+#    else:
+    sess.run(train_op_Adam, tf_dict_train)
 #    optimizer_Adam.apply_gradients(grads)
     loss_value = sess.run(Loss, tf_dict_train)
-    if it%1 == 0:
+    if it%10 == 0:
         print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
     it += 1
     
     
+while it<itmin:
+#    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+    grads = optimizer_Adam.compute_gradients(Loss)
+    mg = tf.reduce_min(tf.convert_to_tensor([tf.reduce_min(k) for k in grads]))
+    op = tf.where(tf.math.equal(mg,mg),tf.ones(shape=[1,1]),0.*tf.ones(shape = [1,1]))
+    a = sess.run(op, tf_dict_train)
+    if a[0,0] == 0. :
+        print('Err')
+        break
+    elif a[0,0] == 1. :
+        sess.run(train_op_Adam,tf_dict_train)
+        print('.',end='')
+    else :
+        print('Err autre')
+        
+    loss_value = sess.run(Loss, tf_dict_train)
+    if it%10 == 0:
+        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
+    it += 1
     
     
 
