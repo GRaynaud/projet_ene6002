@@ -232,7 +232,7 @@ def loss_energy_equation(z):
     
     dA_dz = tf.gradients(A,z)[0]
     
-    err = dA_dz/q - 4./(D*G)
+    err = dA_dz*D*G/(4.*q) - 1.
     return tf.reduce_mean(tf.square(err))
     
     
@@ -265,17 +265,10 @@ def loss_pressure_equation(z):
     f= tf.where(tf.less(x,ones), 0.316*tf.pow((1-x)*G*D/mu_l,-0.25), 0.316*tf.pow(x*G*D/mu_g,-0.25)) # eq (10.13) --> A verifier dans le cas x>1
     dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
-    G2vp_boneps = (G**2)*( tf.square(x)/(eps*rho_g) + tf.square(1.-x)/((1.-eps)*rho_l) ) # eq(10.21)
-    G2vp_eps0 =  (G**2)/rho_l  # Valeur de G²v' quand eps <= 0
-    G2vp_eps1 =  (G**2)/rho_g  # Valeur de G²v' quand eps >= 1
-    
-#    G2vp = tf.where(tf.less(zeroes,eps) , tf.where(tf.less(eps,ones), G2vp_boneps, G2vp_eps1) , G2vp_eps0 )
-    
-    dp_acc_boneps = tf.gradients(G2vp_boneps,z)[0] # eq (10.20) terme 2
-    dp_acc_eps0 = tf.gradients(G2vp_eps0,z)[0]
-    dp_acc_eps1 = tf.gradients(G2vp_eps1,z)[0]
-    
-    dp_acc = tf.where(tf.less(zeroes,eps), tf.where(tf.less(eps,ones), dp_acc_boneps, dp_acc_eps1) , dp_acc_eps0 )
+    # dp_acc * eps^2*(1-eps)^2
+    Fac_dp_acc = eps*tf.square(1.-eps)*tf.gradients(tf.square(x)/rho_g,z)[0] \
+                + tf.square(eps)*(1.-eps)*tf.gradients(tf.square(1-eps)/rho_l, z)[0] \
+                + ( tf.square(eps)*tf.square(1.-eps)/rho_l - tf.square(1.-eps)*tf.square(x)/rho_g )*tf.gradients(eps,z)[0]
     
     
     dp_grav = rho_m*g # eq (10.17)
@@ -283,9 +276,9 @@ def loss_pressure_equation(z):
     dP_dz = tf.gradients(P,z)[0]
     
     
-    err = dP_dz + phi2*dp_dz_l0 + dp_grav + dp_acc # Attention aux signes des termes --> A VERIFIER !!!
-    
-    return tf.reduce_mean(tf.square(err))
+    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A VERIFIER !!!
+    err_norm = err/dp_grav
+    return tf.reduce_mean(tf.square(err_norm))
 
 
 def loss_BC():
@@ -301,7 +294,7 @@ def loss_BC():
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
     
-    err = tf.square(P_s_guess - P_s) #+ tf.square(T_e_guess - T_e) + 
+    err = tf.square(P_s_guess/P_s - 1.) #+ tf.square(T_e_guess - T_e) + 
     return tf.reduce_mean(err)
 
 
@@ -389,7 +382,7 @@ print('Debut de l\'entrainement')
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 7e5
+tolAdam = 1e-5
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
@@ -409,27 +402,27 @@ while it<itmin and loss_value>tolAdam:
     it += 1
     
     
-while it<itmin:
-#    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-    grads = optimizer_Adam.compute_gradients(Loss)
-    mg = tf.reduce_min(tf.convert_to_tensor([tf.reduce_min(k) for k in grads]))
-    op = tf.where(tf.math.equal(mg,mg),tf.ones(shape=[1,1]),0.*tf.ones(shape = [1,1]))
-    a = sess.run(op, tf_dict_train)
-    if a[0,0] == 0. :
-        print('Err')
-        break
-    elif a[0,0] == 1. :
-        sess.run(train_op_Adam,tf_dict_train)
-        print('.',end='')
-    else :
-        print('Err autre')
-        
-    loss_value = sess.run(Loss, tf_dict_train)
-    if it%10 == 0:
-        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
-    it += 1
-    
-    
+#while it<itmin:
+##    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+#    grads = optimizer_Adam.compute_gradients(Loss)
+#    mg = tf.reduce_min(tf.convert_to_tensor([tf.reduce_min(k) for k in grads]))
+#    op = tf.where(tf.math.equal(mg,mg),tf.ones(shape=[1,1]),0.*tf.ones(shape = [1,1]))
+#    a = sess.run(op, tf_dict_train)
+#    if a[0,0] == 0. :
+#        print('Err')
+#        break
+#    elif a[0,0] == 1. :
+#        sess.run(train_op_Adam,tf_dict_train)
+#        print('.',end='')
+#    else :
+#        print('Err autre')
+#        
+#    loss_value = sess.run(Loss, tf_dict_train)
+#    if it%10 == 0:
+#        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
+#    it += 1
+#    
+#    
 
 if False:
     z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
