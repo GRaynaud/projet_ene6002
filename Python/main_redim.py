@@ -130,19 +130,19 @@ def muV_p(p_input_tf):
 #plt.plot(ptest,hL_guess,label='Model')
 #plt.legend()
 #
-## hV_t
-#ptest = np.linspace(1.,50.,400)
-#hV_data = np.asarray([steamTable.hV_p(k) for k in ptest])
-#tf_dict = {p_tf : np.reshape(ptest,(400,1))}
-#hV_guess = sess.run(hV_p(p_tf),tf_dict)[:,0]
-#
-#print('hV_p Normalised std : %.3e' % (np.std(hV_guess-hV_data)/np.mean(hV_data)))
-#
-#plt.figure()
-#plt.plot(ptest,hV_data,label='data')
-#plt.plot(ptest,hV_guess,label='Model')
-#plt.legend()
-#
+# RHO8G
+ptest = np.linspace(1.,50.,1300)
+mu_g_data = np.asarray([steamTable.my_ph(k,steamTable.hV_p(k)) for k in ptest])
+tf_dict = {p_tf : np.reshape(ptest,(1300,1))}
+mu_g_guess = sess.run(muV_p(p_tf),tf_dict)[:,0]
+
+print('hV_p Normalised std : %.3e' % (np.std(hV_guess-hV_data)/np.mean(hV_data)))
+
+plt.figure()
+plt.plot(ptest,mu_g_data,label='data')
+plt.plot(ptest,mu_g_guess,label='Model')
+plt.legend()
+
 
 #####################################################################
 #######################  Fonctions du PB  ###########################
@@ -208,12 +208,12 @@ def loss_DriftFluxModel(z):
     x = x_z(z)
     eps = eps_z(z)
     
-    rho_g = rhoV_p(P)
-    rho_l = rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
+    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
+    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
     
-    mu_g = muV_p(P)
-    mu_l = muL_p(P)
-    sigma = st_p(P)
+    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
     
     x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
     
@@ -308,7 +308,7 @@ def loss_BC():
 # Construction de l'erreur que l'on cherche à minimiser
     
 Loss =  loss_pressure_equation(z_tf)  + loss_BC()  + loss_energy_equation(z_tf) \
-#        + loss_DriftFluxModel(z_tf) \
+        + loss_DriftFluxModel(z_tf) \
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
@@ -390,16 +390,7 @@ tolAdam = 1e-6
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
-#    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-#    grads = optimizer_Adam.compute_gradients(Loss)
-#    grads_value = sess.run(grads, tf_dict_train)
-#    mingrads = np.min(np.asarray([np.min(k) for k in grads_value]))
-#    if mingrads != mingrads:
-#        print('Pb --> Nan in grads')
-#        break
-#    else:
     sess.run(train_op_Adam, tf_dict_train)
-#    optimizer_Adam.apply_gradients(grads)
     loss_value = sess.run(Loss, tf_dict_train)
     if it%10 == 0:
         print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))

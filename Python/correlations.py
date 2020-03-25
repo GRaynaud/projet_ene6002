@@ -105,7 +105,9 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     
     L_cor = L1 / L2
     
-    C0 = tf.where(tf.less(zeroes,txVide), L_cor / (K0 + (1 - K0) * tf.pow(txVide,r)), zeroes)   # Si eps<0 --> C0 = 0
+#    C0 = tf.where(tf.less(zeroes,txVide), L_cor / (K0 + (1 - K0) * tf.pow(txVide,r)), zeroes)   # Si eps<0 --> C0 = 0
+    
+    C0 = ones # L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))
     
     # Calcul de Vgj    
         
@@ -125,7 +127,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C4 = tf.where(boolean_C4, 1./(1.-tf.exp(-C8)), ones)
     
     Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
-    
+    Vgj = -0.01*ones
     
 #    txVide = 1./(rho_g/(G*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
 #
@@ -135,8 +137,9 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     condition_xguess2 = tf.math.logical_and(tf.less(x,ones),tf.less(zeroes,x))
     condition_xguess = tf.math.logical_and(condition_xguess1,condition_xguess2)
     
-    xguess = tf.where(condition_xguess, txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), ones)
-    
+#    xguess = tf.where(condition_xguess, txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), x)
+    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
+   
     return xguess
 
 
