@@ -22,7 +22,7 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 # Exp 65BV
 
-G = 0.47 #kg/s
+mpoint = 0.47 #kg/s
 D = 22.9e-3 #m
 P_th = 151.8 #kW --> hL et hV sont en kJ/kg
 L_c = 1.8 #m
@@ -30,8 +30,9 @@ T_e = 215.3 #°C
 P_s = 42.1 #bars
 g = 9.81
 
+G = mpoint/(np.pi*0.25*D**2) # Flux massique du mélange
 z_e = 0. # Position de l'entrée
-z_s = z_e + L_c # Position de la sortie
+z_s = L_c # Position de la sortie
 
 q = P_th / (np.pi * D*L_c)
 
@@ -232,8 +233,8 @@ def loss_energy_equation(z):
     
     dA_dz = tf.gradients(A,z)[0]
     
-    err = dA_dz*D*G/(4.*q) - 1.
-    return tf.sqrt(tf.reduce_mean(tf.square(err)))
+    err = dA_dz*D*G/(4.*q) - 1. # --> Reflechir sur le signe +/-1. A priori c'est un -
+    return tf.reduce_mean(tf.square(err))
     
     
 def loss_pressure_equation(z):
@@ -276,7 +277,7 @@ def loss_pressure_equation(z):
     dP_dz = tf.gradients(P,z)[0]
     
     
-    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A VERIFIER !!!
+    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A priori ok
     err_norm = err/dp_grav
     return tf.reduce_mean(tf.square(err_norm))
 
@@ -287,14 +288,17 @@ def loss_BC():
     Entrée : T = T_e (°C) à z = z_e
     Sortie : P = P_s (bar) à z = z_s
     '''
-    #z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
+    z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
     z_s_tf = z_s*tf.ones(shape=[1,1],dtype=tf.float32)
     
     #P_e_guess = P_z(z_e_tf)
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
+    x_e = x_z(z_e_tf)
+    eps_e = eps_z(z_e_tf)
     
-    err = tf.square(P_s_guess/P_s - 1.) #+ tf.square(T_e_guess - T_e) + 
+    
+    err = tf.square(P_s_guess/P_s - 1.) + tf.square(x_e) + tf.square(eps_e) 
     return tf.reduce_mean(err)
 
 
@@ -303,7 +307,7 @@ def loss_BC():
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
-Loss =  loss_pressure_equation(z_tf)  + loss_BC()  #+ loss_energy_equation(z_tf) \
+Loss =  loss_pressure_equation(z_tf)  + loss_BC()  + loss_energy_equation(z_tf) \
 #        + loss_DriftFluxModel(z_tf) \
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
