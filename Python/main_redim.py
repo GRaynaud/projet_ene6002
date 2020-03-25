@@ -22,12 +22,12 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 # Exp 65BV
 
-G = 0.64 #kg/s
-D = 13.4e-3 #m
-P_th = 250.0e3 #W
+G = 0.47 #kg/s
+D = 22.9e-3 #m
+P_th = 151.8 #kW --> hL et hV sont en kJ/kg
 L_c = 1.8 #m
-T_e = 184.0 #°C
-P_s = 20.3 #bars
+T_e = 215.3 #°C
+P_s = 42.1 #bars
 g = 9.81
 
 z_e = 0. # Position de l'entrée
@@ -148,7 +148,7 @@ def muV_p(p_input_tf):
 #####################################################################
 
 # P = f(z)
-layers_P = [1,20,1]
+layers_P = [1,10,1]
 layers_fn_P = [tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
@@ -165,7 +165,7 @@ def P_z(z):
 
 # x = f(z) à déterminer
 
-layers_x = [1,20,1]
+layers_x = [1,10,1]
 layers_fn_x = [tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
@@ -179,7 +179,7 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,20,1]
+layers_eps = [1,10,1]
 layers_fn_eps = [tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
@@ -233,7 +233,7 @@ def loss_energy_equation(z):
     dA_dz = tf.gradients(A,z)[0]
     
     err = dA_dz*D*G/(4.*q) - 1.
-    return tf.reduce_mean(tf.square(err))
+    return tf.sqrt(tf.reduce_mean(tf.square(err)))
     
     
 def loss_pressure_equation(z):
@@ -303,7 +303,7 @@ def loss_BC():
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
-Loss =  loss_pressure_equation(z_tf) + loss_BC() \
+Loss =  loss_pressure_equation(z_tf)  + loss_BC()  #+ loss_energy_equation(z_tf) \
 #        + loss_DriftFluxModel(z_tf) \
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
@@ -336,7 +336,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-6)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-5)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
         
@@ -374,15 +374,15 @@ optimizer_preinit.minimize(sess,
 #####################################################################  
 print('Debut de l\'entrainement')
 
-#optimizer.minimize(sess,
-#                fetches = [Loss],
-#                feed_dict = tf_dict_train,
-#                loss_callback = DNN.callback)
+optimizer.minimize(sess,
+                fetches = [Loss],
+                feed_dict = tf_dict_train,
+                loss_callback = DNN.callback)
 
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 1e-5
+tolAdam = 1e-6
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
@@ -402,6 +402,31 @@ while it<itmin and loss_value>tolAdam:
     it += 1
     
     
+    
+### Output
+
+
+print('Répartition des erreurs résiduelles')
+print('Erreur BC : %.3e' % (sess.run(loss_BC(),tf_dict_train)))
+print('Erreur Drift flux model : %.3e' % (sess.run(loss_DriftFluxModel(z_tf),tf_dict_train)))
+print('Erreur Energy : %.3e' % (sess.run(loss_energy_equation(z_tf),tf_dict_train)))
+print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf_dict_train)))
+
+
+z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
+
+plt.figure()
+plt.subplot(211)
+plt.plot(z_o,x_o,label='Titre x')
+plt.plot(z_o,eps_o,label='Eps')
+plt.hlines(0.,z_e,z_s)
+plt.hlines(1.,z_e,z_s)
+plt.legend()
+plt.subplot(212)
+plt.plot(z_o,p_o,label='Pression') 
+plt.legend()
+plt.tight_layout()   
+
 #while it<itmin:
 ##    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
 #    grads = optimizer_Adam.compute_gradients(Loss)
