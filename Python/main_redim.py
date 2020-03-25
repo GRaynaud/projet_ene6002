@@ -298,7 +298,7 @@ def loss_BC():
     eps_e = eps_z(z_e_tf)
     
     
-    err = tf.square(P_s_guess/P_s - 1.) + tf.square(x_e) + tf.square(eps_e) 
+    err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(eps_e) # + tf.square(x_e) 
     return tf.reduce_mean(err)
 
 
@@ -312,8 +312,8 @@ Loss =  loss_pressure_equation(z_tf)  + loss_BC()  + loss_energy_equation(z_tf) 
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
-Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)-0.5)) \
-            + tf.reduce_mean(tf.square( x_z(z_tf) - (0.2 + (0.8-0.2)*(z_tf-z_e)/(z_s-z_e)) )) \
+Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
+            + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
             + tf.reduce_mean(tf.square( P_z(z_tf) - P_s ))
             
 
@@ -378,10 +378,10 @@ optimizer_preinit.minimize(sess,
 #####################################################################  
 print('Debut de l\'entrainement')
 
-optimizer.minimize(sess,
-                fetches = [Loss],
-                feed_dict = tf_dict_train,
-                loss_callback = DNN.callback)
+#optimizer.minimize(sess,
+#                fetches = [Loss],
+#                feed_dict = tf_dict_train,
+#                loss_callback = DNN.callback)
 
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
