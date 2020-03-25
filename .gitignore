@@ -1,2 +1,4 @@
 
 *.pyc
+Python/__pycache__/correlations.cpython-37.pyc
+*.pyc
