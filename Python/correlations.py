@@ -112,7 +112,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     # Calcul de Vgj    
         
     K1_2 = tf.minimum(0.65*ones, 0.5*tf.exp(-tf.abs(Re_g)/4000.)) ### --> Problème : exp(Re_g/4000.) = +INF
-    K1 = tf.where(tf.less(Re_g,zeroes), K1_2, B1)
+    K1 = B1 #tf.where(tf.less(Re_g,zeroes), K1_2, B1)
 
     C5 = tf.sqrt(150 * rho_g / rho_l)
     C6 = C5 / (1 - C5)
