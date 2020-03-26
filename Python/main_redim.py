@@ -358,7 +358,7 @@ Loss =  loss_BC() \
         + loss_energy_equation(z_tf) \
         + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) + loss_x_01(z_tf) \
         + loss_pressure_equation(z_tf) \
-#        + loss_DriftFluxModel(z_tf) \
+        + 1e-1*loss_DriftFluxModel(z_tf) \
        
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
@@ -482,7 +482,7 @@ print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf
 print('Erreur pénalisation eps : %.3e' % (sess.run(loss_eps_01(z_tf),tf_dict_train)))
 print('Erreur pénalisation x : %.3e' % (sess.run(loss_x_01(z_tf),tf_dict_train)))
 print('Erreur pénalisation x*eps : %.3e' % (sess.run(loss_signe_eps_x(z_tf),tf_dict_train)))
-
+print('Saut de pression total : %.3e bar' % (sess.run(P_z(tf.constant(z_e,shape=[1,1])))[0,0]-P_s))
 
 z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
 
