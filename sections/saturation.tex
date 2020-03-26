@@ -3,7 +3,7 @@ Comme nous négligeons la zone où l'ébullition est sous-refroidie (\textbf{H1}
 
 
 \subsection{Puissance chauffage}
-On peut écrire que la puissance nécessaire pour arriver à la température de saturation en partant de la température d'entrée dépend du flux massique et de la capacité thermique massique de l'eau :
+On peut écrire que la puissance nécessaire pour arriver à la température de saturation en partant de la température d'entrée. Cette puissance dépend du flux massique et de la capacité thermique massique de l'eau. Il s'agit donc de faire un bilan énergétique sur le fluide qui passe dans la conduite. On a :
 \begin{equation}
     \dot{Q}_{sat} = \dot{m} Cp \Delta T
 \end{equation}
@@ -92,8 +92,8 @@ On peut maintenant passer à la seconde méthode avec les enthalpies. On a :
                & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
         \midrule
           \textbf{Enthalpie saturation} $h_{l,sat}$ (\si{kJ/kg}) & 912 & 1102 \\
-          \textbf{Enthalpie entrée} $h_{i}$ (\si{kJ/kg}) & 781.5 & 922 \\
-          \textbf{Enthalpie entrée corrigée} $h_{i,cor}$ (\si{kJ/kg}) &  &  \\          
+          \textbf{Enthalpie entrée} $h_{i}$ (\si{kJ/kg}) & 781.2 & 922.6 \\
+          \textbf{Enthalpie entrée corrigée} $h_{i,cor}$ (\si{kJ/kg}) & 781.6 & 922.5 \\          
         \bottomrule  
     \end{tabular}
     \label{donnes}
@@ -108,12 +108,12 @@ Après application numérique on a alors :
         \toprule
                & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
         \midrule
-          \textbf{Longueur sous-refroidie} $L_{sc}$ (\si{m}) & 0.60 & 1.00 \\
-          \textbf{Longueur sous-refroidie corrigée} $L_{sc,cor}$ (\si{m}) &  &  \\
+          \textbf{Longueur sous-refroidie} $L_{sc}$ (\si{m}) & 0.602 & 0.999 \\
+          \textbf{Longueur sous-refroidie corrigée} $L_{sc,cor}$ (\si{m}) & 0.600 & 1.000 \\
         \bottomrule  
     \end{tabular}
     \label{donnes}
 \end{table}
 
-On remarque que les résultats avec les deux méthodes donnent des valeurs du même ordre de grandeur, ce qui confirme que les deux méthodes comparent bien les mêmes choses. De plus les résultats pour les enthalpies, qu'ils soient corrigés ou non sont très proche. L'hypothèse \textbf{H4} semble donc cohérente.\\ \par
-La différence des résultats entre les deux méthodes est que dans la première, on ne prend pas en compte du changement des propriétés thermiques ($Cp$) du fluide dans la conduite et on travaille seulement avec la valeur à saturation. Il pourrait être plus intéressant de moyenner avec la valeur à l'entrée ou bien de faire une intégrale en considérant que le gradient de température est constant dans la conduite.
+On remarque que les résultats avec les deux méthodes donnent des valeurs du même ordre de grandeur, ce qui confirme que les deux comparent bien les mêmes choses. De plus les résultats pour les enthalpies, qu'elles soient corrigés ou non sont très proche, l'hypothèse \textbf{H4} est donc cohérente.\\ \par
+La différence des résultats entre les deux méthodes est que dans la première, on ne prend pas en compte le changement des propriétés thermiques ($Cp$) du fluide dans la conduite et on travaille seulement avec la valeur à saturation. Il pourrait être plus réaliste de moyenner avec la valeur à l'entrée ou bien de faire l'intégrale sur toute ka zone en considérant que le gradient de température est constant dans la conduite.
