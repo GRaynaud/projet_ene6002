@@ -308,7 +308,7 @@ def loss_BC():
 # Construction de l'erreur que l'on cherche à minimiser
     
 Loss =  loss_pressure_equation(z_tf)  + loss_BC()  + loss_energy_equation(z_tf) \
-        + loss_DriftFluxModel(z_tf) \
+ #       + loss_DriftFluxModel(z_tf) \
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
