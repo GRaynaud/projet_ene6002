@@ -202,6 +202,6 @@ def frictionFac_tf(G,D,mu):
     Compatible TensorFlow
     Utilise une rugosité xi/D = 1e-6
     '''
-    Cf = 1.325 / tf.square(tf.log(1e-6/3.7)+5.74/tf.pow(G * D / mu, 0.9))
+    Cf = 1.325 / tf.square(tf.math.log(1e-6/3.7)+5.74/tf.pow(G * D / mu, 0.9))
 
     return Cf  
