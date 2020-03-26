@@ -249,16 +249,16 @@ def loss_pressure_equation(z):
     P = P_z(z)
     x = x_z(z)
     eps = eps_z(z)
-    
-    rho_g = rhoV_p(P)
-    rho_l = rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
+       
+    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
+    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P)
     
     condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
     rho_m = tf.where( condition_rho_m, eps*rho_g + (1.-eps)*rho_l, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
     
-    mu_g = muV_p(P)
-    mu_l = muL_p(P)
-    sigma = st_p(P)
+    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
