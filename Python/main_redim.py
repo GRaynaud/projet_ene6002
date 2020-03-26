@@ -131,17 +131,17 @@ def muV_p(p_input_tf):
 #plt.legend()
 #
 # RHO8G
-ptest = np.linspace(1.,50.,1300)
-mu_g_data = np.asarray([steamTable.my_ph(k,steamTable.hV_p(k)) for k in ptest])
-tf_dict = {p_tf : np.reshape(ptest,(1300,1))}
-mu_g_guess = sess.run(muV_p(p_tf),tf_dict)[:,0]
-
-print('hV_p Normalised std : %.3e' % (np.std(hV_guess-hV_data)/np.mean(hV_data)))
-
-plt.figure()
-plt.plot(ptest,mu_g_data,label='data')
-plt.plot(ptest,mu_g_guess,label='Model')
-plt.legend()
+#ptest = np.linspace(1.,50.,1300)
+#mu_g_data = np.asarray([steamTable.my_ph(k,steamTable.hV_p(k)) for k in ptest])
+#tf_dict = {p_tf : np.reshape(ptest,(1300,1))}
+#mu_g_guess = sess.run(muV_p(p_tf),tf_dict)[:,0]
+#
+#print('hV_p Normalised std : %.3e' % (np.std(hV_guess-hV_data)/np.mean(hV_data)))
+#
+#plt.figure()
+#plt.plot(ptest,mu_g_data,label='data')
+#plt.plot(ptest,mu_g_guess,label='Model')
+#plt.legend()
 
 
 #####################################################################
@@ -340,7 +340,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-5)
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-6)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
         
