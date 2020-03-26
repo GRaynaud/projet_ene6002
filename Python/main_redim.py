@@ -287,12 +287,12 @@ def loss_pressure_equation(z):
 #                + ( tf.square(eps)*tf.square(1.-eps)/rho_l - tf.square(1.-eps)*tf.square(x)/rho_g )*tf.gradients(eps,z)[0]
 #    
 #    
-    dp_acc = G**2*(tf.gradients(x/rho_g,z)[0] + tf.gradients((1-x)/rho_g,z)[0]) #eq (10.2)
+    dp_acc = G**2*(tf.gradients(x/rho_g,z)[0] + tf.gradients((1.-x)/rho_l,z)[0]) #eq (10.2)
     
     
     dp_grav = rho_m*g # eq (10.17)
     
-    dP_dz = tf.gradients(P,z)[0]
+    dP_dz = 1e5*tf.gradients(P,z)[0] # Attention conversion bar --> Pa
     
     
 #    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A priori ok
