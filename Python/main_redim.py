@@ -233,7 +233,7 @@ def loss_energy_equation(z):
     x = x_z(z)
 #    A = hL_p(P)+x*(hV_p(P)-hL_p(P))
     
-    A = tf.nn.relu((1-x)*hL_p(P)) + tf.nn.relu(x*hV_p(P))
+    A = (1-x)*hL_p(P) + x*hV_p(P)
     
     dA_dz = tf.gradients(A,z)[0]
     
@@ -354,14 +354,12 @@ def loss_x_01(z):
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
-Loss =  loss_BC()  + loss_energy_equation(z_tf) \
+Loss =  loss_BC() \
+        + loss_energy_equation(z_tf) \
         + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) + loss_x_01(z_tf) \
         + loss_pressure_equation(z_tf) \
 #        + loss_DriftFluxModel(z_tf) \
-
-#        + loss_energy_equation(z_tf) \
-#        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
-        
+       
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
             + tf.reduce_mean(tf.square( P_z(z_tf) - (P_s +1.  - 1.*(z_tf-z_e)/(z_s-z_e) ) ))
@@ -390,7 +388,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-7) #tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 1e-5) #
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-6,epsilon=1e-8) #tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 1e-5) #
 train_op_Adam_preinit = optimizer_Adam.minimize(Loss_preinit)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         

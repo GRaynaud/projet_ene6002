@@ -149,10 +149,10 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 
 def InoueDriftModel(txVide,x,p,G,D,rho_g,rho_l):
     C0 = 6.76e-3*p+1.026
-    W = G*np.pi*0.25*D**2.
+    W = G*np.pi*0.25*(D**2)
     Vgj = ( 5.1e-3*W+6.91e-2 ) * ( 9.42e-2*tf.square(p) - 1.99*p + 12.6 )
     
-    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
+    xguess = txVide*(rho_g*Vgj/G + C0*( (1.-x)*rho_g/rho_l + x ))
     return xguess
 
 
