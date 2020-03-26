@@ -279,7 +279,7 @@ def loss_pressure_equation(z):
         #dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
     
     f = 0.079*tf.pow(G*D/mu_l,-0.25)
-    dp_dz_l0 = f*2*G**2/D
+    dp_dz_l0 = f*2*G**2/(D*rho_l)
     
     # dp_acc * eps^2*(1-eps)^2
 #    Fac_dp_acc = tf.abs(eps)*tf.square(1.-eps)*tf.gradients(tf.square(x)/rho_g,z)[0] \
@@ -364,7 +364,7 @@ Loss =  loss_BC()  + loss_energy_equation(z_tf) \
         
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
-            + tf.reduce_mean(tf.square( P_z(z_tf) - P_s ))
+            + tf.reduce_mean(tf.square( P_z(z_tf) - (P_s +1.  - 1.*(z_tf-z_e)/(z_s-z_e) ) ))
             
 
 
@@ -426,7 +426,7 @@ optimizer_preinit.minimize(sess,
 
 loss_value_preinit = sess.run(Loss_preinit,tf_dict_train)
 it = 0
-while loss_value_preinit>1e-6:
+while loss_value_preinit>1e-5:
     sess.run(train_op_Adam_preinit, tf_dict_train)
     loss_value_preinit = sess.run(Loss_preinit, tf_dict_train)
     if it%1000 == 0:
