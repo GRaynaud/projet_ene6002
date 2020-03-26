@@ -302,12 +302,21 @@ def loss_BC():
     return tf.reduce_mean(err)
 
 
+def loss_eps_01(z):
+    '''
+    Impose au taux de vide de rester borné entre 0 et 1
+    '''
+    eps = eps_z(z)
+    err = tf.nn.relu(-1.*eps) + tf.nn.relu(eps-1.)
+    return tf.reduce_mean(tf.square(err))
+
 #####################################################################
 #######################  Fns Coûts du PB  ###########################
 #####################################################################
 # Construction de l'erreur que l'on cherche à minimiser
     
 Loss =  loss_pressure_equation(z_tf)  + loss_BC()  + loss_energy_equation(z_tf) \
+        + loss_eps_01(z_tf)
  #       + loss_DriftFluxModel(z_tf) \
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
