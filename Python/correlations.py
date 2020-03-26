@@ -83,7 +83,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     # Calcul de C0
     
     ones = 0.*txVide + 1. - 1e-4
-    zeroes = 0.*txVide + 1e-4
+    zeroes = 0.*txVide + 1e-20
     
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
@@ -105,7 +105,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     
     L_cor = L1 / L2
     
-    C0 = tf.where(tf.less(zeroes,txVide), L_cor / (K0 + (1 - K0) * tf.pow(txVide,r)), zeroes)   # Si eps<0 --> C0 = 0
+    C0 = L_cor / (K0 + (1 - K0) * tf.pow(tf.abs(txVide),r))# Si eps<0 --> C0 = exp(-eps)-1 pour pénaliser un eps <0
     
 #    C0 = ones # L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))
     
@@ -139,7 +139,9 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     condition_xguess2 = tf.math.logical_and(tf.less(x,ones),tf.less(zeroes,x))
     condition_xguess = tf.math.logical_and(condition_xguess1,condition_xguess2)
     
-    xguess = tf.where(condition_xguess, txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), x + tf.exp(-1.*x))
+    xguess_normal = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
+    
+    xguess = tf.where(condition_xguess, xguess_normal, x + tf.exp(-1.*x))
 #    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
    
     return xguess
