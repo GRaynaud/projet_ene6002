@@ -287,7 +287,7 @@ def loss_pressure_equation(z):
 #                + ( tf.square(eps)*tf.square(1.-eps)/rho_l - tf.square(1.-eps)*tf.square(x)/rho_g )*tf.gradients(eps,z)[0]
 #    
 #    
-    dp_acc = G**2*(tf.gradients(x/rho_g,z)[0] + tf.gradients((1.-x)/rho_l,z)[0]) #eq (10.2)
+    dp_acc = G**2*tf.gradients(x*(rho_l-rho_g)/(rho_l*rho_g),z)[0] #eq (10.2)
     
     
     dp_grav = rho_m*g # eq (10.17)
@@ -356,8 +356,9 @@ def loss_x_01(z):
     
 Loss =  loss_BC()  + loss_energy_equation(z_tf) \
         + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) + loss_x_01(z_tf) \
-        + loss_DriftFluxModel(z_tf) \
         + loss_pressure_equation(z_tf) \
+#        + loss_DriftFluxModel(z_tf) \
+
 #        + loss_energy_equation(z_tf) \
 #        + loss_BC() # Nan sur loss_txVide... et loss_pressure...
         
@@ -447,7 +448,7 @@ print('Debut de l\'entrainement')
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 1e-6
+tolAdam = 1e-5
 it=0
 itmin = 1e5
 while it<itmin and loss_value>tolAdam:
