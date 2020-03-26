@@ -137,7 +137,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     condition_xguess2 = tf.math.logical_and(tf.less(x,ones),tf.less(zeroes,x))
     condition_xguess = tf.math.logical_and(condition_xguess1,condition_xguess2)
     
-    xguess = tf.where(condition_xguess, txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), x)
+    xguess = tf.where(condition_xguess, txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x ), x + tf.exp(-1.*x))
 #    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
    
     return xguess
