@@ -82,7 +82,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     '''
     # Calcul de C0
     
-    ones = 0.*txVide + 1. - 1e-4
+    ones = 0.*txVide + 1. - 1e-20
     zeroes = 0.*txVide + 1e-20
     
     Re_g = x * G * D / mu_g
@@ -94,7 +94,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     B1 = tf.minimum(0.8,A1)
     r = (1 + 1.57 * rho_g / rho_l) / (1 - B1)
     K0 = B1 + (1 - B1) * tf.pow(rho_g / rho_l, 0.25)
-    C1 = 4 * p_crit**2 / (p * (p_crit - p))
+    C1 = 4 * p_crit**2 / (tf.maximum(p,1e-2*ones) * (p_crit - p)) # Pb si p = 0...
     
     boolean_L1 = tf.less(80.*ones,C1*txVide)
     L1 = tf.where(boolean_L1,ones,1.-tf.exp(-C1*txVide))
@@ -113,14 +113,14 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
         
 #    K1_2 = tf.minimum(0.65*ones, 0.5*tf.exp(-tf.abs(Re_g)/4000.)) ### --> Problème : exp(Re_g/4000.) = +INF
 #    K1 = B1 #tf.where(tf.less(Re_g,zeroes), K1_2, B1)
-    C9 = tf.where(tf.greater_equal(Re_g,zeroes),tf.pow(1-txVide,B1),tf.minimum(0.7,tf.pow(1-txVide,0.65)))
+    C9 = tf.where(tf.greater_equal(Re_g,zeroes),tf.pow(tf.abs(1-txVide),B1),tf.minimum(0.7,tf.pow(tf.abs(1-txVide),0.65)))
 
     C5 = tf.sqrt(150 * rho_g / rho_l)
     C6 = C5 / (1 - C5)
 
     C2 = tf.where(tf.less(C5,ones), 1./(1.-tf.exp(-C6)), ones)
 
-    C3 = tf.maximum(0.5*ones,2.*tf.exp(-Re_l/60000.))
+    C3 = tf.maximum(0.5*ones,2.*tf.exp(-tf.abs(Re_l)/60000.)) # valeur absolue en sureté
     C7 = tf.pow(D2/D,0.6)*ones
     C8 = C7 / (1. - C7)  
     
@@ -147,6 +147,15 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     return xguess
 
 
+def InoueDriftModel(txVide,x,p,G,D,rho_g,rho_l):
+    C0 = 6.76e-3*p+1.026
+    W = G*np.pi*0.25*D**2.
+    Vgj = ( 5.1e-3*W+6.91e-2 ) * ( 9.42e-2*tf.square(p) - 1.99*p + 12.6 )
+    
+    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
+    return xguess
+
+
 def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     
     rho_h = np.power(x / rho_g + (1 - x) / rho_l,1)
@@ -164,15 +173,15 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     Retourne le coefficient de correlation de Friedel pour un écoulement diphasique
     Compatible avec tensorflow
     '''
-    ones = 0.*x + 1. - 1e-4
-    zeroes = 0.*x + 1e-4
+    ones = 0.*x + 1. - 1e-20
+    zeroes = 0.*x + 1e-20
     
-    rho_h = tf.pow(x / rho_g + (1 - x) / rho_l,1)
+    rho_h = tf.abs(1./(x / rho_g + (1 - x) / rho_l))
     We = G**2 * D / sigma / rho_h #Nombre de Weber
     Fr = G**2 / g / D / rho_h**2  #Nombre de Froude
     H = tf.pow(rho_g / rho_l,0.91) * tf.pow(mu_g / mu_l,0.19) * tf.pow(1 - mu_g / mu_l,0.7)
-    F = tf.pow(x,0.78)*tf.pow(1-x,0.224)
-    E = tf.pow(1-x,2) + x**2 * rho_l * frictionFac_tf(G,D,mu_g) / rho_g / frictionFac_tf(G,D,mu_l)
+    F = tf.pow(tf.abs(x),0.78)*tf.pow(tf.abs(1-x),0.224)
+    E = tf.square(1-x) + tf.square(x) * rho_l * frictionFac_tf(G,D,mu_g) / rho_g / frictionFac_tf(G,D,mu_l)
     phi2_xinf1 = E + 3.24 * F * H / (tf.pow(Fr,0.045) * tf.pow(We,0.035))
     
     condition_phi2 = tf.math.logical_and( tf.less(x,ones) , tf.less(zeroes,x) ) # Vérifie que 0 < x < 1 sinon F --> NaN
@@ -193,6 +202,6 @@ def frictionFac_tf(G,D,mu):
     Compatible TensorFlow
     Utilise une rugosité xi/D = 1e-6
     '''
-    Cf = 1.325 / tf.pow((tf.log (1e-6/3.7)+5.74/tf.pow(G * D / mu, 0.9)),2)
+    Cf = 1.325 / tf.square(tf.log(1e-6/3.7)+5.74/tf.pow(G * D / mu, 0.9))
 
     return Cf  
