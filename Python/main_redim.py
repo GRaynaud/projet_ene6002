@@ -150,8 +150,8 @@ def muV_p(p_input_tf):
 #####################################################################
 
 # P = f(z)
-layers_P = [1,10,1]
-layers_fn_P = [tf.tanh]
+layers_P = [1,10,10,1]
+layers_fn_P = [tf.tanh,tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
 def P_z(z):
@@ -167,8 +167,8 @@ def P_z(z):
 
 # x = f(z) à déterminer
 
-layers_x = [1,10,1]
-layers_fn_x = [tf.tanh]
+layers_x = [1,10,10,1]
+layers_fn_x = [tf.tanh,tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
 def x_z(z):
@@ -181,8 +181,8 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,10,1]
-layers_fn_eps = [tf.tanh]
+layers_eps = [1,10,10,1]
+layers_fn_eps = [tf.tanh,tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
@@ -450,14 +450,19 @@ print('Loss value : %.3e' % (loss_value))
 tolAdam = 1e-5
 it=0
 itmin = 1e5
-while it<itmin and loss_value>tolAdam:
-    sess.run(train_op_Adam, tf_dict_train)
-    loss_value = sess.run(Loss, tf_dict_train)
-    if it%100 == 0:
-        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
-    it += 1
-    
-    
+lr = optimizer_Adam._lr
+for k in range(3):
+    it = 0
+    while it<itmin and loss_value>tolAdam:
+        sess.run(train_op_Adam, tf_dict_train)
+        loss_value = sess.run(Loss, tf_dict_train)
+        if it%100 == 0:
+            print('Adam %d it %e - Training Loss :  %.6e' % (k+1 ,it, loss_value))
+        it += 1
+        
+    lr*=0.1
+    optimizer_Adam._lr = lr
+        
 
     
 ### Output
