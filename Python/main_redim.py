@@ -21,14 +21,24 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 #################### Constantes du Problème #########################
 #####################################################################
+## Exp 19
+#
+#mpoint = 0.47 #kg/s
+#D = 22.9e-3 #m
+#P_th = 151.8 #kW --> hL et hV sont en kJ/kg
+#L_c = 1.8 #m
+#T_e = 215.3 #°C
+#P_s = 42.1 #bars
+#g = 9.81
+
 # Exp 65BV
 
-mpoint = 0.47 #kg/s
-D = 22.9e-3 #m
-P_th = 151.8 #kW --> hL et hV sont en kJ/kg
+mpoint = 0.64 #kg/s
+D = 13.4e-3 #m
+P_th = 250 #kW --> hL et hV sont en kJ/kg
 L_c = 1.8 #m
-T_e = 215.3 #°C
-P_s = 42.1 #bars
+T_e = 184 #°C
+P_s = 20.3 #bars
 g = 9.81
 
 G = mpoint/(np.pi*0.25*D**2) # Flux massique du mélange
