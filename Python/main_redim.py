@@ -15,6 +15,7 @@ import tensorflow as tf
 import pickle
 import DNNFunctions as DNN
 import correlations
+import experiences
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 #####################################################################
@@ -388,7 +389,7 @@ optimizer = tf.contrib.opt.ScipyOptimizerInterface(Loss, method = 'L-BFGS-B',
                                                                            'ftol' : 1.0 * np.finfo(np.float32).eps}) 
     
 
-optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-6,epsilon=1e-8) #tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 1e-5) #
+optimizer_Adam = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-5,epsilon=1e-8) #tf.compat.v1.train.GradientDescentOptimizer(learning_rate = 1e-5) #
 train_op_Adam_preinit = optimizer_Adam.minimize(Loss_preinit)
 train_op_Adam = optimizer_Adam.minimize(Loss)         
         
@@ -452,24 +453,12 @@ itmin = 1e5
 while it<itmin and loss_value>tolAdam:
     sess.run(train_op_Adam, tf_dict_train)
     loss_value = sess.run(Loss, tf_dict_train)
-    if it%20 == 0:
+    if it%100 == 0:
         print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
     it += 1
-    #        z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-#        plt.close()
-#        plt.figure()
-#        plt.subplot(211)
-#        plt.plot(z_o,x_o,label='Titre x')
-#        plt.plot(z_o,eps_o,label='Eps')
-#        plt.hlines(0.,z_e,z_s)
-#        plt.hlines(1.,z_e,z_s)
-#        plt.legend()
-#        plt.subplot(212)
-#        plt.plot(z_o,p_o,label='Pression') 
-#        plt.legend()
-#        plt.tight_layout()   
-#        plt.pause(1)
     
+    
+
     
 ### Output
 
@@ -488,13 +477,15 @@ z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_trai
 
 plt.figure()
 plt.subplot(211)
-plt.plot(z_o,x_o,label='Titre x')
-plt.plot(z_o,eps_o,label='Eps')
-plt.hlines(0.,z_e,z_s)
-plt.hlines(1.,z_e,z_s)
+plt.plot(z_o,x_o,label='Titre x',c='black')
+plt.plot(z_o,eps_o,label='Eps',c='orange')
+plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
+plt.hlines(0.,z_e,z_s,linestyle='dashed')
+plt.hlines(1.,z_e,z_s,linestyle='dashed')
 plt.legend()
 plt.subplot(212)
-plt.plot(z_o,p_o,label='Pression') 
+plt.plot(z_o,p_o,label='Pression',c='blue') 
+plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
 plt.legend()
 plt.tight_layout()   
 
