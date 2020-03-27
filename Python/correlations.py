@@ -88,7 +88,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
     
-    Re = tf.where(tf.math.logical_or(tf.less(Re_g, Re_l), tf.less(Re_g,zeroes)), Re_g, Re_l)
+    Re = tf.where(tf.math.logical_or(tf.less(Re_l, Re_g), tf.less(Re_g,zeroes)), Re_g, Re_l)
     
     A1 = 1. / (tf.exp(-Re/60000.) + 1.)
     B1 = tf.minimum(0.8,A1)
@@ -124,7 +124,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C7 = tf.pow(D2/D,0.6)*ones
     C8 = C7 / (1. - C7)  
     
-    boolean_C4 = tf.less(ones,C7)
+    boolean_C4 = tf.less(C7,ones)
     C4 = tf.where(boolean_C4, 1./(1.-tf.exp(-C8)), ones)
     
 #    Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
