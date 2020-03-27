@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar 20 15:05:58 2020
@@ -126,6 +126,7 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     
     boolean_C4 = tf.less(C7,ones)
     C4 = tf.where(boolean_C4, 1./(1.-tf.exp(-C8)), ones)
+
     
 #    Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4 
     Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * C9 * C2 * C3 * C4
