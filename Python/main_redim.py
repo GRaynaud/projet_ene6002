@@ -447,7 +447,7 @@ print('Debut de l\'entrainement')
 loss_value = sess.run(Loss,tf_dict_train)
 print('Loss value : %.3e' % (loss_value))
 
-tolAdam = 1e-5
+tolAdam = 1e-7
 it=0
 itmin = 1e5
 lr = optimizer_Adam._lr
