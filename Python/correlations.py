@@ -14,64 +14,47 @@ p_crit = 221.2 #bars
 g = 9.81 #m/s2
 
 
-def chexal(jg,j,rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
+def chexal_np(txVide,x,G,D,p,sigma,rho_g,rho_l,mu_g,mu_l):
     
     Re_g = x * G * D / mu_g
     Re_l = (1-x) * G * D / mu_l
 
-    if Re_g > Re_l or Re_g < 0 :
-        Re = Re_g
-    else :
-            Re = Re_l
+    Re = np.where(np.logical_or(np.less(Re_l, Re_g), np.less(Re_g,0)), Re_g, Re_l)
  
 # Calcul de C0    
     A1 = 1 / (np.exp(-Re/60000) + 1)
-    B1 = np.min(0.8,A1)
+    B1 = np.minimum(0.8,A1)
     r = (1 + 1.57 * rho_g / rho_l) / (1 - B1)
     K0 = B1 + (1 - B1) * np.power(rho_g / rho_l, 0.25)
     C1 = 4 * p_crit**2 / (p * (p_crit - p))
 
-    if C1*txVide > 80 :
-        L1 = 1
-    else :
-        L1 = 1 - np.exp(-C1*txVide)
-
-    if C1>80 :
-        L2 = 1
-    else :
-        L2 = 1 - np.exp(-C1)   
+    boolean_L1 = np.less(80,C1*txVide)
+    L1 = np.where(boolean_L1,1.-np.exp(-C1*txVide),1)
+    
+    boolean_L2 = np.less(80,C1)
+    L2 = np.where(boolean_L2, 1. - np.exp(-C1),1)
     
     L_cor = L1 / L2
     C0 = L_cor / (K0 + (1 - K0) * np.power(txVide,r))   
     
 # Calcul de Vgj
 
-    if Re_g >= 0 :
-        K1 = B1
-    else :
-        K1 = np.min(0.65,0.5*np.exp(np.abs(Re_g)/4000))        
+    C9 = np.where(np.greater_equal(Re_g,0),np.power(np.abs(1-txVide),B1),np.minimum(0.7,np.power(np.abs(1-txVide),0.65)))       
 
     C5 = np.sqrt(150 * rho_g / rho_l)
     C6 = C5 / (1 - C5)
 
-    if C5 >= 1 :
-        C2 = 1
-    else :
-        C2 = 1 / (1 - np.exp(-C6))
+    C2 = np.where(np.less(C5,1), 1./(1.-np.exp(-C6)), 1)
 
-    C3 = np.max(0.5,2*np.exp(-Re_l/60000))
+    C3 = np.maximum(0.5,2*np.exp(-Re_l/60000))
     C7 = np.power(D2/D,0.6)
     C8 = C7 / (1 - C7)  
 
-    if C7 >= 1 :
-        C4 = 1
-    else :
-        C4 = 1 / (1 - np.exp(-C8))
+    C4 = np.where(np.less(C7,1), 1./(1.-np.exp(-C8)), 1)
     
-    Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * np.power(1 - txVide, K1) * C2 * C3 * C4   
-    txVide = np.power(rho_g / G * (1 - x) / x * Vgj + C0 *(rho_g / rho_l * (1 - x) / x + 1),1) #a verifier pour le 1/G (tu as mis G_l dans le TeX)
+    Vgj = 1.41 * np.power((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * C9 * C2 * C3 * C4   
     
-    return txVide     
+    return C0,Vgj   
 
 
 def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
@@ -97,11 +80,11 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C1 = 4 * p_crit**2 / (tf.maximum(p,1e-2*ones) * (p_crit - p)) # Pb si p = 0...
     
     boolean_L1 = tf.less(80.*ones,C1*txVide)
-    L1 = tf.where(boolean_L1,ones,1.-tf.exp(-C1*txVide))
+    L1 = tf.where(boolean_L1,1.-tf.exp(-C1*txVide),ones) #--> A verifier la condition
 #    L1 = tf.where(tf.less(80.*ones,C1*txVide),ones,1.-tf.exp(-C1*txVide))
     
     boolean_L2 = tf.less(80.*ones,C1)
-    L2 = tf.where(boolean_L2, ones, 1. - tf.exp(-C1))
+    L2 = tf.where(boolean_L2, 1. - tf.exp(-C1),ones)
     
     L_cor = L1 / L2
     
@@ -146,6 +129,8 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 #    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
    
     return xguess
+
+
 
 
 def InoueDriftModel_np(txVide,x,p,G,D,rho_g,rho_l):

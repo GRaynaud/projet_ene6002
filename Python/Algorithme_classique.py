@@ -11,6 +11,7 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 #################### Constantes du Problème #########################
 #####################################################################
+
 # Exp 19
 
 mpoint = 0.47 #kg/s
@@ -77,11 +78,15 @@ def DeuxphiModel(x,eps,p):
 
     rho_g = np.asarray([steamTable.rhoV_p(k) for k in p])
     rho_l = np.asarray([steamTable.rhoL_p(k) for k in p])
+    mu_g = np.asarray([steamTable.my_ph(k, steamTable.hV_p(k)) for k in p])
+    mu_l = np.asarray([steamTable.my_ph(k, steamTable.hL_p(k))for k in p])
+    sigma = np.asarray([steamTable.st_p(k)for k in p])
     
 #    C0 = 1.
 #    Vgj = 0.01
     
-    C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
+#    C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
+    C0,Vgj = correlations.chexal_np(eps,x,G,D,p,sigma,rho_g,rho_l,mu_g,mu_l)
     
     new_eps_diphasique = x/(rho_g*Vgj/G + C0*(rho_g*(1-x)/rho_l+x))
     
@@ -153,12 +158,12 @@ while err > target_err:
     plt.hlines(0.,0.,L_c,linestyle='dashed')
     plt.hlines(1.,0.,L_c,linestyle='dashed')
     plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
-    #plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps exp', c='orange')
+#    plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps exp', c='orange')
     plt.legend()
     plt.subplot(212)
     plt.plot(z,p,label='Pression',c='blue')         
     plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
-    #plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='exp',c='blue')
+#    plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='exp',c='blue')
     plt.tight_layout()
     
     plt.pause(1.)

@@ -219,22 +219,22 @@ def loss_DriftFluxModel(z):
     x = x_z(z)
     eps = eps_z(z)
     
-#    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
-#    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
+    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
+    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
     
-    rho_g = rhoV_p(P)
-    rho_l = rhoL_p(P) 
+#    rho_g = rhoV_p(P)
+#    rho_l = rhoL_p(P) 
     
-#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
-#    
+    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
+    
 #    mu_g =  muV_p(P)
 #    mu_l = muL_p(P)
 #    sigma = st_p(P)
     
-#    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
-    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
+    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
+#    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
 #    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
     err = x_z_guess - x
     
@@ -272,11 +272,11 @@ def loss_pressure_equation(z):
     x = x_z(z)
     eps = eps_z(z)
        
-#    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
-#    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
-#    
-    rho_g = rhoV_p(P)
-    rho_l = rhoL_p(P) 
+    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
+    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
+   
+#    rho_g = rhoV_p(P)
+#    rho_l = rhoL_p(P) 
     
 #    condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
 #    rho_m = tf.where( condition_rho_m,, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
@@ -284,13 +284,13 @@ def loss_pressure_equation(z):
     rho_m =  tf.nn.relu(eps)*rho_g + tf.nn.relu((1.-eps))*rho_l
 #    rho_m = tf.maximum(rho_g , tf.minimum(rho_m_normal, rho_l))
 #    
-#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
-#    
-    mu_g =  muV_p(P)
-    mu_l = muL_p(P)
-    sigma = st_p(P)
+    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
+ 
+#    mu_g =  muV_p(P)
+#    mu_l = muL_p(P)
+#    sigma = st_p(P)
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
