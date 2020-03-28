@@ -148,6 +148,12 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     return xguess
 
 
+def InoueDriftModel_np(txVide,x,p,G,D,rho_g,rho_l):
+    C0 = 6.76e-3*p+1.026
+    W = G*np.pi*0.25*(D**2)
+    Vgj = ( 5.1e-3*W+6.91e-2 ) * ( 9.42e-2*np.square(p) - 1.99*p + 12.6 )
+    return C0,Vgj
+
 def InoueDriftModel(txVide,x,p,G,D,rho_g,rho_l):
     C0 = 6.76e-3*p+1.026
     W = G*np.pi*0.25*(D**2)
@@ -169,7 +175,10 @@ def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     H = np.power(rho_g / rho_l,0.91) * np.power(mu_g / mu_l,0.19) * np.power(1 - mu_g / mu_l,0.7)
     F = np.power(x,0.78)*np.power(1-x,0.224)
     E = np.power(1-x,2) + x**2 * rho_l * frictionFac(G,D,mu_g) / rho_g / frictionFac(G,D,mu_l)
-    phi2 = E + 3.24 * F * H / (np.power(Fr,0.045) * np.power(We,0.035))
+    phi2_xinf1 = E + 3.24 * F * H / (np.power(Fr,0.045) * np.power(We,0.035))
+    
+    condition = np.logical_and(x<1., x>0.)
+    phi2 = np.where(condition, phi2_xinf1, E)
     
     return phi2
 
