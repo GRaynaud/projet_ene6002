@@ -165,3 +165,10 @@ while err > target_err:
     
     
     
+# =============================================================================
+# Output final
+# =============================================================================
+print('Algorithme terminé apres %d itérations' % (it))
+print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
+
+#Save fig ...
