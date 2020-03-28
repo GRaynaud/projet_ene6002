@@ -156,6 +156,10 @@ def InoueDriftModel(txVide,x,p,G,D,rho_g,rho_l):
     xguess = txVide*(rho_g*Vgj/G + C0*( (1.-x)*rho_g/rho_l + x ))
     return xguess
 
+def HomogeneousModel(txVide,rho_g,rho_l):
+    
+    xguess = txVide*rho_g/((1.-txVide)*rho_l + txVide*rho_g )
+    return xguess
 
 def friedel(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
     

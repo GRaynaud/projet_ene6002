@@ -222,13 +222,20 @@ def loss_DriftFluxModel(z):
     rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
     rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
     
+#    rho_g = rhoV_p(P)
+#    rho_l = rhoL_p(P) 
+    
     mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
     mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
     sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
     
+#    mu_g =  muV_p(P)
+#    mu_l = muL_p(P)
+#    sigma = st_p(P)
+    
 #    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
     x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
-    
+#    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
     err = x_z_guess - x
     
     return tf.reduce_mean(tf.square(err))
@@ -265,8 +272,11 @@ def loss_pressure_equation(z):
     x = x_z(z)
     eps = eps_z(z)
        
-    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
-    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P)
+    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
+    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
+    
+#    rho_g = rhoV_p(P)
+#    rho_l = rhoL_p(P) 
     
 #    condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
 #    rho_m = tf.where( condition_rho_m,, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
@@ -277,6 +287,10 @@ def loss_pressure_equation(z):
     mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
     mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
     sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
+    
+#    mu_g =  muV_p(P)
+#    mu_l = muL_p(P)
+#    sigma = st_p(P)
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
@@ -494,13 +508,16 @@ plt.figure()
 plt.subplot(211)
 plt.plot(z_o,x_o,label='Titre x',c='black')
 plt.plot(z_o,eps_o,label='Eps',c='orange')
-plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
+#plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
+plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps exp', c='orange')
 plt.hlines(0.,z_e,z_s,linestyle='dashed')
 plt.hlines(1.,z_e,z_s,linestyle='dashed')
 plt.legend()
 plt.subplot(212)
 plt.plot(z_o,p_o,label='Pression',c='blue') 
-plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
+#plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
+plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='exp',c='blue')
+
 plt.legend()
 plt.tight_layout()   
 
