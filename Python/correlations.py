@@ -147,6 +147,15 @@ def InoueDriftModel(txVide,x,p,G,D,rho_g,rho_l):
     xguess = txVide*(rho_g*Vgj/G + C0*( (1.-x)*rho_g/rho_l + x ))
     return xguess
 
+def InoueDriftModel_tf_eps(x,p,G,D,rho_g,rho_l):
+    C0 = 6.76e-3*p+1.026
+    W = G*np.pi*0.25*(D**2)
+    Vgj = ( 5.1e-3*W+6.91e-2 ) * ( 9.42e-2*tf.square(p) - 1.99*p + 12.6 )
+    
+    eps_guess = tf.where(x>0.*x,x/(rho_g*Vgj/G + C0*(rho_g*(1-x)/rho_l+x)),0.*x)
+    
+    return eps_guess
+
 def HomogeneousModel(txVide,rho_g,rho_l):
     
     xguess = txVide*rho_g/((1.-txVide)*rho_l + txVide*rho_g )

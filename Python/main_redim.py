@@ -47,6 +47,9 @@ z_s = L_c # Position de la sortie
 
 q = P_th / (np.pi * D*L_c)
 
+# Titre en sortie pour la BC
+L_sc = (steamTable.hL_p(P_s)-steamTable.h_pt(P_s,T_e))*mpoint/(np.pi*D*q)
+x_s = 4*q*(L_c-L_sc)/(G*D*(steamTable.hV_p(P_s)-steamTable.hL_p(P_s)))
 #####################################################################
 ###################### Imports tensorflow ###########################
 #####################################################################
@@ -160,7 +163,7 @@ def muV_p(p_input_tf):
 #####################################################################
 
 # P = f(z)
-layers_P = [1,5,1]
+layers_P = [1,20,1]
 layers_fn_P = [tf.tanh,tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
@@ -177,7 +180,7 @@ def P_z(z):
 
 # x = f(z) à déterminer
 
-layers_x = [1,5,1]
+layers_x = [1,20,1]
 layers_fn_x = [tf.tanh,tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
@@ -191,8 +194,8 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,5,1]
-layers_fn_eps = [tf.tanh,tf.tanh]
+layers_eps = [1,20,5,1]
+layers_fn_eps = [tf.nn.leaky_relu,tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
@@ -233,11 +236,14 @@ def loss_DriftFluxModel(z):
 #    mu_l = muL_p(P)
 #    sigma = st_p(P)
     
-    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
-#    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
-#    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
+#    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
+    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
+##    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
     err = x_z_guess - x
-    
+
+#    eps_z_guess = tf.where(tf.less(0.*z,x),correlations.InoueDriftModel_tf_eps(x,P,G,D,rho_g,rho_l),0.*z)
+#    
+#    err = eps_z_guess - eps
     return tf.reduce_mean(tf.square(err))
 
 def loss_energy_equation(z):
@@ -338,11 +344,10 @@ def loss_BC():
     #P_e_guess = P_z(z_e_tf)
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
-    x_e = x_z(z_e_tf)
-    eps_e = eps_z(z_e_tf)
+   # x_s_guess = x_z(z_s_tf)
     
     
-    err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(eps_e) # + tf.square(x_e) 
+    err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
     return tf.reduce_mean(err)
 
 
@@ -365,15 +370,15 @@ def loss_signe_eps_x(z):
     return tf.reduce_mean(tf.square(err))
     
     
-def loss_x_01(z):
-    '''
-    Impose au titre de rester borné entre 0 et 1
-    '''
-    x = x_z(z)
-        
-    err = tf.nn.relu(-1.*x) + tf.nn.relu(x-1.)
-    
-    return tf.reduce_mean(tf.square(err))
+#def loss_x_01(z):
+#    '''
+#    Impose au titre de rester borné entre 0 et 1
+#    '''
+#    x = x_z(z)
+#        
+#    err = tf.nn.relu(-1.*x) + tf.nn.relu(x-1.)
+#    
+#    return tf.reduce_mean(tf.square(err))
 #####################################################################
 #######################  Fns Coûts du PB  ###########################
 #####################################################################
@@ -381,7 +386,7 @@ def loss_x_01(z):
     
 Loss =  1e3*loss_BC() \
         + loss_energy_equation(z_tf) \
-        + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) + loss_x_01(z_tf) \
+        + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) \
         + loss_pressure_equation(z_tf) \
         + 1e-1*loss_DriftFluxModel(z_tf) \
        
@@ -498,7 +503,7 @@ print('Erreur Drift flux model : %.3e' % (sess.run(loss_DriftFluxModel(z_tf),tf_
 print('Erreur Energy : %.3e' % (sess.run(loss_energy_equation(z_tf),tf_dict_train)))
 print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf_dict_train)))
 print('Erreur pénalisation eps : %.3e' % (sess.run(loss_eps_01(z_tf),tf_dict_train)))
-print('Erreur pénalisation x : %.3e' % (sess.run(loss_x_01(z_tf),tf_dict_train)))
+#print('Erreur pénalisation x : %.3e' % (sess.run(loss_x_01(z_tf),tf_dict_train)))
 print('Erreur pénalisation x*eps : %.3e' % (sess.run(loss_signe_eps_x(z_tf),tf_dict_train)))
 print('Saut de pression total : %.3e bar' % (sess.run(P_z(tf.constant(z_e,shape=[1,1])))[0,0]-P_s))
 
