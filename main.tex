@@ -21,6 +21,8 @@
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{comment} 
+\usepackage{placeins}
+\usepackage[ruled,vlined]{algorithm2e}
 \usepackage{minted}
 \renewcommand{\thesection}{\arabic{section}}
 \newcommand*{\rttensor}[1]{\bar{\bar{#1}}}
@@ -78,10 +80,11 @@ Thermohydraulique des systèmes diphasiques \\
 \input{sections/algo_clas.tex}
 \newpage
 \input{sections/resultats.tex}
-%\newpage
+\newpage
 %\input{sections/annexes.tex}
 
 % References
-%\bibliographystyle{plain}
-%\bibliography{references}
+\FloatBarrier
+\bibliographystyle{plain}
+\bibliography{references}
 \end{document}
