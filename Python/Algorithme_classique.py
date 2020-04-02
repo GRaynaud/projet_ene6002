@@ -8,30 +8,45 @@ from pyXSteam.XSteam import XSteam
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', size=14)
+plt.rc('axes',titlesize=16)
+plt.rc('legend',fontsize=14)
+plt.rc('figure',titlesize=20)
+
 #####################################################################
 #################### Constantes du Problème #########################
 #####################################################################
 
+exp = '65BV' # '19' or '65BV'
+choix_corr = 'Chexal' #'Chexal' or 'Inoue'
+
 # Exp 19
+if exp == '19':
+    mpoint = 0.47 #kg/s
+    D = 22.9e-3 #m
+    P_th = 151.8 #kW --> hL et hV sont en kJ/kg
+    L_c = 1.8 #m
+    T_e = 215.3 #°C
+    P_s = 42.1 #bars
+    z_LC = 1.0
 
-mpoint = 0.47 #kg/s
-D = 22.9e-3 #m
-P_th = 151.8 #kW --> hL et hV sont en kJ/kg
-L_c = 1.8 #m
-T_e = 215.3 #°C
-P_s = 42.1 #bars
+elif exp == '65BV':
+    # Exp 65BV
+    
+    mpoint = 0.64 #kg/s
+    D = 13.4e-3 #m
+    P_th = 250 #kW --> hL et hV sont en kJ/kg
+    L_c = 1.8 #m
+    T_e = 184 #°C
+    P_s = 20.3 #bars
+    z_LC = 0.6
+    
+else:
+    print('Erreur ! Experience mal renseigneé')
+
 g = 9.81
-
-## Exp 65BV
-#
-#mpoint = 0.64 #kg/s
-#D = 13.4e-3 #m
-#P_th = 250 #kW --> hL et hV sont en kJ/kg
-#L_c = 1.8 #m
-#T_e = 184 #°C
-#P_s = 20.3 #bars
-#g = 9.81
-
 G = mpoint/(np.pi*0.25*D**2) # Flux massique du mélange
 z_e = 0. # Position de l'entrée
 z_s = L_c # Position de la sortie
@@ -82,11 +97,12 @@ def DeuxphiModel(x,eps,p):
     mu_l = np.asarray([steamTable.my_ph(k, steamTable.hL_p(k))for k in p])
     sigma = np.asarray([steamTable.st_p(k)for k in p])
     
-#    C0 = 1.
-#    Vgj = 0.01
-    
-#    C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
-    C0,Vgj = correlations.chexal_np(eps,x,G,D,p,sigma,rho_g,rho_l,mu_g,mu_l)
+    if choix_corr == 'Chexal':
+        C0,Vgj = correlations.chexal_np(eps,x,G,D,p,sigma,rho_g,rho_l,mu_g,mu_l)
+    elif choix_corr == 'Inoue':
+        C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
+    else:
+        print('Erreur : correlation mal definie')       
     
     new_eps_diphasique = x/(rho_g*Vgj/G + C0*(rho_g*(1-x)/rho_l+x))
     
@@ -151,19 +167,30 @@ while err > target_err:
     p = new_p
 
     plt.close()
-    plt.figure()
+    plt.figure(figsize=(7,6))
     plt.subplot(211)
-    plt.plot(z,x,label='Titre x',c='black')
-    plt.plot(z,eps,label='Eps',c='orange')
-    plt.hlines(0.,0.,L_c,linestyle='dashed')
-    plt.hlines(1.,0.,L_c,linestyle='dashed')
-    plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
-#    plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps exp', c='orange')
+    plt.plot(z,x,label='$x$',c='black')
+    plt.plot(z,eps,label='$\\epsilon$',c='orange')
+    plt.hlines(0.,0.,L_c,linestyle='dotted')
+    plt.hlines(1.,0.,L_c,linestyle='dotted')
+    if exp == '19':
+        plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+    elif exp == '65BV':
+        plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+    plt.vlines(z_LC,-0.1,1.1,linestyle='dashed',color='red')    
+    plt.xlabel('$z$ axis (m)')
+    plt.ylabel('Dimensionless quantities')
     plt.legend()
     plt.subplot(212)
-    plt.plot(z,p,label='Pression',c='blue')         
-    plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
-#    plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='exp',c='blue')
+    plt.plot(z,p,label='$p$',c='blue')   
+    if exp == '19':      
+        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='$p_{data}$',c='blue')
+    elif exp == '65BV':
+        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='p_{data}',c='blue')
+    plt.vlines(z_LC,np.min(p),np.max(p),linestyle='dashed',color='red')
+    plt.xlabel('$z$ axis (m)')
+    plt.ylabel('Pressure (bars)')
+    plt.legend()
     plt.tight_layout()
     
     plt.pause(1.)
@@ -176,4 +203,7 @@ while err > target_err:
 print('Algorithme terminé apres %d itérations' % (it))
 print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
 
+
 #Save fig ...
+plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
+plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
