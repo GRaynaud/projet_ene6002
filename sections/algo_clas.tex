@@ -1,0 +1,11 @@
+\section{Algorithme classique\label{section:algo_clas}}
+La première partie de ce rapport détaille les équations qui régissent notre problème. Nous pouvons donc nous concentrer sur la mise en place de celles-ci maintenant.\\ \par 
+La présentation des méthodes que nous avons utilisés ne se fait pas dans l'ordre chronologique, ce que nous avons appelé \texttt{Algorithme classique} et qui est présenté dans cette section nous a servi de comparaison pour le second algorithme qui est lui plus complexe et qui rend la détection de fautes plus difficile (il peut parfois s'agir de la non convergence de l'algorithme et pas de fautes de à proprement parler).\\ \par
+Dans cette méthode nous avons effectué une discrétisation de la zone d'étude et résolus les équations à chacun de ces points. Nous avons travaillé avec le modèle à vitesses séparées et les corrélations de \textsc{Chexal, Fridel} ainsi que de \textsc{Inoue} ont été utilisées. \\
+Une hypothèse forte qui a été faite, est celle de négliger la variation des enthalpies par rapport à la position dans la conduite. Elles ne sont pas constantes pour autant, elles restent dépendantes de la de la pression et donc de la température.\\ \par
+L'algorithme part de ce que l'on connaît déjà (ie. la pression de sortie) et intègre en \og remontant \fg{} la conduite. Nous avons des équations (qui ont été définies précédemment dans la partie \ref{section:res}) pour les termes $x$, $epsilon$ et $p$ que nous pouvons actualiser à chaque itération.\\ \par
+Cette technique nécessite donc un critère d'arrêt, car sinon le programme tourne indéfiniment. Nous l'avons pris tel que :
+\begin{equation}
+    \sqrt{\left(x_{i}-x_{i+1}\right)^2 + \left(\frac{p_i- p_{i+1}}{p_s} \right)^2 + \left(\epsilon_i - \epsilon_{i+1} \right)^2} < \num{1e-7}
+\end{equation}
+Cela permet de faire converger rapidement l'algorithme et ne pas trop contraindre la variation des différents paramètres.
