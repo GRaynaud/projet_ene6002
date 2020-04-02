@@ -186,7 +186,7 @@ while err > target_err:
     if exp == '19':      
         plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='$p_{data}$',c='blue')
     elif exp == '65BV':
-        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='p_{data}',c='blue')
+        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='$p_{data}$',c='blue')
     plt.vlines(z_LC,np.min(p),np.max(p),linestyle='dashed',color='red')
     plt.xlabel('$z$ axis (m)')
     plt.ylabel('Pressure (bars)')
@@ -207,3 +207,5 @@ print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
 #Save fig ...
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
+print('Figure sauvergardé')
+print('Ok, normal End')
