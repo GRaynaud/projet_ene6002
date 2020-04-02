@@ -20,7 +20,7 @@ plt.rc('figure',titlesize=20)
 #####################################################################
 
 exp = '19' # '19' or '65BV'
-choix_corr = 'Inoue' #'Chexal' or 'Inoue'
+choix_corr = 'Chexal' #'Chexal' or 'Inoue'
 
 # Exp 19
 if exp == '19':
@@ -202,7 +202,9 @@ while err > target_err:
 # =============================================================================
 print('Algorithme terminé apres %d itérations' % (it))
 print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
-
+if exp == '19':
+    exp_drop = 1e-2*experiences.p_19[0]
+err_rel = 
 
 #Save fig ...
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')

@@ -21,31 +21,41 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 #################### Constantes du Problème #########################
 #####################################################################
+
+exp = '65BV' # '19' or '65BV'
+choix_corr = 'Chexal' #'Chexal' or 'Inoue'
+
 # Exp 19
+if exp == '19':
+    mpoint = 0.47 #kg/s
+    D = 22.9e-3 #m
+    P_th = 151.8 #kW --> hL et hV sont en kJ/kg
+    L_c = 1.8 #m
+    T_e = 215.3 #°C
+    P_s = 42.1 #bars
+    z_LC = 1.0
 
-mpoint = 0.47 #kg/s
-D = 22.9e-3 #m
-P_th = 151.8 #kW --> hL et hV sont en kJ/kg
-L_c = 1.8 #m
-T_e = 215.3 #°C
-P_s = 42.1 #bars
+elif exp == '65BV':
+    # Exp 65BV
+    
+    mpoint = 0.64 #kg/s
+    D = 13.4e-3 #m
+    P_th = 250 #kW --> hL et hV sont en kJ/kg
+    L_c = 1.8 #m
+    T_e = 184 #°C
+    P_s = 20.3 #bars
+    z_LC = 0.6
+    
+else:
+    print('Erreur ! Experience mal renseigneé')
+
 g = 9.81
-
-## Exp 65BV
-#
-#mpoint = 0.64 #kg/s
-#D = 13.4e-3 #m
-#P_th = 250 #kW --> hL et hV sont en kJ/kg
-#L_c = 1.8 #m
-#T_e = 184 #°C
-#P_s = 20.3 #bars
-#g = 9.81
-
 G = mpoint/(np.pi*0.25*D**2) # Flux massique du mélange
 z_e = 0. # Position de l'entrée
 z_s = L_c # Position de la sortie
 
 q = P_th / (np.pi * D*L_c)
+
 
 # Titre en sortie pour la BC
 L_sc = (steamTable.hL_p(P_s)-steamTable.h_pt(P_s,T_e))*mpoint/(np.pi*D*q)
@@ -194,8 +204,8 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,20,5,1]
-layers_fn_eps = [tf.nn.leaky_relu,tf.tanh]
+layers_eps = [1,20,1]
+layers_fn_eps = [tf.tanh,tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
@@ -209,9 +219,16 @@ def eps_z(z):
 #####################################################################
 #######################  Equations du PB  ###########################
 #####################################################################
+if choix_corr == 'Chexal':
+    def correlation_function(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps):
+        return correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
+elif choix_corr == 'Inoue':
+    def correlation_function(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps):
+        return correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
+else:
+    print('Erreur - correlation function mal définie')
 
-
-def loss_DriftFluxModel(z):
+def loss_Model(z):
     '''
     Retrourne l'écart quadratique moyen entre 
     la valeur devinée du taux de vide et celle
@@ -221,23 +238,25 @@ def loss_DriftFluxModel(z):
     P = P_z(z)
     x = x_z(z)
     eps = eps_z(z)
+#    
+#    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
+#    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
+#    
+    rho_g = rhoV_p(P)
+    rho_l = rhoL_p(P) 
+#    
+#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
     
-    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
-    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
-    
-#    rho_g = rhoV_p(P)
-#    rho_l = rhoL_p(P) 
-    
-    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
-    
-#    mu_g =  muV_p(P)
-#    mu_l = muL_p(P)
-#    sigma = st_p(P)
-    
+    mu_g =  muV_p(P)
+    mu_l = muL_p(P)
+    sigma = st_p(P)
+
+#    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
 #    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
-    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
+#    
+    x_z_guess = correlation_function(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
 ##    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
     err = x_z_guess - x
 
@@ -278,11 +297,11 @@ def loss_pressure_equation(z):
     x = x_z(z)
     eps = eps_z(z)
        
-    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
-    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
+#    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
+#    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
    
-#    rho_g = rhoV_p(P)
-#    rho_l = rhoL_p(P) 
+    rho_g = rhoV_p(P)
+    rho_l = rhoL_p(P) 
     
 #    condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
 #    rho_m = tf.where( condition_rho_m,, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
@@ -290,13 +309,13 @@ def loss_pressure_equation(z):
     rho_m =  tf.nn.relu(eps)*rho_g + tf.nn.relu((1.-eps))*rho_l
 #    rho_m = tf.maximum(rho_g , tf.minimum(rho_m_normal, rho_l))
 #    
-    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
- 
-#    mu_g =  muV_p(P)
-#    mu_l = muL_p(P)
-#    sigma = st_p(P)
+#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
+#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
+#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
+# 
+    mu_g =  muV_p(P)
+    mu_l = muL_p(P)
+    sigma = st_p(P)
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
@@ -344,7 +363,7 @@ def loss_BC():
     #P_e_guess = P_z(z_e_tf)
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
-   # x_s_guess = x_z(z_s_tf)
+    #x_s_guess = x_z(z_s_tf)
     
     
     err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
@@ -388,7 +407,7 @@ Loss =  1e3*loss_BC() \
         + loss_energy_equation(z_tf) \
         + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) \
         + loss_pressure_equation(z_tf) \
-        + 1e-1*loss_DriftFluxModel(z_tf) \
+        + 1e-1*loss_Model(z_tf) \
        
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
@@ -470,7 +489,7 @@ print('Debut de l\'entrainement')
 
 #optimizer.minimize(sess,
 #                fetches = [Loss],
-#                feed_dict = tf_dict_train,
+#                feed_dict = tf_dict_train,spot
 #                loss_callback = DNN.callback)
 
 loss_value = sess.run(Loss,tf_dict_train)
@@ -478,7 +497,7 @@ print('Loss value : %.3e' % (loss_value))
 
 tolAdam = 1e-5
 it=0
-itmin = 1e5
+itmin = 5e4
 lr = optimizer_Adam._lr
 for k in range(3):
     it = 0
@@ -499,7 +518,7 @@ for k in range(3):
 
 print('Répartition des erreurs résiduelles')
 print('Erreur BC : %.3e' % (sess.run(loss_BC(),tf_dict_train)))
-print('Erreur Drift flux model : %.3e' % (sess.run(loss_DriftFluxModel(z_tf),tf_dict_train)))
+print('Erreur Drift flux model : %.3e' % (sess.run(loss_Model(z_tf),tf_dict_train)))
 print('Erreur Energy : %.3e' % (sess.run(loss_energy_equation(z_tf),tf_dict_train)))
 print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf_dict_train)))
 print('Erreur pénalisation eps : %.3e' % (sess.run(loss_eps_01(z_tf),tf_dict_train)))
@@ -509,22 +528,37 @@ print('Saut de pression total : %.3e bar' % (sess.run(P_z(tf.constant(z_e,shape=
 
 z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
 
-plt.figure()
+plt.figure(figsize=(7,6))
 plt.subplot(211)
-plt.plot(z_o,x_o,label='Titre x',c='black')
-plt.plot(z_o,eps_o,label='Eps',c='orange')
-plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps exp', c='orange')
-#plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps exp', c='orange')
-plt.hlines(0.,0.,L_c,linestyle='dashed')
-plt.hlines(1.,0.,L_c,linestyle='dashed')
+plt.plot(z_o,x_o,label='$x$',c='black')
+plt.plot(z_o,eps_o,label='$\\epsilon$',c='orange')
+plt.hlines(0.,0.,L_c,linestyle='dotted')
+plt.hlines(1.,0.,L_c,linestyle='dotted')
+if exp == '19':
+    plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+elif exp == '65BV':
+    plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+plt.vlines(z_LC,-0.1,1.1,linestyle='dashed',color='red')    
+plt.xlabel('$z$ axis (m)')
+plt.ylabel('Dimensionless quantities')
 plt.legend()
 plt.subplot(212)
-plt.plot(z_o,p_o,label='Pression',c='blue') 
-plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='exp',c='blue')
-#plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='exp',c='blue')
-
+plt.plot(z_o,p_o,label='$p$',c='blue')   
+if exp == '19':      
+    plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='$p_{data}$',c='blue')
+elif exp == '65BV':
+    plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='$p_{data}$',c='blue')
+plt.vlines(z_LC,np.min(p_o),np.max(p_o),linestyle='dashed',color='red')
+plt.xlabel('$z$ axis (m)')
+plt.ylabel('Pressure (bars)')
 plt.legend()
-plt.tight_layout()   
+plt.tight_layout()
+
+
+plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.png')
+plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.pgf')
+print('Figure sauvergardée')
+print('Ok, normal End')
 
 #while it<itmin:
 ##    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
@@ -555,6 +589,6 @@ if False:
     eps
     x
     z
-    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_DriftFluxModel(z_tf),tf_dict_train) ]
+    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_Model(z_tf),tf_dict_train) ]
     np.min(x),np.max(x)
     np.min(eps),np.max(eps) 

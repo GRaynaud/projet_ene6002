@@ -195,8 +195,8 @@ def friedel_tf(x,rho_g,rho_l,mu_g,mu_l,G,sigma,D):
 
     condition_phi2 = tf.math.logical_and( tf.less(x,ones) , tf.less(zeroes,x) ) # Vérifie que 0 < x < 1 sinon F --> NaN
 
-    phi2 = tf.where(condition_phi2,phi2_xinf1,E)
-
+    phi2_positiv = tf.where(condition_phi2,phi2_xinf1,E)
+    phi2 = tf.where(tf.less(0.*x,x),phi2_positiv,1.+0.*x)
     return phi2
 
 def frictionFac (G,D,mu):
