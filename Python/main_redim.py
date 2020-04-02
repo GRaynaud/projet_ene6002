@@ -23,13 +23,13 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #####################################################################
 
 exp = '65BV' # '19' or '65BV'
-choix_corr = 'Chexal' #'Chexal' or 'Inoue'
+choix_corr = 'Inoue' #'Chexal' or 'Inoue'
 
 # Exp 19
 if exp == '19':
     mpoint = 0.47 #kg/s
     D = 22.9e-3 #m
-    P_th = 151.8 #kW --> hL et hV sont en kJ/kg
+    P_th = 151.8 #kW --> hL et hV sont en kJ/kg;
     L_c = 1.8 #m
     T_e = 215.3 #°C
     P_s = 42.1 #bars
@@ -173,7 +173,7 @@ def muV_p(p_input_tf):
 #####################################################################
 
 # P = f(z)
-layers_P = [1,20,1]
+layers_P = [1,10,10,1]
 layers_fn_P = [tf.tanh,tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
@@ -190,7 +190,7 @@ def P_z(z):
 
 # x = f(z) à déterminer
 
-layers_x = [1,20,1]
+layers_x = [1,10,10,1]
 layers_fn_x = [tf.tanh,tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
@@ -204,8 +204,8 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,20,1]
-layers_fn_eps = [tf.tanh,tf.tanh]
+layers_eps = [1,20,20,1]
+layers_fn_eps = [tf.nn.sigmoid,tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
@@ -472,13 +472,13 @@ optimizer_preinit.minimize(sess,
                 loss_callback = DNN.callback)
 
 loss_value_preinit = sess.run(Loss_preinit,tf_dict_train)
-it = 0
-while loss_value_preinit>1e-5:
-    sess.run(train_op_Adam_preinit, tf_dict_train)
-    loss_value_preinit = sess.run(Loss_preinit, tf_dict_train)
-    if it%1000 == 0:
-        print('Pre init %d - Loss %.3e' % (it,loss_value_preinit))
-    it += 1
+#it = 0
+#while loss_value_preinit>1e-5:
+#    sess.run(train_op_Adam_preinit, tf_dict_train)
+#    loss_value_preinit = sess.run(Loss_preinit, tf_dict_train)
+#    if it%1000 == 0:
+#        print('Pre init %d - Loss %.3e' % (it,loss_value_preinit))
+#    it += 1
 
 print('Fin du préentrainement : loss pr-init %.3e' % (sess.run(Loss_preinit,tf_dict_train)))
 
@@ -497,7 +497,7 @@ print('Loss value : %.3e' % (loss_value))
 
 tolAdam = 1e-5
 it=0
-itmin = 5e4
+itmin = 1e5
 lr = optimizer_Adam._lr
 for k in range(3):
     it = 0
@@ -524,7 +524,16 @@ print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf
 print('Erreur pénalisation eps : %.3e' % (sess.run(loss_eps_01(z_tf),tf_dict_train)))
 #print('Erreur pénalisation x : %.3e' % (sess.run(loss_x_01(z_tf),tf_dict_train)))
 print('Erreur pénalisation x*eps : %.3e' % (sess.run(loss_signe_eps_x(z_tf),tf_dict_train)))
-print('Saut de pression total : %.3e bar' % (sess.run(P_z(tf.constant(z_e,shape=[1,1])))[0,0]-P_s))
+pdrop = sess.run(P_z(tf.constant(z_e,shape=[1,1])))[0,0]-P_s
+print('Saut de pression total : %.3e bar' % (pdrop))
+if exp == '19':
+    exp_drop = 1e-2*experiences.p_19[0]
+else:
+    exp_drop = 1e-2*experiences.p_65[0]
+err_rel = np.abs(exp_drop-pdrop)/exp_drop
+print('Erreur relative avec les exp : %.3e' % (err_rel))
+
+
 
 z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
 

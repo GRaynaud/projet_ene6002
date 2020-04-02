@@ -200,12 +200,15 @@ while err > target_err:
 # =============================================================================
 # Output final
 # =============================================================================
+pdrop = p[0]-p[-1]
 print('Algorithme terminé apres %d itérations' % (it))
-print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
+print('Saut de pression total : %.3e bar' % (pdrop))
 if exp == '19':
     exp_drop = 1e-2*experiences.p_19[0]
-err_rel = 
-
+else:
+    exp_drop = 1e-2*experiences.p_65[0]
+err_rel = np.abs(exp_drop-pdrop)/exp_drop
+print('Erreur relative avec les exp : %.3e' % (err_rel))
 #Save fig ...
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
