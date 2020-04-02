@@ -19,8 +19,8 @@ plt.rc('figure',titlesize=20)
 #################### Constantes du Problème #########################
 #####################################################################
 
-exp = '65BV' # '19' or '65BV'
-choix_corr = 'Chexal' #'Chexal' or 'Inoue'
+exp = '19' # '19' or '65BV'
+choix_corr = 'Inoue' #'Chexal' or 'Inoue'
 
 # Exp 19
 if exp == '19':
@@ -207,5 +207,5 @@ print('Saut de pression total : %.3e bar' % (p[0]-p[-1]))
 #Save fig ...
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
 plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
-print('Figure sauvergardé')
+print('Figure sauvergardée')
 print('Ok, normal End')
