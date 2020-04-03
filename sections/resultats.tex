@@ -1,0 +1,71 @@
+\section{Resultats obtenus}
+
+\begin{table}[H]
+\caption{Chute de pression (bars)}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{PINN} Chexal  & \num{4.85} & \num{1.78e-1} \\
+          \textbf{Classique} Chexal & \num{4.26} & \num{2.33e-1} \\   
+          \textbf{PINN} Inoue  & \num{4.68} & \num{2.14e-1}  \\
+          \textbf{Classique} Inoue & \num{4.27} & \num{2.52e-1} \\   
+                 
+        \bottomrule  
+    \end{tabular}
+    \label{PressureDrop}
+\end{table}
+
+
+\begin{table}[H]
+\caption{Ecart relatif de la chute de pression avec les expériences$err = \frac{\| \Delta p - \Delta p_{data}\| }{\Delta p_{data}}$  (\%) }
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+               & \textbf{Expérience 65BV}& \textbf{Expérience 19}\\
+        \midrule
+          \textbf{PINN} Chexal  & 51.6 & 4.8 \\
+          \textbf{Classique} Chexal & 33.3  & 24.6 \\   
+          \textbf{PINN} Inoue  & 46.5  & 14.4  \\
+          \textbf{Classique} Inoue & 33.6 & 34.8 \\   
+                   
+        \bottomrule  
+    \end{tabular}
+    \label{ErrorPressureDrop}
+\end{table}
+
+
+\begin{figure}
+    \centering
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_classique_Inoue_19.pgf}}
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_classique_chexal_19.pgf}}
+    \caption{Résultats obtenus avec la méthode classique dans le cas de l'expérience 19 avec les corrélations d'Inoue \cite{inoueInbundleVoidMeasurement1993} (à gauche) et celle de Chexal \cite{chexalFullrangeDriftfluxCorrelation1986} (à droite)}
+    \label{fig:Result_classique_19}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_classique_Inoue_65BV.pgf}}
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_classique_chexal_65BV.pgf}}
+    \caption{Résultats obtenus avec la méthode classique dans le cas de l'expérience 65BV avec les corrélations d'Inoue \cite{inoueInbundleVoidMeasurement1993} (à gauche) et celle de Chexal \cite{chexalFullrangeDriftfluxCorrelation1986} (à droite)}
+    \label{fig:Result_classique_65BV}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_PINN_Inoue_19.pgf}}
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_PINN_chexal_19.pgf}}
+    \caption{Résultats obtenus avec la méthode PINN dans le cas de l'expérience 19 avec les corrélations d'Inoue \cite{inoueInbundleVoidMeasurement1993} (à gauche) et celle de Chexal \cite{chexalFullrangeDriftfluxCorrelation1986} (à droite)}
+    \label{fig:Result_PINN_19}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_PINN_Inoue_65BV.pgf}}
+    \resizebox{0.47\linewidth}{!}{\input{Python/Resultats/Output_PINN_chexal_65BV.pgf}}
+    \caption{Résultats obtenus avec la méthode PINN dans le cas de l'expérience 65BV avec les corrélations d'Inoue \cite{inoueInbundleVoidMeasurement1993} (à gauche) et celle de Chexal \cite{chexalFullrangeDriftfluxCorrelation1986} (à droite)}
+    \label{fig:Result_PINN_65BV}
+\end{figure}
