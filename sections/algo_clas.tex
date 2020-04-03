@@ -4,10 +4,21 @@
 
 La première partie de ce rapport détaille les équations qui régissent notre problème. Nous pouvons donc nous concentrer sur la mise en place de celles-ci maintenant.\\ \par 
 La présentation des méthodes que nous avons utilisés ne se fait pas dans l'ordre chronologique, ce que nous avons appelé \texttt{Algorithme classique} et qui est présenté dans cette section nous a servi de comparaison pour le second algorithme qui est lui plus complexe et qui rend la détection de fautes plus difficile (il peut parfois s'agir de la non convergence de l'algorithme et pas de fautes de à proprement parler).\\ \par
-Dans cette méthode nous avons effectué une discrétisation de la zone d'étude en $N_z$ points équidistants et résolus les équations à chacun de ces points. Nous avons travaillé avec le modèle à vitesses séparées et les corrélations de \textsc{Chexal} \cite{chexalFullrangeDriftfluxCorrelation1986}, \textsc{Fridel} \cite{freidelImprovedFrictionPressure1979a} ainsi que de \textsc{Inoue} \cite{inoueInbundleVoidMeasurement1993} ont été utilisées. Une version légèrement différente de ces modèles \cite{revellinAdiabaticTwophaseFrictional2007} a pu être utilisée pour corriger un certain nombre de bugs. \\
+Dans cette méthode nous avons effectué une discrétisation de la zone d'étude en $N_z$ points équidistants et résolus les équations à chacun de ces points. Nous avons travaillé avec le modèle à vitesses séparées et les corrélations de \textsc{Chexal} \cite{chexalFullrangeDriftfluxCorrelation1986}, \textsc{Fridel} \cite{freidelImprovedFrictionPressure1979a} ainsi que de \textsc{Inoue} \cite{inoueInbundleVoidMeasurement1993} ont été utilisées. Une version légèrement différente de ces modèles \cite{revellinAdiabaticTwophaseFrictional2007} a pu être utilisée pour corriger un certain nombre d'erreurs. \\
 
-Une hypothèse forte qui a été faite, est celle de négliger la variation des enthalpies par rapport à la position dans la conduite. Elles ne sont pas constantes pour autant, elles restent dépendantes de la de la pression et donc de la température.\\ \par
-L'algorithme part de ce que l'on connaît déjà (ie. la pression de sortie) et intègre en \og remontant \fg{} la conduite. Nous avons des équations (qui ont été définies précédemment dans la partie \ref{section:res}) pour les termes $x$, $epsilon$ et $p$ que nous pouvons actualiser à chaque itération.\\ \par
+Une hypothèse forte qui a été faite, est celle de négliger la variation des enthalpies par rapport à la position dans la conduite. Elles ne sont pas constantes pour autant, elles restent dépendantes de la de la pression et donc de la température. Plus formellement :
+
+\begin{equation}
+    \left| x_{(z)}\pder[h]{P}\pder[P]{z} \right| \ll \left|\pder[x_{(z)}]{z}h(P_{(z)}) \right|
+\end{equation}
+
+Ce qui revient à isoler le terme de dérivée du titre $\pder[x]{z}$ dans l'équation \ref{eq:titre} :
+\begin{equation}
+     \pder[x_{(z)}]{z}h_{l,sat}(P_{(z)}) \approx \pder{z} \left[ h_{l,sat}(P_{(z)})+x_{(z)}h_{vl,sat}(P_{(z)})\right]  = \frac{4}{DG}q''
+\label{eq:titre}
+\end{equation}
+
+L'algorithme part de ce que l'on connaît déjà (ie. la pression ainsi que le titre en sortie) et intègre en \og remontant \fg{} la conduite. Nous avons des équations (qui ont été définies précédemment dans la partie \ref{section:res}) pour les termes $x$, $\epsilon$ et $p$ que nous pouvons actualiser à chaque itération.\\ \par
 Cette technique nécessite donc un critère d'arrêt, car sinon le programme tourne indéfiniment. Nous l'avons pris tel que le RMS de la variation entre deux itérations soit inférieur à un seuil de tolérance :
 \begin{equation}
     \textnormal{RMS var} = \sqrt{\frac{1}{N_z}\sum_{k=1}^{N_z}\left[\left(x^{i}_k-x^{i+1}_k\right)^2 + \left(\frac{p^i_k- p^{i+1}_k}{p_s} \right)^2 + \left(\epsilon^i_k - \epsilon^{i+1}_k \right)^2\right]} <  \textnormal{tol} =\num{1e-7}
@@ -29,8 +40,8 @@ $x$,$\epsilon$,$p$ $\leftarrow 0 \in \mathbb{R}^{N_z}$ \;
 \While{RMS var > tol}{
 Compute thermodynamic properties at each point\;
 $\epsilon^{new} \leftarrow$ Correlation Model($\epsilon,x,p,...$)\;
-$x^{new} \leftarrow$ Energy Equation($\epsilon,x,p,...$)\;
-$p^{new} \leftarrow$ Momentum Equation($\epsilon,x,p,...$)\;
+$x^{new} \leftarrow x_s + \int_{z_s}^z$ Energy Equation($\epsilon,x,p,...$)\;
+$p^{new} \leftarrow P_s + \int_{z_s}^{z}$ Momentum Equation($\epsilon,x,p,...$)\;
 Compute RMS var $(x^{new},\epsilon^{new},p^{new}) - (x,\epsilon,p)$\;
 $x,\epsilon,p \leftarrow x^{new},\epsilon^{new},p^{new}$
 }
