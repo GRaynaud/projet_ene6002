@@ -298,7 +298,7 @@ def loss_pressure_equation(z):
     eps = eps_z(z)
        
 #    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
-#    rho_l = steamTable.rhoL_p(P_s) + 0.*z 
+    rho_l_s = steamTable.rhoL_p(P_s)
    
     rho_g = rhoV_p(P)
     rho_l = rhoL_p(P) 
@@ -347,7 +347,7 @@ def loss_pressure_equation(z):
     
 #    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A priori ok
     err = dP_dz + phi2*dp_dz_l0 + dp_grav + dp_acc
-    err_norm = err/dp_grav
+    err_norm = err/(rho_l_s*g)
     return tf.reduce_mean(tf.square(err_norm))
 
 
