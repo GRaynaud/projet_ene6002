@@ -26,26 +26,46 @@ Avec :
     v^{\prime}=\frac{x^{2}}{\varepsilon \rho_{v}}+\frac{(1-x)^{2}}{(1-\varepsilon) \rho_{l}}
 \end{equation}
 
-Le terme de frottement pouvant être écrit comme la perte de pression (par frottement) si l'écoulement était seulement liquide et une correction le \og multiplicateur diphasique \fg{}. Ce dernier sera obtenu par la corrélation de \textsc{Friedel}.
+Etant donné la complexité de gérer les cas $\varepsilon \rightarrow 0$ et $\varepsilon \rightarrow 1$ dans l'équation précédente, on a utilisé une équation dérivée du modèle homogène pour $v'$ :
+
+\begin{equation}
+    v^{\prime} = \frac{1}{\rho_m} = \frac{1}{\varepsilon \rho_v + (1-\varepsilon)\rho_l }
+\end{equation}
+
+Le terme de frottement pouvant être écrit comme la perte de pression (par frottement) si l'écoulement était seulement liquide et une correction le \og multiplicateur diphasique \fg{}. Ce dernier sera obtenu par la corrélation de \textsc{Friedel} rappelée dans \cite{revellinAdiabaticTwophaseFrictional2007}.
 \begin{equation}
     \left(\pder[p]{z} \right)_{f} = f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2
 \end{equation}
 
-Le facteur de frottement $f$ est défini par :
+Comme rappelé par \cite{revellinAdiabaticTwophaseFrictional2007}, le facteur de frottement $f$ est défini par :
 \begin{equation}
     f = 0.316 \left[\text{Re}_L\right]^{-0.25} = 0.316 \left[\frac{G D}{\mu_l}\right]^{-0.25} 
 \end{equation}
+On peut donc écrire la perte de pression que nous allons évaluer comme :
+\begin{equation}
+     -\pder[p]{z} = G^2\pder{z}\left[\frac{1}{\varepsilon \rho_v + (1-\varepsilon)\rho_l } \right] + f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2 + \left[ \varepsilon \rho_v + (1-\varepsilon)\rho_l  \right] g
+\end{equation}
 
-Une relation entre le taux de vide moyen $\varepsilon$ et le titre de l'écoulement $x$ provenant du modèle à vitesses séparées. Il est accompagné de lois de comportements pour fixer les constantes de corrélation :
+
+On dispose ensuite d'une relation entre le taux de vide moyen $\varepsilon$ et le titre de l'écoulement $x$ provenant du modèle à vitesses séparées. Il est accompagné de lois de comportements pour fixer les constantes de corrélation :
 \begin{equation}
         \frac{1}{\varepsilon} = \frac{\rho_g}{\hat{x} G} <V_{gj}>_{2g} + C_0\left(\frac{\rho_g}{\rho_l}\frac{1-\hat{x}}{\hat{x}} + 1\right) 
+\label{eq:DriftFluxModel}
 \end{equation}
 \begin{align*}
          C_0 &\textnormal{ fonction des paramètres de l'écoulement}\\
         <V_{gj}>_{2g} &\textnormal{ fonction des paramètres de l'écoulement}   
 \end{align*}
 
-Des lois de conservation, notamment de la masse :
+En pratique on l'utilisera de deux manières. Dans l'algorithme classique, on s'en sert pour obtenir $\varepsilon$ à partir de $x$ et $p$ en inversant l'équation \ref{eq:DriftFluxModel}. Dans le PINN, on utilise plutôt la forme suivante où on retourne $x$ à partir d'un set initial de $\varepsilon,x$ et $p$ :
+
+\begin{equation}
+    x = \varepsilon \left[ \frac{\rho_g}{G}<V_{gj}>_{2g} + C_0 \left( \frac{1-x}{\rho_l}\rho_g + x\right) \right]
+\end{equation}
+
+Il faut bien noter que $C_0$ et $<V_{gj}>$ dépendent des solutions $\varepsilon,x$ et $p$ ainsi que des propriétés thermodynamiques qui varient elles-même avec les solutions, d'où la complexité du problème.\\ 
+
+Enfin on utilise des lois de conservation, notamment de la masse qui permet de fixer $G$ pour tout le problème :
 \begin{equation}
     \pder[G]{z} = 0
 \end{equation}
@@ -53,13 +73,11 @@ Des lois de conservation, notamment de la masse :
 et de l'énergie du mélange :
 \begin{equation}
     \pder{z} \left[ h_{l,sat}(T_{(z)})+x_{(z)}h_{vl,sat}(T_{(z)})\right] = \frac{4}{DG}q''
+\label{eq:titre}
 \end{equation}
 
-où $q''$ est le flux de chaleur ajouté en paroi obtenu en supposant la puissance thermique $P_{th}$ apportée uniformément répartie sur la longueur chauffée $L_x$ du cylindre : $q'' = \frac{P_{th}}{\pi DL_c}$.\\ \par
-On peut donc écrire la perte de pression que nous allons évaluer comme :
-\begin{equation}
-     -\pder[p]{z} = G^2\pder{z}\left[\frac{x^{2}}{\varepsilon \rho_{v}}+\frac{(1-x)^{2}}{(1-\varepsilon) \rho_{l}} \right] + f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2 + \rho_m g
-\end{equation}
+où $q''$ est le flux de chaleur ajouté en paroi obtenu en supposant la puissance thermique $P_{th}$ apportée uniformément répartie sur la longueur chauffée $L_x$ du cylindre : $q'' = \frac{P_{th}}{\pi DL_c}$. On suppose que l'on travaille à saturation, où la pression $p$ et la température $T$ sont directement liées. Ainsi on n'a pas besoin de résoudre explicitement $T = T_{sat}(p_{(z)})$\\ \par
+
 
 \subsection{Fonctionnement du programme}
 \textcolor{red}{Dans notre étude, nous connaissons seulement la pression de sortie et la température d'entrée. La section \ref{subs:sat} nous a permis de trouver la position à laquelle le fluide est à saturation. C'est à partir de cette zone que la perte de pression va avoir lieu.} \\ \par
