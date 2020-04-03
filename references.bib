@@ -1,4 +1,150 @@
 
+@article{zhangLearningModalSpace2019,
+	title = {Learning in {Modal} {Space}: {Solving} {Time}-{Dependent} {Stochastic} {PDEs} {Using} {Physics}-{Informed} {Neural} {Networks}},
+	shorttitle = {Learning in {Modal} {Space}},
+	url = {http://arxiv.org/abs/1905.01205},
+	abstract = {One of the open problems in scientific computing is the long-time integration of nonlinear stochastic partial differential equations (SPDEs). We address this problem by taking advantage of recent advances in scientific machine learning and the dynamically orthogonal (DO) and bi-orthogonal (BO) methods for representing stochastic processes. Specifically, we propose two new Physics-Informed Neural Networks (PINNs) for solving time-dependent SPDEs, namely the NN-DO/BO methods, which incorporate the DO/BO constraints into the loss function with an implicit form instead of generating explicit expressions for the temporal derivatives of the DO/BO modes. Hence, the proposed methods overcome some of the drawbacks of the original DO/BO methods: we do not need the assumption that the covariance matrix of the random coefficients is invertible as in the original DO method, and we can remove the assumption of no eigenvalue crossing as in the original BO method. Moreover, the NN-DO/BO methods can be used to solve time-dependent stochastic inverse problems with the same formulation and computational complexity as for forward problems. We demonstrate the capability of the proposed methods via several numerical examples: (1) A linear stochastic advection equation with deterministic initial condition where the original DO/BO method would fail; (2) Long-time integration of the stochastic Burgers' equation with many eigenvalue crossings during the whole time evolution where the original BO method fails. (3) Nonlinear reaction diffusion equation: we consider both the forward and the inverse problem, including noisy initial data, to investigate the flexibility of the NN-DO/BO methods in handling inverse and mixed type problems. Taken together, these simulation results demonstrate that the NN-DO/BO methods can be employed to effectively quantify uncertainty propagation in a wide range of physical problems.},
+	urldate = {2019-09-09},
+	journal = {arXiv:1905.01205 [physics, stat]},
+	author = {Zhang, Dongkun and Guo, Ling and Karniadakis, George Em},
+	month = may,
+	year = {2019},
+	note = {arXiv: 1905.01205},
+	keywords = {\_tablet, Computer Science - Machine Learning, Mathematics - Numerical Analysis, Physics - Computational Physics, Statistics - Machine Learning},
+	file = {arXiv.org Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\MRRCHMG3\\1905.html:text/html;Zhang et al_2019_Learning in Modal Space.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\IGA3VVER\\Zhang et al_2019_Learning in Modal Space.pdf:application/pdf}
+}
+
+@book{raissiHiddenFluidMechanics2018,
+	title = {Hidden {Fluid} {Mechanics}: {A} {Navier}-{Stokes} {Informed} {Deep} {Learning} {Framework} for {Assimilating} {Flow} {Visualization} {Data}},
+	shorttitle = {Hidden {Fluid} {Mechanics}},
+	abstract = {We present hidden fluid mechanics (HFM), a physics informed deep learning framework capable of encoding an important class of physical laws governing fluid motions, namely the Navier-Stokes equations. In particular, we seek to leverage the underlying conservation laws (i.e., for mass, momentum, and energy) to infer hidden quantities of interest such as velocity and pressure fields merely from spatio-temporal visualizations of a passive scaler (e.g., dye or smoke), transported in arbitrarily complex domains (e.g., in human arteries or brain aneurysms). Our approach towards solving the aforementioned data assimilation problem is unique as we design an algorithm that is agnostic to the geometry or the initial and boundary conditions. This makes HFM highly flexible in choosing the spatio-temporal domain of interest for data acquisition as well as subsequent training and predictions. Consequently, the predictions made by HFM are among those cases where a pure machine learning strategy or a mere scientific computing approach simply cannot reproduce. The proposed algorithm achieves accurate predictions of the pressure and velocity fields in both two and three dimensional flows for several benchmark problems motivated by real-world applications. Our results demonstrate that this relatively simple methodology can be used in physical and biomedical problems to extract valuable quantitative information (e.g., lift and drag forces or wall shear stresses in arteries) for which direct measurements may not be possible.},
+	author = {Raissi, Maziar and Yazdani, Alireza and Karniadakis, George},
+	month = aug,
+	year = {2018},
+	keywords = {\_tablet},
+	file = {Raissi et al_2018_Hidden Fluid Mechanics.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\IGLRA94R\\Raissi et al_2018_Hidden Fluid Mechanics.pdf:application/pdf}
+}
+
+@misc{PartialDifferentialEquations,
+	title = {Partial {Differential} {Equations} {\textbar} {TensorFlow} {Core}},
+	url = {https://www.tensorflow.org/tutorials/non-ml/pdes},
+	language = {en},
+	urldate = {2019-09-04},
+	journal = {TensorFlow},
+	file = {Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\X6QLZJNS\\pdes.html:text/html}
+}
+
+@article{raissiDeepLearningVortexinduced2019a,
+	title = {Deep learning of vortex-induced vibrations},
+	volume = {861},
+	journal = {Journal of Fluid Mechanics},
+	author = {Raissi, Maziar and Wang, Zhicheng and Triantafyllou, Michael S. and Karniadakis, George Em},
+	year = {2019},
+	keywords = {\_tablet},
+	pages = {119--137},
+	file = {Raissi et al_2019_Deep learning of vortex-induced vibrations.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\SJD3U3MD\\Raissi et al_2019_Deep learning of vortex-induced vibrations.pdf:application/pdf;Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\HQUQ2X9X\\B7D9B152C42B7F1E895C1661F5A85881.html:text/html}
+}
+
+@article{al-aradiSolvingNonlinearHighDimensional,
+	title = {Solving {Nonlinear} and {High}-{Dimensional} {Partial} {Differential} {Equations} via {Deep} {Learning}},
+	language = {en},
+	author = {Al-Aradi, Ali and Correia, Adolfo and Naiff, Danilo and Jardim, Gabriel and Vargas, Fundacao Getulio and Saporito, Yuri},
+	pages = {76},
+	file = {Al-Aradi et al. - Solving Nonlinear and High-Dimensional Partial Dif.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\2Z7QR3PF\\Al-Aradi et al. - Solving Nonlinear and High-Dimensional Partial Dif.pdf:application/pdf}
+}
+
+@article{raissiPhysicsinformedNeuralNetworks2019,
+	title = {Physics-informed neural networks: {A} deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations},
+	volume = {378},
+	issn = {0021-9991},
+	shorttitle = {Physics-informed neural networks},
+	url = {http://www.sciencedirect.com/science/article/pii/S0021999118307125},
+	doi = {10.1016/j.jcp.2018.10.045},
+	abstract = {We introduce physics-informed neural networks – neural networks that are trained to solve supervised learning tasks while respecting any given laws of physics described by general nonlinear partial differential equations. In this work, we present our developments in the context of solving two main classes of problems: data-driven solution and data-driven discovery of partial differential equations. Depending on the nature and arrangement of the available data, we devise two distinct types of algorithms, namely continuous time and discrete time models. The first type of models forms a new family of data-efficient spatio-temporal function approximators, while the latter type allows the use of arbitrarily accurate implicit Runge–Kutta time stepping schemes with unlimited number of stages. The effectiveness of the proposed framework is demonstrated through a collection of classical problems in fluids, quantum mechanics, reaction–diffusion systems, and the propagation of nonlinear shallow-water waves.},
+	urldate = {2019-09-24},
+	journal = {Journal of Computational Physics},
+	author = {Raissi, M. and Perdikaris, P. and Karniadakis, G. E.},
+	month = feb,
+	year = {2019},
+	keywords = {Data-driven scientific computing, Machine learning, Nonlinear dynamics, Predictive modeling, Runge–Kutta methods},
+	pages = {686--707},
+	file = {ScienceDirect Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\7A7BS9ZL\\S0021999118307125.html:text/html}
+}
+
+@article{raissiPhysicsinformedNeuralNetworks2019a,
+	title = {Physics-informed neural networks: {A} deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations},
+	volume = {378},
+	issn = {0021-9991},
+	shorttitle = {Physics-informed neural networks},
+	url = {http://www.sciencedirect.com/science/article/pii/S0021999118307125},
+	doi = {10.1016/j.jcp.2018.10.045},
+	abstract = {We introduce physics-informed neural networks – neural networks that are trained to solve supervised learning tasks while respecting any given laws of physics described by general nonlinear partial differential equations. In this work, we present our developments in the context of solving two main classes of problems: data-driven solution and data-driven discovery of partial differential equations. Depending on the nature and arrangement of the available data, we devise two distinct types of algorithms, namely continuous time and discrete time models. The first type of models forms a new family of data-efficient spatio-temporal function approximators, while the latter type allows the use of arbitrarily accurate implicit Runge–Kutta time stepping schemes with unlimited number of stages. The effectiveness of the proposed framework is demonstrated through a collection of classical problems in fluids, quantum mechanics, reaction–diffusion systems, and the propagation of nonlinear shallow-water waves.},
+	urldate = {2019-10-07},
+	journal = {Journal of Computational Physics},
+	author = {Raissi, M. and Perdikaris, P. and Karniadakis, G. E.},
+	month = feb,
+	year = {2019},
+	keywords = {Data-driven scientific computing, Machine learning, Nonlinear dynamics, Predictive modeling, Runge–Kutta methods},
+	pages = {686--707},
+	file = {Raissi et al_2019_Physics-informed neural networks.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\L4NLVGT3\\Raissi et al_2019_Physics-informed neural networks.pdf:application/pdf;ScienceDirect Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\ZE9YZ437\\S0021999118307125.html:text/html}
+}
+
+@article{gulianMachineLearningSpaceFractional2019a,
+	title = {Machine {Learning} of {Space}-{Fractional} {Differential} {Equations}},
+	volume = {41},
+	issn = {1064-8275, 1095-7197},
+	url = {https://epubs.siam.org/doi/10.1137/18M1204991},
+	doi = {10.1137/18M1204991},
+	abstract = {Data-driven discovery of “hidden physics”—i.e., machine learning of diﬀerential equation models underlying observed data—has recently been approached by embedding the discovery problem into a Gaussian process regression of spatial data, treating and discovering unknown equation parameters as hyperparameters of a “physics informed” Gaussian process kernel. This kernel includes the parametrized diﬀerential operators applied to a prior covariance kernel. We extend this framework to the data-driven discovery of linear space-fractional diﬀerential equations. The methodology is compatible with a wide variety of space-fractional operators in Rd and stationary covariance kernels, including the Mat´ern class, and allows for optimizing the Mat´ern parameter during training. Since fractional derivatives are typically not given by closed-form analytic expressions, the main challenges to be addressed are a user-friendly, general way to set up fractionalorder derivatives of covariance kernels, together with feasible and robust numerical methods for such implementations. Making use of the simple Fourier-space representation of space-fractional derivatives in Rd, we provide a uniﬁed set of integral formulas for the resulting Gaussian process kernels. The shift property of the Fourier transform results in formulas involving d-dimensional integrals that can be eﬃciently treated using generalized Gauss–Laguerre quadrature. The implementation of fractional derivatives has several beneﬁts. First, the method allows for discovering models involving fractional-order PDEs for systems characterized by heavy tails or anomalous diffusion, while bypassing the analytical diﬃculty of fractional calculus. Data sets exhibiting such features are of increasing prevalence in physical and ﬁnancial domains. Second, a single fractionalorder archetype allows for a derivative term of arbitrary order to be learned, with the order itself being a parameter in the regression. As a result, even when used for discovering integer-order equations, the proposed method has several beneﬁts compared to previous works on data-driven discovery of diﬀerential equations; the user is not required to assume a “dictionary” of derivatives of various orders and directly controls the parsimony of the models being discovered. We illustrate our method on several examples, including fractional-order interpolation of advection-diﬀusion and modeling relative stock performance in the S\&P 500 with α-stable motion via a fractional diﬀusion equation.},
+	language = {en},
+	number = {4},
+	urldate = {2019-10-07},
+	journal = {SIAM J. Sci. Comput.},
+	author = {Gulian, Mamikon and Raissi, Maziar and Perdikaris, Paris and Karniadakis, George},
+	month = jan,
+	year = {2019},
+	pages = {A2485--A2509},
+	file = {Gulian et al. - 2019 - Machine Learning of Space-Fractional Differential .pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\QY573E8X\\Gulian et al. - 2019 - Machine Learning of Space-Fractional Differential .pdf:application/pdf}
+}
+
+@article{maoPhysicsinformedNeuralNetworks2020,
+	title = {Physics-informed neural networks for high-speed flows},
+	volume = {360},
+	issn = {0045-7825},
+	url = {http://www.sciencedirect.com/science/article/pii/S0045782519306814},
+	doi = {10.1016/j.cma.2019.112789},
+	abstract = {In this work we investigate the possibility of using physics-informed neural networks (PINNs) to approximate the Euler equations that model high-speed aerodynamic flows. In particular, we solve both the forward and inverse problems in one-dimensional and two-dimensional domains. For the forward problem, we utilize the Euler equations and the initial/boundary conditions to formulate the loss function, and solve the one-dimensional Euler equations with smooth solutions and with solutions that have a contact discontinuity as well as a two-dimensional oblique shock wave problem. We demonstrate that we can capture the solutions with only a few scattered points clustered randomly around the discontinuities. For the inverse problem, motivated by mimicking the Schlieren photography experimental technique used traditionally in high-speed aerodynamics, we use the data on density gradient ∇ρ(x,t), the pressure p(x∗,t) at a specified point x=x∗ as well as the conservation laws to infer all states of interest (density, velocity and pressure fields). We present illustrative benchmark examples for both the problem with smooth solutions and Riemann problems (Sod and Lax problems) with PINNs, demonstrating that all inferred states are in good agreement with the reference solutions. Moreover, we show that the choice of the position of the point x∗ plays an important role in the learning process. In particular, for the problem with smooth solutions we can randomly choose the position of the point x∗ from the computational domain, while for the Sod or Lax problem, we have to choose the position of the point x∗ from the domain between the initial discontinuous point and the shock position of the final time. We also solve the inverse problem by combining the aforementioned data and the Euler equations in characteristic form, showing that the results obtained by using the Euler equations in characteristic form are better than that obtained by using the Euler equations in conservative form. Furthermore, we consider another type of inverse problem, specifically, we employ PINNs to learn the value of the parameter γ in the equation of state for the parameterized two-dimensional oblique wave problem by using the given data of the density, velocity and the pressure, and we identify the parameter γ accurately. Taken together, our results demonstrate that in the current form, where the conservation laws are imposed at random points, PINNs are not as accurate as traditional numerical methods for forward problems but they are superior for inverse problems that cannot even be solved with standard techniques.},
+	language = {en},
+	urldate = {2020-01-09},
+	journal = {Computer Methods in Applied Mechanics and Engineering},
+	author = {Mao, Zhiping and Jagtap, Ameya D. and Karniadakis, George Em},
+	month = mar,
+	year = {2020},
+	keywords = {Conservation laws, Euler equations, Hidden fluid mechanics, Machine learning, Neural networks, Riemann problem},
+	pages = {112789},
+	file = {Mao et al_2020_Physics-informed neural networks for high-speed flows.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\Mao et al_2020_Physics-informed neural networks for high-speed flows.pdf:application/pdf;ScienceDirect Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\YC8GGJB7\\S0045782519306814.html:text/html}
+}
+
+@phdthesis{rudyComputationalMethodsSystem2019,
+	address = {Ann Arbor, United States},
+	type = {Ph.{D}.},
+	title = {Computational {Methods} for {System} {Identification} and {Data}-driven {Forecasting}},
+	copyright = {Database copyright ProQuest LLC; ProQuest does not claim copyright in the individual underlying works.},
+	url = {https://search.proquest.com/pqdtglobal/docview/2291448884/abstract/7C65F93BEF04B05PQ/1},
+	abstract = {This thesis develops several novel computational tools for system identification and data-driven forecasting. The material is divided into four chapters: data-driven identification of partial differential equations, neural network interpolation of velocity field data from trajectory measurements, smoothing of high dimensional nonlinear time series, and an application of data-driven forecasting in biology.
+We first develop a novel computational method for identifying partial differential equations (PDEs) from measurements in the spatio-temporal domain. Building on past methods in sparse regression, we formulate a regression problem to select the active terms of a PDE from a large library of candidate basis functions. In contrast to many data-driven forecasting methods, the proposed algorithm yields exact representations of the dynamics. This has the advantage of allowing for future state prediction from novel initial and boundary conditions as well as rigorous mathematical analysis. The method is also extended to the case where coefficients vary either in space or time. We demonstrate the ability to accurately learn the correct active terms and their magnitudes on a variety on canonical partial differential equations.
+We also develop a method for interpolating the velocity fields of smooth dynamical systems using neural networks. We specifically focus on addressing the issue of learning from noisy and limited data. We construct a cost function for training neural network interpolations of velocity fields from trajectory measurements that explicitly accounts for measurement noise. The need to numerically differentiate data is avoided by placing the neural network interpolation of velocity within an explicit timestepping scheme and training as a flow map rather than directly on the velocity field. The proposed framework is shown to be capable of learning accurate forecasting models even when data is corrupted by significant levels of noise. We also consider some limitations of using neural networks as forecasting models for dynamical systems. Using test problems with known dynamics, we show that neural networks are able to accurately interpolate a vector field only where data is collected and generally exhibit high generalization error. Some guidelines are proposed regarding the contexts in which neural networks may or may not be useful in practice.
+For datasets where dynamics are known either completely or up to a set of parameters, we develop a novel smoothing technique based on soft-adherence to governing equations. The proposed method may be applicable to smoothing data from deterministic dynamical systems where high dimensionality or nonlinearity make sequential Bayesian methods impractical. We test the method on several canonical problems from data assimilation and show that it is robust to exceptionally high levels of noise as well as noise with non-zero mean and temporally autocorrelated noise.
+The last section of this thesis develops a data-driven forecasting model for the half-sarcomere, a small component of skeletal muscle tissue. Current models of the half-sarcomere currently require computationally expensive Monte Carlo simulations to resolve the effects of filament compliance. We seek to replicate the dynamic behavior realized by Monte Carlo simulation of the half-sarcomere at a lower cost. Drawing inspiration from surrogate and reduced order modeling, we apply a course graining to the variables tracked by the Monte Carlo simulation and learn a dynamics model on the course grained variables using data. We find that the resulting data-driven model effectively reproduces force traces and dynamics of the course grained state when given novel input parameters.
+Taken together, the innovations presented in this thesis represent a modest contribution to the field of data-driven methods for system identification and forecasting. In the concluding chapter, we highlight several exciting directions that build upon and improve the research presented in this thesis.},
+	language = {Anglais},
+	urldate = {2020-02-11},
+	author = {Rudy, Samuel},
+	year = {2019},
+	keywords = {System identification, Data-driven forecasting, Partial differential equations},
+	file = {Rudy_2019_Computational Methods for System Identification and Data-driven Forecasting.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\AABEXT9Y\\Rudy_2019_Computational Methods for System Identification and Data-driven Forecasting.pdf:application/pdf}
+}
+
 @article{coddingtonStudyPerformanceVoid2002,
 	title = {A study of the performance of void fraction correlations used in the context of drift-flux two-phase flow models},
 	volume = {215},
@@ -15,6 +161,30 @@
 	pages = {199--216}
 }
 
+@article{corbettaApplicationSparseIdentification,
+	title = {Application of sparse identiﬁcation of nonlinear dynamics for physics-informed learning},
+	abstract = {Advances in machine learning and deep neural networks have enabled complex engineering tasks like image recognition, anomaly detection, regression, and multi-objective optimization, to name but a few. The complexity of the algorithm architecture, e.g., the number of hidden layers in a deep neural network, typically grows with the complexity of the problems they are required to solve, leaving little room for interpreting (or explaining) the path that results in a speciﬁc solution. This drawback is particularly relevant for autonomous aerospace and aviation systems, where certiﬁcations require a complete understanding of the algorithm behavior in all possible scenarios. Including physics knowledge in such data-driven tools may improve the interpretability of the algorithms, thus enhancing model validation against events with low probability but relevant for system certiﬁcation. Such events include, for example, spacecraft or aircraft sub-system failures, for which data may not be available in the training phase. This paper investigates a recent physics-informed learning algorithm for identiﬁcation of system dynamics, and shows how the governing equations of a system can be extracted from data using sparse regression. The learned relationships can be utilized as a surrogate model which, unlike typical data-driven surrogate models, relies on the learned underlying dynamics of the system rather than large number of ﬁtting parameters. The work shows that the algorithm can reconstruct the differential equations underlying the observed dynamics using a single trajectory when no uncertainty is involved. However, the training set size must increase when dealing with stochastic systems, e.g., nonlinear dynamics with random initial conditions.},
+	language = {en},
+	author = {Corbetta, Matteo and Field, Moffett},
+	pages = {9},
+	file = {Corbetta et Field - Application of sparse identiﬁcation of nonlinear d.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\I23XZMIJ\\Corbetta et Field - Application of sparse identiﬁcation of nonlinear d.pdf:application/pdf}
+}
+
+@article{jinNSFnetsNavierStokesFlow2020,
+	title = {{NSFnets} ({Navier}-{Stokes} {Flow} nets): {Physics}-informed neural networks for the incompressible {Navier}-{Stokes} equations},
+	shorttitle = {{NSFnets} ({Navier}-{Stokes} {Flow} nets)},
+	url = {http://arxiv.org/abs/2003.06496},
+	abstract = {We employ physics-informed neural networks (PINNs) to simulate the incompressible flows ranging from laminar to turbulent flows. We perform PINN simulations by considering two different formulations of the Navier-Stokes equations: the velocity-pressure (VP) formulation and the vorticity-velocity (VV) formulation. We refer to these specific PINNs for the Navier-Stokes flow nets as NSFnets. Analytical solutions and direct numerical simulation (DNS) databases provide proper initial and boundary conditions for the NSFnet simulations. The spatial and temporal coordinates are the inputs of the NSFnets, while the instantaneous velocity and pressure fields are the outputs for the VP-NSFnet, and the instantaneous velocity and vorticity fields are the outputs for the VV-NSFnet. These two different forms of the Navier-Stokes equations together with the initial and boundary conditions are embedded into the loss function of the PINNs. No data is provided for the pressure to the VP-NSFnet, which is a hidden state and is obtained via the incompressibility constraint without splitting the equations. We obtain good accuracy of the NSFnet simulation results upon convergence of the loss function, verifying that NSFnets can effectively simulate complex incompressible flows using either the VP or the VV formulations. We also perform a systematic study on the weights used in the loss function for the data/physics components and investigate a new way of computing the weights dynamically to accelerate training and enhance accuracy. Our results suggest that the accuracy of NSFnets, for both laminar and turbulent flows, can be improved with proper tuning of weights (manual or dynamic) in the loss function.},
+	urldate = {2020-03-24},
+	journal = {arXiv:2003.06496 [physics]},
+	author = {Jin, Xiaowei and Cai, Shengze and Li, Hui and Karniadakis, George Em},
+	month = mar,
+	year = {2020},
+	note = {arXiv: 2003.06496},
+	keywords = {Physics - Computational Physics},
+	file = {arXiv.org Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\HA34TH4J\\2003.html:text/html;Jin et al_2020_NSFnets (Navier-Stokes Flow nets).pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\Jin et al_2020_NSFnets (Navier-Stokes Flow nets).pdf:application/pdf}
+}
+
 @article{revellinAdiabaticTwophaseFrictional2007,
 	title = {Adiabatic two-phase frictional pressure drops in microchannels},
 	volume = {31},
@@ -29,22 +199,6 @@
 	month = jul,
 	year = {2007},
 	pages = {673--685}
-}
-
-@article{coddingtonStudyPerformanceVoid2002a,
-	title = {A study of the performance of void fraction correlations used in the context of drift-flux two-phase flow models},
-	volume = {215},
-	issn = {00295493},
-	url = {https://linkinghub.elsevier.com/retrieve/pii/S0029549301005039},
-	doi = {10.1016/S0029-5493(01)00503-9},
-	language = {en},
-	number = {3},
-	urldate = {2020-03-26},
-	journal = {Nuclear Engineering and Design},
-	author = {Coddington, Paul and Macian, Rafael},
-	month = jun,
-	year = {2002},
-	pages = {199--216}
 }
 
 @article{koncarModellingLowpressureSubcooled2003,
@@ -112,4 +266,77 @@
 	author = {Inoue, Akira and Kurosu, Tatsuo and Yagi, Makoto and Morooka, Shinchi and Hoshide, Akehiko and Ishizuka, Takao and Yoshimura, Kunihiro},
 	year = {1993},
 	file = {Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\3LZXU253\\search.html:text/html}
+}
+
+@article{chenPhysicsinformedNeuralNetworks2020,
+	title = {Physics-informed neural networks for inverse problems in nano-optics and metamaterials},
+	url = {http://arxiv.org/abs/1912.01085},
+	abstract = {In this paper we employ the emerging paradigm of physics-informed neural networks (PINNs) for the solution of representative inverse scattering problems in photonic metamaterials and nano-optics technologies. In particular, we successfully apply mesh-free PINNs to the difficult task of retrieving the effective permittivity parameters of a number of finite-size scattering systems that involve many interacting nanostructures as well as multi-component nanoparticles. Our methodology is fully validated by numerical simulations based on the Finite Element Method (FEM). The development of physics-informed deep learning techniques for inverse scattering can enable the design of novel functional nanostructures and significantly broaden the design space of metamaterials by naturally accounting for radiation and finite-size effects beyond the limitations of traditional effective medium theories.},
+	urldate = {2020-04-03},
+	journal = {arXiv:1912.01085 [physics]},
+	author = {Chen, Yuyao and Lu, Lu and Karniadakis, George Em and Negro, Luca Dal},
+	month = mar,
+	year = {2020},
+	note = {arXiv: 1912.01085},
+	keywords = {Physics - Computational Physics, Physics - Optics},
+	file = {arXiv.org Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\PETSEUSN\\1912.html:text/html;Chen et al_2020_Physics-informed neural networks for inverse problems in nano-optics and.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\Chen et al_2020_Physics-informed neural networks for inverse problems in nano-optics and.pdf:application/pdf}
+}
+
+@article{mehtaDiscoveringUniversalVariableorder2019,
+	title = {Discovering a universal variable-order fractional model for turbulent {Couette} flow using a physics-informed neural network},
+	volume = {22},
+	issn = {1311-0454, 1314-2224},
+	url = {http://www.degruyter.com/view/j/fca.2019.22.issue-6/fca-2019-0086/fca-2019-0086.xml},
+	doi = {10.1515/fca-2019-0086},
+	abstract = {Abstract
+            
+              The first fractional model for Reynolds stresses in wall-bounded turbulent flows was proposed by Wen Chen [2]. Here, we extend this formulation by allowing the fractional order
+              α
+              (
+              y
+              ) of the model to vary with the distance from the wall (
+              y
+              ) for turbulent Couette flow. Using available direct numerical simulation (DNS) data, we formulate an inverse problem for
+              α
+              (
+              y
+              ) and design a physics-informed neural network (PINN) to obtain the fractional order. Surprisingly, we found a
+              universal scaling law
+              for
+              α
+              (
+              y
+              +
+              ), where
+              y
+              +
+              is the non-dimensional distance from the wall in wall units. Therefore, we obtain a variable-order fractional model that can be used at any Reynolds number to predict the mean velocity profile and Reynolds stresses with accuracy better than 1\%.},
+	number = {6},
+	urldate = {2020-04-03},
+	journal = {Fractional Calculus and Applied Analysis},
+	author = {Mehta, Pavan Pranjivan and Pang, Guofei and Song, Fangying and Karniadakis, George Em},
+	month = dec,
+	year = {2019},
+	pages = {1675--1688}
+}
+
+@article{bruntonDiscoveringGoverningEquations2016,
+	title = {Discovering governing equations from data by sparse identification of nonlinear dynamical systems},
+	volume = {113},
+	copyright = {©  . Freely available online through the PNAS open access option.},
+	issn = {0027-8424, 1091-6490},
+	url = {https://www.pnas.org/content/113/15/3932},
+	doi = {10.1073/pnas.1517384113},
+	abstract = {Extracting governing equations from data is a central challenge in many diverse areas of science and engineering. Data are abundant whereas models often remain elusive, as in climate science, neuroscience, ecology, finance, and epidemiology, to name only a few examples. In this work, we combine sparsity-promoting techniques and machine learning with nonlinear dynamical systems to discover governing equations from noisy measurement data. The only assumption about the structure of the model is that there are only a few important terms that govern the dynamics, so that the equations are sparse in the space of possible functions; this assumption holds for many physical systems in an appropriate basis. In particular, we use sparse regression to determine the fewest terms in the dynamic governing equations required to accurately represent the data. This results in parsimonious models that balance accuracy with model complexity to avoid overfitting. We demonstrate the algorithm on a wide range of problems, from simple canonical systems, including linear and nonlinear oscillators and the chaotic Lorenz system, to the fluid vortex shedding behind an obstacle. The fluid example illustrates the ability of this method to discover the underlying dynamics of a system that took experts in the community nearly 30 years to resolve. We also show that this method generalizes to parameterized systems and systems that are time-varying or have external forcing.},
+	language = {en},
+	number = {15},
+	urldate = {2020-04-03},
+	journal = {PNAS},
+	author = {Brunton, Steven L. and Proctor, Joshua L. and Kutz, J. Nathan},
+	month = apr,
+	year = {2016},
+	pmid = {27035946},
+	keywords = {dynamical systems, machine learning, optimization, sparse regression, system identification},
+	pages = {3932--3937},
+	file = {Brunton et al_2016_Discovering governing equations from data by sparse identification of nonlinear.pdf:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\Brunton et al_2016_Discovering governing equations from data by sparse identification of nonlinear.pdf:application/pdf;Snapshot:C\:\\Users\\Gaétan\\Zotero\\Dropbox\\storage\\UL2X5T77\\3932.html:text/html}
 }
