@@ -12,11 +12,10 @@ Cette technique nécessite donc un critère d'arrêt, car sinon le programme tou
 \begin{equation}
     \textnormal{RMS var} = \sqrt{\frac{1}{N_z}\sum_{k=1}^{N_z}\left[\left(x^{i}_k-x^{i+1}_k\right)^2 + \left(\frac{p^i_k- p^{i+1}_k}{p_s} \right)^2 + \left(\epsilon^i_k - \epsilon^{i+1}_k \right)^2\right]} <  \textnormal{tol} =\num{1e-7}
 \end{equation}
-Dans l'équation ci-dessus, $x^i_k$ fait référence au titre évalué au k\up{ème} point de discretisation ($z_k = z_e + \frac{k}{N_z}L_c$) lors de la i\up{ème} itération . Cela permet de faire converger rapidement l'algorithme et ne pas trop contraindre la variation des différents paramètres.
+Dans l'équation ci-dessus, $x^i_k$ fait référence au titre évalué au k\up{ème} point de discrétisation ($z_k = z_e + \frac{k}{N_z}L_c$) lors de la i\up{ème} itération . Cela permet de faire converger rapidement l'algorithme et ne pas trop contraindre la variation des différents paramètres.
 
 
 \subsection{Formalisation de l'algorithme classique}
-
 \begin{algorithm}
 \caption{Algorithme de résolution classique}
 \SetAlgoLined
@@ -34,3 +33,25 @@ $x,\epsilon,p \leftarrow x^{new},\epsilon^{new},p^{new}$
 Compute total pressure drop\;
 Output $x,\epsilon,p$ and plot\;
 \end{algorithm}
+
+
+\subsection{Convergence en discrétisation spatiale}
+
+Afin de vérifier que la discrétisation spatiale engendre des erreurs qui convergent vers 0 avec $N_z$, on effectue une série de simulations et on considérera le paramètre scalaire $\Delta p = P(z_s)-P(z_e)$.  On se limitera au cadre de l'expérience 19 avec le modèle de corrélation d'Inoue \cite{inoueInbundleVoidMeasurement1993}. Le seuil d'arrêt est fixé dans tous les cas à $tol = \num{1e-7}$. Enfin on s'intéressera à l'écart relatif entre la chute de pression pour une discrétisation $N_z$ avec la discrétisation la plus fine obtenue.
+
+
+
+\begin{table}[H]
+\caption{Convergence de la chute de pression}
+\vspace{5pt}
+    \centering
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+               \textbf{$N_z$}& \textbf{$-\Delta p$}& \textbf{Écart relatif} & \textbf{Nombre d'itérations}\\
+        \midrule
+          \textbf{10000}  & \num{2.518e-1} & & 6 \\
+                 
+        \bottomrule  
+    \end{tabular}
+    \label{PressureDrop}
+\end{table}
