@@ -20,7 +20,7 @@ plt.rc('figure',titlesize=20)
 #####################################################################
 
 exp = '19' # '19' or '65BV'
-choix_corr = 'Chexal' #'Chexal' or 'Inoue'
+choix_corr = 'Inoue' #'Chexal' or 'Inoue'
 
 # Exp 19
 if exp == '19':
@@ -58,7 +58,7 @@ q = P_th / (np.pi * D*L_c)
 # Discretisation
 # =============================================================================
 # Nombre de points de discretisation
-Nz = 1000
+Nz = 20000
 
 z = np.linspace(z_e,z_s,Nz)
 
@@ -202,7 +202,7 @@ while err > target_err:
 # =============================================================================
 pdrop = p[0]-p[-1]
 print('Algorithme terminé apres %d itérations' % (it))
-print('Saut de pression total : %.3e bar' % (pdrop))
+print('Saut de pression total : %.5e bar' % (pdrop))
 if exp == '19':
     exp_drop = 1e-2*experiences.p_19[0]
 else:
