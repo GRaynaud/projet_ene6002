@@ -16,7 +16,11 @@ Dans l'équation ci-dessus, $x^i_k$ fait référence au titre évalué au k\up{�
 
 
 \subsection{Formalisation de l'algorithme classique}
+
+On se propose de synthétiser la structure de la simulation classique avec l'algorithme \ref{algo:classique}. La version complète peut-être trouvée dans le fichier python \verb|Python/Algorithme_classique.py|.
+
 \begin{algorithm}
+\label{algo:classique}
 \caption{Algorithme de résolution classique}
 \SetAlgoLined
 \KwResult{Return converged vectors $x$, $\epsilon$ and $p$}
@@ -37,21 +41,22 @@ Output $x,\epsilon,p$ and plot\;
 
 \subsection{Convergence en discrétisation spatiale}
 
-Afin de vérifier que la discrétisation spatiale engendre des erreurs qui convergent vers 0 avec $N_z$, on effectue une série de simulations et on considérera le paramètre scalaire $\Delta p = P(z_s)-P(z_e)$.  On se limitera au cadre de l'expérience 19 avec le modèle de corrélation d'Inoue \cite{inoueInbundleVoidMeasurement1993}. Le seuil d'arrêt est fixé dans tous les cas à $tol = \num{1e-7}$. Enfin on s'intéressera à l'écart relatif entre la chute de pression pour une discrétisation $N_z$ avec la discrétisation la plus fine obtenue.
+Afin de vérifier que la discrétisation spatiale engendre des erreurs qui convergent vers 0 avec $N_z$, on effectue une série de simulations et on considérera le paramètre scalaire $\Delta p = \left| P(z_s)-P(z_e) \right|$.  On se limitera au cadre de l'expérience 19 avec le modèle de corrélation d'Inoue \cite{inoueInbundleVoidMeasurement1993}. Le seuil d'arrêt est fixé dans tous les cas à $tol = \num{1e-7}$ pour le RMS de la variation entre deux itérations consécutives. Enfin on s'intéressera à l'écart relatif entre la chute de pression pour une discrétisation $N_z$ avec la discrétisation la plus fine obtenue, défini par :
+
+\begin{equation}
+    err_{\Delta p} = \left|\frac{ \Delta p^{N_z} - \Delta p ^{\max{N_z}} }{\Delta p ^{\max{N_z}}}\right|
+\end{equation}
+
+Les résultats sont obtenus à l'aide du code contenu dans le fichier situé dans le dossier\\ \texttt{Python/Convergence\_Discretisation\_Algo\_Classique.py} et sont présentés à la figure \ref{fig:ConvAlgoClassique}. On observe que le nombre d'itérations pour arriver au même seuil de tolérance ne varie pas avec la finesse de discrétisation spatiale dans le cadre de l'étude présentée.\\
+
+D'autre part la convergence de la chute de pression avec le nombre d'éléments $N_z$ semble suivre un ordre 1 en espace. Ce n'est pas un résultat évident car on ne peut pas faire d'analyse classiques d'une discrétisation d'une équation aux dérivées partielles linéaire (car le critère d'arrêt dépend de la variation entre itérations successives et n'a rien d'absolu). Néanmoins, cela peut se comprendre par le fait d'avoir choisi un schéma de discrétisation pour la dérivée (matrice $Dz$) ainsi que l'intégrale (par une technique de rectangles) qui est d'ordre 1 en espace. \\
+
+A ce titre, étant donné que le nombre d'itérations reste constant, chaque opération est globalement en $\mathcal{O}(N_z)$ par itération ce qui permet d'expliquer l'évolution linéaire du temps écoulé pour la résolution du problème avec $N_z$ (pas d'inversion de matrice, ou autre procédé plus gourmand en ressources). On remarque que l'analyse aurait été à priori assez différente si la discrétisation influait davantage sur la vitesse de convergence, i.e. le nombre d'itérations nécessaires.\\
 
 
-
-\begin{table}[H]
-\caption{Convergence de la chute de pression}
-\vspace{5pt}
+\begin{figure}
     \centering
-    \begin{tabular}{@{}lccc@{}}
-        \toprule
-               \textbf{$N_z$}& \textbf{$-\Delta p$}& \textbf{Écart relatif} & \textbf{Nombre d'itérations}\\
-        \midrule
-          \textbf{10000}  & \num{2.518e-1} & & 6 \\
-                 
-        \bottomrule  
-    \end{tabular}
-    \label{PressureDrop}
-\end{table}
+    \resizebox{0.8\linewidth}{!}{\input{Python/Resultats/EtudeConvergence_AlgoClassique.pgf}}
+    \caption{Étude de convergence en discrétisation spatiale sur l'algorithme classique. Pour différents $N_z$, on donne la chute de pression obtenue, l'écart relatif $err_{\Delta p}$, le nombre d'itérations ainsi que le temps écoulé}
+    \label{fig:ConvAlgoClassique}
+\end{figure}
