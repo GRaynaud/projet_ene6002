@@ -2,25 +2,31 @@
 
 \subsection{Introduction et état de l'art}
 
-L'utilisation des techniques d'apprentissage machine aux domaines dits "classiques" comme la mécanique n'est pas nouveau. De nombreux travaux de recherche ont été menés jusqu'aux applications industrielles pour des problèmes d'aide à l'optimisation, de contrôle, de pré-développement de pièces ou de modèles réduits dont on pourra se faire une idée avec la synthèse de \cite{brunton_machine_2019}. Néanmoins l'approche privilégiée a été celle des données, \textit{data-driven} comme on le trouve dans la littérature. Cela signifie que les réseaux de neurones encodent les mécanismes physiques (dans le meilleur des cas) uniquement à partir d'un certain nombre de données préparées au préalable. Par exemple, cite{guo,2016} permet d'estimer l'écoulement moyen autour de formes complexes à l'aide de réseaux de neurones convolutionnels (CNNs) cite{Goodfellow}. 
+L'utilisation des techniques d'apprentissage machine aux domaines dits "classiques" comme la mécanique n'est pas nouveau. De nombreux travaux de recherche ont été menés jusqu'aux applications industrielles pour des problèmes d'aide à l'optimisation, de contrôle, de pré-développement de pièces ou de modèles réduits dont on pourra se faire une idée avec la synthèse de \cite{bruntonMachineLearningFluid2019a}. Néanmoins l'approche privilégiée a été celle des données, \textit{data-driven} comme on le trouve dans la littérature. Cela signifie que les réseaux de neurones encodent les mécanismes physiques (dans le meilleur des cas) uniquement à partir d'un certain nombre de données préparées au préalable. Par exemple,  \cite{guoConvolutionalNeuralNetworks2016} montre qu'il est possible d'estimer très rapidement l'écoulement moyen autour de formes complexes à l'aide de réseaux de neurones convolutionnels (CNNs) (Pour les concepts de base on pourra se référer à un ouvrage de référence \cite{goodfellowDeepLearning2016a}). \\
 
-Partir de la régression symbolique appliquée à la représentation/résolution de PDE.
-"Dsicovering governing equations from data ...", S Brunton \cite{bruntonDiscoveringGoverningEquations2016}
-Qui a amené à :
-"Application of Sparse Identification ..." Corbetta \cite{corbettaApplicationSparseIdentification}
-Puis Raissi \cite{raissiPhysicsinformedNeuralNetworks2019,raissiHiddenFluidMechanics2018}, Karniadakis, et récents papiers
-Chap 5 "Solving Nonlinear and H-D PDE via DL", Al-Aradi \cite{al-aradiSolvingNonlinearHighDimensional}
-PhD Rudy \cite{rudyComputationalMethodsSystem2019}
+Néanmoins une autre approche a été récemment explorée, celle de l'approximation des solutions d'un problème de type PDE (équations aux dérivées partielles) par des familles de fonctions sous l'hypothèse du théorème général d'approximation. S. Brunton a notamment travaillé dans ce domaine en déterminant les fonctions les plus adaptées pour décrire quantitativement avec des données brutes les solutions d'un problème à partir d'une famille suffisamment large de fonctions candidates \cite{bruntonDiscoveringGoverningEquations2016}. Une suite logique est présentée chez \cite{corbettaApplicationSparseIdentification} où la représentation d'un phénomène par une famille de fonctions continues permet de remonter aux équations qui le gouvernent. C'est aussi une manière d'établir des modèles réduits de problèmes complexes. \\
 
+Le formalisme plus classique des réseaux de neurones comme détaillé dans la section suivante apparaît un peu plus tard. \cite{raissiPhysicsinformedNeuralNetworks2019} présente un formalisme assez général de résolution de PDE avec différentes échelles de complexité et non-linéarités que l'on appelera PINN par la suite (pour \textit{Physics-Informed Neural Networks}. Il s'agit de représenter les solutions d'une PDE par une combinaison de fonctions de bases, connues, dont les inputs sont les coordonnées physiques : le temps, l'espace. Il n'y a donc pas de discrétisation spatiale ou temporelle. De plus, il introduit des fonctions d'erreurs basées sur les équations locales du problème accompagnées de conditions aux limites (spatiales et temporelles) ainsi que d'écarts aux mesures. On pourra également trouver une justification mathématique de la méthode avec une analogie avec la méthode de Galerkin chez \cite{al-aradiSolvingNonlinearHighDimensional}. Le manuscrit de thèse \cite{rudyComputationalMethodsSystem2019} est également une piste d'approfondissement.\\
 
-Ouvertures à d'autres sujets :
-IFS \cite{raissiDeepLearningVortexinduced2019a}
-High-Speed flows : \cite{maoPhysicsinformedNeuralNetworks2020}
-Solid mechanics \cite{haghighatDeepLearningFramework2020,luExtractionMechanicalProperties2020}
-Nano optics and metamaterals : \cite{chenPhysicsinformedNeuralNetworks2020}
+Des applications dans des domaines plus spécifiques sont rapidement publiées : \cite{raissiHiddenFluidMechanics2018} pour la reconstitution d'écoulement et de forces à partir de mesures de concentration d'un scalaire passif. Dans le domaine de l'interaction fluide-structure, \cite{raissiDeepLearningVortexinduced2019a} propose la reconstitution d'écoulement 2D autour d'un cylindre monté sur ressort à partir de divers types de données initiales. Plus récemment encore, on pourra se pencher du côté de \cite{maoPhysicsinformedNeuralNetworks2020} pour des écoulements hautes-vitesses, \cite{haghighatDeepLearningFramework2020,luExtractionMechanicalProperties2020} pour de la mécanique des solides ou encore \cite{chenPhysicsinformedNeuralNetworks2020} dans le domaine de la nano-optique et des méta matériaux.\
 
 
 \subsection{Principe de fonctionnement}
+
+L'idée fondamentale de la méthode PINN réside dans le théorème général d'approximation cite{hornik} que l'on pourra énoncer dans une version simplifiée par : 
+
+\begin{theorem}
+Soit $u : x\in  C \rightarrow u(x) \in \mathbb{R}^m$ une fonction continue d'un sous-ensemble compact $C$ de $\mathbb{R}^n$ dans $\mathbb{R}^m$. Alors $u$ peut-être approchée avec une fonction d'activation $f$ avec une précision (étant donné une norme sur $C$) arbitraire ($\epsilon$) par un réseau à une couche cachée suffisamment large ($p$).
+$$ \forall \epsilon > 0, \exists p\in \mathbb{N}, B_1 \in \mathbb{R}^p, B_2 \in \mathbb{R}^m, W_1 \in \mathbb{R}^{p\times n}, W_2 \in \mathbb{R}^{m \times p} $$
+définissant
+$$ \Tilde{u}_{NN} (x) = W_2 f\left( W_1 . x + B_1  \right) + B_2 $$
+Avec 
+$$ \| \Tilde{u}_{DNN} - u \|_{C} \leq \epsilon $$
+\end{theorem}
+
+
+
+cite{leshno} puis Stone-Weierstrass analogy
 
 \subsection{Adaptation au problème du projet et limites}
 
