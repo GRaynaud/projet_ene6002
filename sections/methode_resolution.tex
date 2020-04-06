@@ -77,9 +77,3 @@ et de l'énergie du mélange :
 \end{equation}
 
 où $q''$ est le flux de chaleur ajouté en paroi obtenu en supposant la puissance thermique $P_{th}$ apportée uniformément répartie sur la longueur chauffée $L_x$ du cylindre : $q'' = \frac{P_{th}}{\pi DL_c}$. On suppose que l'on travaille à saturation, où la pression $p$ et la température $T$ sont directement liées. Ainsi on n'a pas besoin de résoudre explicitement $T = T_{sat}(p_{(z)})$\\ \par
-
-
-\subsection{Fonctionnement du programme}
-\textcolor{red}{Dans notre étude, nous connaissons seulement la pression de sortie et la température d'entrée. La section \ref{subs:sat} nous a permis de trouver la position à laquelle le fluide est à saturation. C'est à partir de cette zone que la perte de pression va avoir lieu.} \\ \par
-\textcolor{red}{Dans un premier temps on initialise la perte de pression comme nulle (ie. la pression d'entrée est égale à la pression de sortie) et on réalise les calculs avec les différentes corrélations.} \\
-\textcolor{red}{Comme on connaît la pression de sortie, on ajoute le $\Delta P$ trouvé à la première itération à la pression d'entrée et on itère jusqu'à avoir une différence entre les itérations $i$ et $i+1$ suffisamment petite.}

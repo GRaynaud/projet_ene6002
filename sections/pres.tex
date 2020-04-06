@@ -2,7 +2,12 @@
 
 \subsection{Introduction}
 
-Citer des applications utiles du calcul de perte de pression dans des écoulements diphasiques, exemples industriels, effet sur le rendement,catastrophes... Parler des codes de calcul courants et des modèles existants 
+Dans les applications industrielles, dès lors que l'on travaille avec un écoulement dans un conduite chauffée, on peut se retrouver dans le cas d'un écoulement diphasique. Si la conduite est suffisamment longue, la prise en compte des pertes de charges risque d'être peu représentatif de la réalité, les pertes liées à l'ébullition n'étant pas négligeables.\\
+Cette sous-estimation de la perte de pression lors du dimensionnement pourrait avoir des répercussions sur le rendement de l'installation ou bien la sécurité de celle-ci. Dans le cas d'un réacteur à eau pressurisé, il est important de connaître les conditions de l'écoulement à tous les endroits de la conduite. On ne souhaite pas se retrouver avec un fluide diphasique dans une zone où cela n'était pas prévu. Les conséquences pourrait être grave dans le cas d'une installation pour un réacteur nucléaire par exemple.
+
+
+%Citer des applications utiles du calcul de perte de pression dans des écoulements diphasiques, exemples industriels, effet sur le rendement,catastrophes... 
+\textcolor{red}{Parler des codes de calcul courants et des modèles existants}
 
 \subsection{Présentation de l'étude}
 
@@ -27,7 +32,7 @@ Pour réaliser cela, plusieurs hypothèses ont été réalisées :
 \par
 La détermination des propriétés thermodynamiques a été faite avec \texttt{pyXSteam}, qui est une librairie Python sur la base de \texttt{X-Steam} disponible sur Excel et Matlab.\\
 Le titre et le taux de vide moyen sont déterminés à l'aide des corrélations de \textsc{Chexal-Lellouche}. Le multiplicateur diphasique ainsi que les facteurs de frottements qui servent au calcul de la perte de pression proviennent eux de la corrélation de \textsc{Friedel}.\\ \par
-\textcolor{red}{A voir si on met l'explication de travailler avec TensorFlow, je pense que cela peut-etre intéressant. On aura le temps de reprendre cela.}
+
 
 
 
