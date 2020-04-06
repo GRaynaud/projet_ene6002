@@ -13,10 +13,10 @@ Des applications dans des domaines plus spécifiques sont rapidement publiées :
 
 \subsection{Principe de fonctionnement}
 
-L'idée fondamentale de la méthode PINN réside dans le théorème général d'approximation \cite{hor cite{hornik} que l'on pourra énoncer dans une version simplifiée par : 
+L'idée fondamentale de la méthode PINN réside dans le théorème général d'approximation \cite{hornikMultilayerFeedforwardNetworks1989} que l'on pourra énoncer dans une version simplifiée par : 
 
 \begin{theorem}
-Soit $u : x\in  C \rightarrow u(x) \in \mathbb{R}^m$ une fonction continue d'un sous-ensemble compact $C$ de $\mathbb{R}^n$ dans $\mathbb{R}^m$. Alors $u$ peut-être approchée avec une fonction d'activation $f$ avec une précision (étant donné une norme sur $C$) arbitraire ($\epsilon$) par un réseau à une couche cachée suffisamment large ($p$).
+Soit $u : x\in  C \rightarrow u(x) \in \mathbb{R}^m$ une fonction continue d'un sous-ensemble compact $C$ de $\mathbb{R}^n$ dans $\mathbb{R}^m$. Alors $u$ peut-être approchée avec une fonction d'activation $f$ avec une précision (étant donné une norme sur $C$) arbitraire (i.e. à $\epsilon \in \mathbb{R}^+$ près) par un réseau à une couche cachée suffisamment large ($p$).
 $$ \forall \epsilon > 0, \exists p\in \mathbb{N}, B_1 \in \mathbb{R}^p, B_2 \in \mathbb{R}^m, W_1 \in \mathbb{R}^{p\times n}, W_2 \in \mathbb{R}^{m \times p} $$
 définissant
 $$ \Tilde{u}_{NN} (x) = W_2 f\left( W_1 . x + B_1  \right) + B_2 $$
@@ -24,9 +24,27 @@ Avec
 $$ \| \Tilde{u}_{DNN} - u \|_{C} \leq \epsilon $$
 \end{theorem}
 
+L'approximation de $u$ par un réseau de neurones mono-couche $\Tilde{u}_{DNN}$ est construite en plusieurs étapes successives : 
+\begin{enumerate}
+    \item D'abord, on effectue une première opération matricielle de l'ensemble de départ ($x\in \mathbb{R}^n$) jusqu'à $\mathbb{R}^p$ qui est l'espace de la couche cachée (\textit{hidden layer} dans la littérature. On multiplie $x$ par la matrice $W_1$ puis on ajoute un terme constant $B_1$. 
+    $$ y_1 = W_1 . x + B_1 $$
+    \item On effectue une opération non-linéaire sur les éléments du hidden-layer avec la fonction d'activation $f$. Par exemple on peut prendre la tangente hyperbolique de chacun des éléments du vecteur $y_1 \in \mathbb{R}^p$.
+    \item On envoie $f(y_1)$ dans l'espace d'arrivée $\mathbb{R}^m$ avec une seconde opération matricielle (comme au 1.) utilisant $W_2$ et $B_2$ :
+    $$ \Tilde{u}_{DNN} = W_2 f(y_1) + B_2 $$
+\end{enumerate}
+En pratique le choix de la taille de la couche cachée $p$ ainsi que les fonctions d'activations $f$ ne sont pas donnés et peuvent dépendre du problème en question. On trouve beaucoup de littérature à ce sujet, par exemple sur les fonctions d'activation \cite{leshnoMultilayerFeedforwardNetworks1993}.\\
+
+D'autre part, les matrices $(W_k)_k$ et les vecteurs $(B_k)_k$ sont appelés poids (W pour \textit{Weights} en anglais) et biais et forment l'ensemble des paramètres ajustables du modèle. En pratique, pour éviter que $p$ ne soit trop grand quand $u$ se complexifie, on rajoute des couches intérieures, "cachées". Cela signifie qu'après l'étape 2, on reprend l'étape 1 avec de nouveaux poids $W$ et biais $B$. On peut recommencer autant de fois que l'on veut de couches cachées (on parle de profondeur du réseau). On effectue l'étape 3 pour revenir dans l'espace d'arrivée de $u(x)$. \\
+
+Intuitivement ce résultat peut se comprendre avec l'exemple plus classique du Théorème de Stone-Weierstrass (approximation des fonctions continues par un polynôme et décomposition en série de polynômes de Taylor). Pour approcher une fonction continue, on ne travaille pas dans un espace de fonctions de bases constantes (ou $\mathcal{C}^k$) par morceaux sur une partition d'un intervalle  $I \subset R$, ce qui est le fondement des discrétisations spatiales par un maillage. Au lieu de ça, on travaille dans un espace de paramètres de fonctions continues. Par exemple dans le cas de Stone-Weierstrass, ces paramètres sont les coefficients associés à une base de polynômes. Pour un réseau de neurones, l'espace des paramètres est celui des poids et des biais. On désigne généralement ces paramètres par $\theta$.\\
+
+Finalement, connaissant la structure du réseau, c'est à dire ses fonctions d'activation $f$, le nombre de couches cachées ainsi que la taille de chacune de ses couches cachées, $\Tilde{u}_{DNN}$ est entièrement définie avec l'ensemble des paramètres $\theta$ (poids et biais) pour tout $x\in \mathbb{R}^n$. L'objectif du problème est donc d'\textbf{optimiser} ces paramètres en \textbf{minimisant une erreur} $\mathcal {L}$. La difficulté étant de bien construire cette erreur.\\
+
+L'optimisation d'un très grand nombre de paramètres ($\theta$ peut contenir plusieurs milliers de scalaires !) est rendue possible par des outils de calcul symbolique. En effet, pour chacun des $\theta_i$, on peut calculer \textbf{symboliquement} $\pder[\mathcal{L}]{\theta_i}$ par dérivation en chaîne : $\pder[f(g)]{\theta_i} = \pder[f]{g} \pder[g]{\theta_i}$ puisque on connaît explicitement l'ensemble des opérations qui permettent d'obtenir $\Tilde{u}_{DNN}$ puis $\mathcal{L}$ à partir de $x$ et $\theta$. Et plus important, on sait les dériver exactement ! Enfin on a des librairies qui le font automatiquement (Tensorflow par exemple \cite{PartialDifferentialEquations}) : on appelle cela l'\textbf{auto-différenciation}. \\
+
+L'auto-différenciation permet donc de dériver symboliquement l'erreur $\mathcal{L}$ par rapport aux paramètres du modèle et ainsi faire des descentes de gradients ou de Hessiennes. Plusieurs optimiseurs existent et font cela en boite noire. En particulier, on 
 
 
-cite{leshno} puis Stone-Weierstrass analogy
 
 \subsection{Adaptation au problème du projet et limites}
 
