@@ -1,8 +1,9 @@
 \section{Résultats obtenus}
 
+\subsection{Résumé synthétique}
+
 On trouvera à la table \ref{PressureDrop} un tableau synthétisant les pertes de pression obtenues pour les différentes expériences, modèles et méthodes retenues. Les écarts relatifs avec les données expérimentales sur la chute de pression totale sont, quant à eux, présentés à la table \ref{ErrorPressureDrop} pour les même paramètres.\\
 
-Enfin les figures \ref{fig:Result_classique_19}, \ref{fig:Result_classique_65BV}, \ref{fig:Result_PINN_19} et \ref{fig:Result_PINN_65BV} présentent graphiquement l'évolution du titre $x$, du taux de vide $\varepsilon$ ainsi que de la pression $p$ avec l'abscisse $z$ pour la méthode classique puis la PINN respectivement.
 
 
 \begin{table}[H]
@@ -40,6 +41,12 @@ Enfin les figures \ref{fig:Result_classique_19}, \ref{fig:Result_classique_65BV}
     \end{tabular}
     \label{ErrorPressureDrop}
 \end{table}
+
+\subsection{Résultats détaillés}
+
+Enfin les figures \ref{fig:Result_classique_19}, \ref{fig:Result_classique_65BV}, \ref{fig:Result_PINN_19} et \ref{fig:Result_PINN_65BV} présentent graphiquement l'évolution du titre $x$, du taux de vide $\varepsilon$ ainsi que de la pression $p$ avec l'abscisse $z$ pour la méthode classique puis la PINN respectivement.
+
+
 Les lignes en pointillés rouge sur les figures suivantes correspondent à la position où le fluide est à saturation ($x=0$). La partie précédent cette position n'est pas prise en compte dans l'algorithme classique. Dans le cas de l'algorithme PINN, il n'est pas possible de fixer cette condition, c'est pour cette raison que le titre n'est pas nul au niveau de la zone de saturation.
 \afterpage{%
 \begin{figure}
