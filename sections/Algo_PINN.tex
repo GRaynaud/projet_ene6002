@@ -69,9 +69,9 @@ Dans le cas d'un PINN, on décompose $\mathcal{L} = \mathcal{L}_{PDE} + \mathcal
 
 
 
-\subsection{Adaptation au problème du projet et limites}
+\subsection{Adaptation au problème du projet}
 
-Pour résoudre ce problème, on cherche à approximer avec la méthode PINN le titre $x$, la pression $p$ ainsi que le taux de vide $\epsilon$ comme des fonctions de $z \in [z_e,z_s]$. On construit alors trois réseaux de neurones dont les poids et biais sont les inconnues du modèle à optimiser. On aurait d'ailleurs pu faire le choix d'utiliser un seul réseau de neurones dont la couche de sortie est dans $\mathbb{R}^3$, ce qui est discuté chez \cite{haghighatDeepLearningFramework2020}.\\
+Pour résoudre ce problème, on cherche à approximer avec la méthode PINN le titre $x$, la pression $p$ ainsi que le taux de vide $\epsilon$ comme des fonctions de $z \in [z_e,z_s]$. On construit alors trois réseaux de neurones avec $n=m=1$ et dont les poids et biais sont les inconnues du modèle à optimiser. On aurait d'ailleurs pu faire le choix d'utiliser un seul réseau de neurones dont la couche de sortie est dans $\mathbb{R}^3$, ce qui est discuté chez \cite{haghighatDeepLearningFramework2020}.\\
 \begin{equation}
     \begin{array}{cc}
         \text{DNN}_{\epsilon} : z \in \mathbb{R} & \rightarrow \Tilde{\epsilon}_{DNN}(z) \in \mathbb{R}  \\
@@ -120,11 +120,16 @@ Avec $\pder[H]{z}$ obtenu en un bloc. Concrètement, on utilise \verb|tf.gradien
     \label{eq:titrednn}
 \end{equation}
 
-La même structure d'erreur est constituée pour les deux autres équations. A ce titre, il faut aborder le point de la \textbf{normalisation}. En effet, on travaille avec des grandeurs dimensionnées qui peuvent être d'un ordre de grandeur très différent : $x$ varie usuellement entre $0$ et $1$ et donc on s'attend à ce que $\mathcal{L}_{\text{Drift Flux Model}}\sim 1$. En revanche, $4q''/DG \sim 10^2$ donc $\mathcal{L}_{\text{Energie}}$ peut être de l'ordre de $10^4$ si on l'implémente comme dans l'équation \ref{eq:titre}. Cela explique pourquoi l'équation \ref{eq:titrednn} a un $-1$ comme terme de droite. En effet, il est difficile d'optimiser simultanément une somme de plusieurs termes qui sont d'ordre de grandeurs très différents. Une solution plus simple aurait été de travailler dès le début avec des grandeurs adimensionnés. Cela ne s'est pas fait car il y a beaoucp de relations thermodynamiques et de coefficients dimensionnés définis implicitement.\\
+La même structure d'erreur est constituée pour les deux autres équations. A ce titre, il faut aborder le point de la \textbf{normalisation}. En effet, on travaille avec des grandeurs dimensionnées qui peuvent être d'un ordre de grandeur très différent : $x$ varie usuellement entre $0$ et $1$ et donc on s'attend à ce que $\mathcal{L}_{\text{Drift Flux Model}}\sim 1$. En revanche, $4q''/DG \sim 10^2$ donc $\mathcal{L}_{\text{Energie}}$ peut être de l'ordre de $10^4$ si on l'implémente comme dans l'équation \ref{eq:titre}. Cela explique pourquoi l'équation \ref{eq:titrednn} a un $-1$ comme terme de droite. En effet, il est difficile d'optimiser simultanément une somme de plusieurs termes qui sont d'ordre de grandeurs très différents. Une solution plus simple aurait été de travailler dès le début avec des grandeurs adimensionnés. Cela ne s'est pas fait car il y a beaucoup de relations thermodynamiques et de coefficients dimensionnés définis implicitement.\\
 
 Enfin, la question de l'initialisation des réseaux de neurones pour la résolution de $\epsilon, x$ et $p$ est un sujet compliqué dont on ne traitera pas en profondeur dans ce rapport. En pratique, après une initialisation aléatoire, on effectue une pré-optimisation vers un set de fonctions affines afin de gommer l'"indéterminisme".\\
 
 
-A travers cette section nous avons tenté d'introduire le formalisme PINN et quelques détails qui nous semblaient importants. Comme vous le constaterez par les dates des articles (la plupart n'étant pas paru avant 2019), le sujet est tout récent et manque donc encore de maturité. Nous n'avons pas non plus cherché à être exhaustif car ce n'est pas l'objet de ce rapport. De même la bibliographie a été réduite à quelques exemples pertinents et est loin d'être complète. Si vous avez des questions ou souhaitez en savoir davantage, vous pouvez nous contacter.
+A travers cette section nous avons tenté d'introduire le formalisme PINN et quelques détails qui nous semblaient importants. Comme vous le constaterez par les dates des articles (la plupart n'étant pas paru avant 2019), le sujet est tout récent et manque donc encore de maturité. Nous n'avons pas non plus cherché à être exhaustif car ce n'est pas l'objet de ce rapport. De même la bibliographie a été réduite à quelques exemples pertinents et est loin d'être complète. L'idée a été motivée par un projet de maîtrise portant sur les PINNs dans un domaine connexe. Si vous avez des questions ou souhaitez en savoir davantage, n'hésitez pas à nous contacter.
 
+\subsection{Limites rencontrées}
+
+Dans le cadre du projet, nous avons rencontré plusieurs difficultés à adapter la méthode PINN pour des raisons parfois spécifiques à la nature du problème. En particulier les modèles de corrélation complexes avec des seuils, des conditions posent des soucis de différentiation. De même il faut bien veiller à n'appliquer les équations du modèle diphasique lorsque $0<x<1$ et veiller à ce que l'on retombe sur des équations monophasiques aux bords ce qui créé d'autres sources d'instabilités avec des gradients infinis. Enfin nous avons tenté de supprimer toute les possibilités d'obtenir un numérateur nul en écrivant les équations de la manière la plus adéquat. Il demeure quelques sources de problèmes tout de même.\\
+
+De manière plus générale, le choix des fonctions d'activation et de la taille des réseaux est encore assez empirique et sujet à discussion. Ceci dit, il reste un grand nombre de possibilités à explorer tant dans les détails que dans la méthode. L'une d'entre elle serait d'établir des modèles de corrélation directement avec des réseaux de neurones en utilisant des données expérimentales dans davantage de cas.
 

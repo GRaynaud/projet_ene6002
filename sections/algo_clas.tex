@@ -19,7 +19,7 @@ Ce qui revient à isoler le terme de dérivée du titre $\pder[x]{z}$ dans l'éq
 \end{equation}
 
 L'algorithme part de ce que l'on connaît déjà (ie. la pression ainsi que le titre en sortie) et intègre en \og remontant \fg{} la conduite. Nous avons des équations (qui ont été définies précédemment dans la partie \ref{section:res}) pour les termes $x$, $\epsilon$ et $p$ que nous pouvons actualiser à chaque itération.\\ \par
-Cette technique nécessite donc un critère d'arrêt, car sinon le programme tourne indéfiniment. Nous l'avons pris tel que le RMS de la variation entre deux itérations soit inférieur à un seuil de tolérance :
+Cette technique nécessite donc un critère d'arrêt, car sinon le programme tourne indéfiniment. Nous l'avons pris tel que le RMS de la variation entre deux itérations soit inférieur à un seuil de tolérance fixé à une valeur proche de l'epsilon machine en simple précision :
 \begin{equation}
     \textnormal{RMS var} = \sqrt{\frac{1}{N_z}\sum_{k=1}^{N_z}\left[\left(x^{i}_k-x^{i+1}_k\right)^2 + \left(\frac{p^i_k- p^{i+1}_k}{p_s} \right)^2 + \left(\epsilon^i_k - \epsilon^{i+1}_k \right)^2\right]} <  \textnormal{tol} =\num{1e-7}
 \end{equation}
