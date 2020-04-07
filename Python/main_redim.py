@@ -126,7 +126,7 @@ def muL_p(p_input_tf):
 def muV_p(p_input_tf):
     return 1e-5*DNN.neural_net(p_input_tf,w_muV_p,b_muV_p,[tf.nn.elu])
 
-# Vérification
+## Vérification
 #
 ## Tsat_p
 #ptest = np.linspace(1.,50.,400)
@@ -140,7 +140,7 @@ def muV_p(p_input_tf):
 #plt.plot(ptest,t_data,label='data')
 #plt.plot(ptest,t_guess,label='Model')
 #plt.legend()
-#
+
 ## hL_t
 #ptest = np.linspace(1.,50.,400)
 #hL_data = np.asarray([steamTable.hL_p(k) for k in ptest])
@@ -150,10 +150,14 @@ def muV_p(p_input_tf):
 #print('hL_p Normalised std : %.3e' % (np.std(hL_guess-hL_data)/np.mean(hL_data)))
 #
 #plt.figure()
-#plt.plot(ptest,hL_data,label='data')
-#plt.plot(ptest,hL_guess,label='Model')
+#plt.plot(ptest,hL_data,label='pyXSteam data')
+#plt.plot(ptest,hL_guess,label='DNN Model',linestyle='dashed')
+#plt.xlabel('Pressure $p$ (bars)')
+#plt.ylabel('Enthalpy $h_{l,sat}$ (kJ/kg)')
 #plt.legend()
 #
+#plt.tight_layout()
+#plt.savefig("DNN_Model_h_lsat.pgf")
 # RHO8G
 #ptest = np.linspace(1.,50.,1300)
 #mu_g_data = np.asarray([steamTable.my_ph(k,steamTable.hV_p(k)) for k in ptest])
