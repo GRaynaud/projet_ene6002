@@ -15,7 +15,7 @@ Une hypothèse forte qui a été faite, est celle de négliger la variation des 
 Ce qui revient à isoler le terme de dérivée du titre $\pder[x]{z}$ dans l'équation \ref{eq:titre} :
 \begin{equation}
      \pder[x_{(z)}]{z}h_{l,sat}(P_{(z)}) \approx \pder{z} \left[ h_{l,sat}(P_{(z)})+x_{(z)}h_{vl,sat}(P_{(z)})\right]  = \frac{4}{DG}q''
-\label{eq:titre}
+\label{eq:titreapprox}
 \end{equation}
 
 L'algorithme part de ce que l'on connaît déjà (ie. la pression ainsi que le titre en sortie) et intègre en \og remontant \fg{} la conduite. Nous avons des équations (qui ont été définies précédemment dans la partie \ref{section:res}) pour les termes $x$, $\epsilon$ et $p$ que nous pouvons actualiser à chaque itération.\\ \par
@@ -48,7 +48,7 @@ $x,\epsilon,p \leftarrow x^{new},\epsilon^{new},p^{new}$
 Compute total pressure drop\;
 Output $x,\epsilon,p$ and plot\;
 \end{algorithm}
-
+Les mises à jour des paramètres se font avec les équations qui régissent notre modèle. Plus précisément, le taux de vide $\epsilon$ est modifié en suivant l'équation \ref{eq:DriftFluxModel}, le titre et la pression quant à eux suivent respectivement les équations \ref{eq:titreapprox} et \ref{eq:pres}
 
 \subsection{Convergence en discrétisation spatiale}
 

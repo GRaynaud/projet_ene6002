@@ -4,9 +4,9 @@
 
 L'utilisation des techniques d'apprentissage machine aux domaines dits "classiques" comme la mécanique n'est pas nouveau. De nombreux travaux de recherche ont été menés jusqu'aux applications industrielles pour des problèmes d'aide à l'optimisation, de contrôle, de pré-développement de pièces ou de modèles réduits dont on pourra se faire une idée avec la synthèse de \cite{bruntonMachineLearningFluid2019a}. Néanmoins l'approche privilégiée a été celle des données, \textit{data-driven} comme on le trouve dans la littérature. Cela signifie que les réseaux de neurones encodent les mécanismes physiques (dans le meilleur des cas) uniquement à partir d'un certain nombre de données préparées au préalable. Par exemple,  \cite{guoConvolutionalNeuralNetworks2016} montre qu'il est possible d'estimer très rapidement l'écoulement moyen autour de formes complexes à l'aide de réseaux de neurones convolutionnels (CNNs) (Pour les concepts de base on pourra se référer à un ouvrage de référence \cite{goodfellowDeepLearning2016a}). \\
 
-Néanmoins une autre approche a été récemment explorée, celle de l'approximation des solutions d'un problème de type PDE (équations aux dérivées partielles) par des familles de fonctions sous l'hypothèse du théorème général d'approximation. S. Brunton a notamment travaillé dans ce domaine en déterminant les fonctions les plus adaptées pour décrire quantitativement avec des données brutes les solutions d'un problème à partir d'une famille suffisamment large de fonctions candidates \cite{bruntonDiscoveringGoverningEquations2016}. Une suite logique est présentée chez \cite{corbettaApplicationSparseIdentification} où la représentation d'un phénomène par une famille de fonctions continues permet de remonter aux équations qui le gouvernent. C'est aussi une manière d'établir des modèles réduits de problèmes complexes. \\
+Néanmoins une autre approche a été récemment explorée, celle de l'approximation des solutions d'un problème de type PDE (équations aux dérivées partielles) par des familles de fonctions sous l'hypothèse du théorème général d'approximation. S. Brunton a notamment travaillé dans ce domaine en déterminant les fonctions les plus adaptées pour décrire quantitativement (avec des données brutes) les solutions d'un problème à partir d'une famille suffisamment large de fonctions candidates \cite{bruntonDiscoveringGoverningEquations2016}. Une suite logique est présentée chez \cite{corbettaApplicationSparseIdentification} où la représentation d'un phénomène par une famille de fonctions continues permet de remonter aux équations qui le gouvernent. C'est aussi une manière d'établir des modèles réduits de problèmes complexes. \\
 
-Le formalisme plus classique des réseaux de neurones comme détaillé dans la section suivante apparaît un peu plus tard. \cite{raissiPhysicsinformedNeuralNetworks2019} présente un formalisme assez général de résolution de PDE avec différentes échelles de complexité et non-linéarités que l'on appelera PINN par la suite (pour \textit{Physics-Informed Neural Networks}. Il s'agit de représenter les solutions d'une PDE par une combinaison de fonctions de bases, connues, dont les inputs sont les coordonnées physiques : le temps, l'espace. Il n'y a donc pas de discrétisation spatiale ou temporelle. De plus, il introduit des fonctions d'erreurs basées sur les équations locales du problème accompagnées de conditions aux limites (spatiales et temporelles) ainsi que d'écarts aux mesures. On pourra également trouver une justification mathématique de la méthode avec une analogie avec la méthode de Galerkin chez \cite{al-aradiSolvingNonlinearHighDimensional}. Le manuscrit de thèse \cite{rudyComputationalMethodsSystem2019} est également une piste d'approfondissement.\\
+Le formalisme plus classique des réseaux de neurones comme détaillé dans la section suivante apparaît un peu plus tard. \cite{raissiPhysicsinformedNeuralNetworks2019} présente un formalisme assez général de résolution de PDE avec différentes échelles de complexité et non-linéarités que l'on appelera PINN par la suite (pour \textit{Physics-Informed Neural Networks}). Il s'agit de représenter les solutions d'une PDE par une combinaison de fonctions de bases, connues, dont les inputs sont les coordonnées physiques : le temps, l'espace. Il n'y a donc pas de discrétisation spatiale ou temporelle. De plus, il introduit des fonctions d'erreurs basées sur les équations locales du problème accompagnées de conditions aux limites (spatiales et temporelles) ainsi que d'écarts aux mesures. On pourra également trouver une justification mathématique de la méthode avec une analogie avec la méthode de Galerkin chez \cite{al-aradiSolvingNonlinearHighDimensional}. Le manuscrit de thèse \cite{rudyComputationalMethodsSystem2019} est également une piste d'approfondissement.\\
 
 Des applications dans des domaines plus spécifiques sont rapidement publiées : \cite{raissiHiddenFluidMechanics2018} pour la reconstitution d'écoulement et de forces à partir de mesures de concentration d'un scalaire passif. Dans le domaine de l'interaction fluide-structure, \cite{raissiDeepLearningVortexinduced2019a} propose la reconstitution d'écoulement 2D autour d'un cylindre monté sur ressort à partir de divers types de données initiales. Plus récemment encore, on pourra se pencher du côté de \cite{maoPhysicsinformedNeuralNetworks2020} pour des écoulements hautes-vitesses, \cite{haghighatDeepLearningFramework2020,luExtractionMechanicalProperties2020} pour de la mécanique des solides ou encore \cite{chenPhysicsinformedNeuralNetworks2020} dans le domaine de la nano-optique et des méta matériaux.\
 
@@ -16,19 +16,19 @@ Des applications dans des domaines plus spécifiques sont rapidement publiées :
 L'idée fondamentale de la méthode PINN réside dans le théorème général d'approximation \cite{hornikMultilayerFeedforwardNetworks1989} que l'on pourra énoncer dans une version simplifiée par : 
 
 \begin{theorem}
-Soit $u : x\in  C \rightarrow u(x) \in \mathbb{R}^m$ une fonction continue d'un sous-ensemble compact $C$ de $\mathbb{R}^n$ dans $\mathbb{R}^m$. Alors $u$ peut-être approchée avec une fonction d'activation $f$ avec une précision (étant donné une norme sur $C$) arbitraire (i.e. à $\epsilon \in \mathbb{R}^+$ près) par un réseau à une couche cachée suffisamment large ($p$).
+Soit $u : x\in  C \rightarrow u(x) \in \mathbb{R}^m$ une fonction continue d'un sous-ensemble compact $C$ de $\mathbb{R}^n$ dans $\mathbb{R}^m$. Alors $u$ peut-être approchée avec une fonction d'activation $f$ avec une précision (étant donné une norme $\|.\|$ sur l'espace de fonctions $\mathcal{C}(C,\mathbb{R}^m)$) arbitraire (i.e. à $\epsilon \in \mathbb{R}^+$ près) par un réseau à une couche cachée suffisamment large (taille $p\in \mathbb{N}$).
 $$ \forall \epsilon > 0, \exists p\in \mathbb{N}, B_1 \in \mathbb{R}^p, B_2 \in \mathbb{R}^m, W_1 \in \mathbb{R}^{p\times n}, W_2 \in \mathbb{R}^{m \times p} $$
 définissant
 $$ \Tilde{u}_{NN} (x) = W_2 f\left( W_1 . x + B_1  \right) + B_2 $$
 Avec 
-$$ \| \Tilde{u}_{DNN} - u \|_{C} \leq \epsilon $$
+$$ \| \Tilde{u}_{DNN} - u \| \leq \epsilon $$
 \end{theorem}
 
 L'approximation de $u$ par un réseau de neurones mono-couche $\Tilde{u}_{DNN}$ est construite en plusieurs étapes successives : 
 \begin{enumerate}
-    \item D'abord, on effectue une première opération matricielle de l'ensemble de départ ($x\in \mathbb{R}^n$) jusqu'à $\mathbb{R}^p$ qui est l'espace de la couche cachée (\textit{hidden layer} dans la littérature. On multiplie $x$ par la matrice $W_1$ puis on ajoute un terme constant $B_1$. 
-    $$ y_1 = W_1 . x + B_1 $$
-    \item On effectue une opération non-linéaire sur les éléments du hidden-layer avec la fonction d'activation $f$. Par exemple on peut prendre la tangente hyperbolique de chacun des éléments du vecteur $y_1 \in \mathbb{R}^p$.
+    \item D'abord, on effectue une première opération matricielle de l'ensemble de départ ($x\in \mathbb{R}^n$) jusqu'à $\mathbb{R}^p$ qui est l'espace de la couche cachée (\textit{hidden layer} dans la littérature). On multiplie $x$ par la matrice $W_1$ puis on ajoute un terme constant $B_1$. 
+    $$ y_1 = W_1 . x + B_1 \in \mathbb{R}^p$$
+    \item On effectue une opération non-linéaire sur les éléments du hidden-layer avec la fonction d'activation $f$. Par exemple on peut prendre la tangente hyperbolique de chacun des éléments du vecteur $y_1 \in \mathbb{R}^p$. Généralement, $f(y_1) \in \mathbb{R}^p$ 
     \item On envoie $f(y_1)$ dans l'espace d'arrivée $\mathbb{R}^m$ avec une seconde opération matricielle (comme au 1.) utilisant $W_2$ et $B_2$ :
     $$ \Tilde{u}_{DNN} = W_2 f(y_1) + B_2 $$
 \end{enumerate}
@@ -36,15 +36,82 @@ En pratique le choix de la taille de la couche cachée $p$ ainsi que les fonctio
 
 D'autre part, les matrices $(W_k)_k$ et les vecteurs $(B_k)_k$ sont appelés poids (W pour \textit{Weights} en anglais) et biais et forment l'ensemble des paramètres ajustables du modèle. En pratique, pour éviter que $p$ ne soit trop grand quand $u$ se complexifie, on rajoute des couches intérieures, "cachées". Cela signifie qu'après l'étape 2, on reprend l'étape 1 avec de nouveaux poids $W$ et biais $B$. On peut recommencer autant de fois que l'on veut de couches cachées (on parle de profondeur du réseau). On effectue l'étape 3 pour revenir dans l'espace d'arrivée de $u(x)$. \\
 
-Intuitivement ce résultat peut se comprendre avec l'exemple plus classique du Théorème de Stone-Weierstrass (approximation des fonctions continues par un polynôme et décomposition en série de polynômes de Taylor). Pour approcher une fonction continue, on ne travaille pas dans un espace de fonctions de bases constantes (ou $\mathcal{C}^k$) par morceaux sur une partition d'un intervalle  $I \subset R$, ce qui est le fondement des discrétisations spatiales par un maillage. Au lieu de ça, on travaille dans un espace de paramètres de fonctions continues. Par exemple dans le cas de Stone-Weierstrass, ces paramètres sont les coefficients associés à une base de polynômes. Pour un réseau de neurones, l'espace des paramètres est celui des poids et des biais. On désigne généralement ces paramètres par $\theta$.\\
+Intuitivement ce résultat peut se comprendre avec l'exemple plus classique de l'approximation des fonctions continues par un polynôme (Théorème de Stone-Weierstrass) et décomposition en série de polynômes de Taylor. La méthode classique pour approcher une fonction continue consiste à travailler dans un espace de fonctions de bases en escalier (constantes ou $\mathcal{C}^k$ par morceaux) sur une subdivision d'un intervalle  $I \subset R$ (une sorte de maillage, comme dans la construction de l'intégrale de Riemann). Au lieu de ça, on travaille dans un espace de paramètres définissant des fonctions continues. Par exemple dans le cas de Stone-Weierstrass, ces paramètres sont les coefficients associés à une base de polynômes. Pour un réseau de neurones, l'espace des paramètres est celui des poids et des biais. On désigne généralement ces paramètres par $\theta$. Cette façon de faire se rapproche d'une méthode de Galerkin mais ici les fonctions de bases sont elles-même modifiables.\\
 
 Finalement, connaissant la structure du réseau, c'est à dire ses fonctions d'activation $f$, le nombre de couches cachées ainsi que la taille de chacune de ses couches cachées, $\Tilde{u}_{DNN}$ est entièrement définie avec l'ensemble des paramètres $\theta$ (poids et biais) pour tout $x\in \mathbb{R}^n$. L'objectif du problème est donc d'\textbf{optimiser} ces paramètres en \textbf{minimisant une erreur} $\mathcal {L}$. La difficulté étant de bien construire cette erreur.\\
 
-L'optimisation d'un très grand nombre de paramètres ($\theta$ peut contenir plusieurs milliers de scalaires !) est rendue possible par des outils de calcul symbolique. En effet, pour chacun des $\theta_i$, on peut calculer \textbf{symboliquement} $\pder[\mathcal{L}]{\theta_i}$ par dérivation en chaîne : $\pder[f(g)]{\theta_i} = \pder[f]{g} \pder[g]{\theta_i}$ puisque on connaît explicitement l'ensemble des opérations qui permettent d'obtenir $\Tilde{u}_{DNN}$ puis $\mathcal{L}$ à partir de $x$ et $\theta$. Et plus important, on sait les dériver exactement ! Enfin on a des librairies qui le font automatiquement (Tensorflow par exemple \cite{PartialDifferentialEquations}) : on appelle cela l'\textbf{auto-différenciation}. \\
+L'optimisation d'un très grand nombre de paramètres ($\theta$ peut contenir plusieurs milliers de scalaires !) est rendue possible par des outils de calcul symbolique. En effet, pour chacun des $\theta_i$, on peut calculer \textbf{symboliquement} $\pder[\mathcal{L}]{\theta_i}$ par dérivation en chaîne : $\pder[f(g)]{\theta_i} = \pder[f]{g} \pder[g]{\theta_i}$ puisque on connaît explicitement l'ensemble des opérations qui permettent d'obtenir $\Tilde{u}_{DNN}$ puis $\mathcal{L}$ à partir de $x$ et $\theta$. Et plus important, connaissant $f'$, on sait les dériver exactement ! Les librairies actuelles le font automatiquement (Tensorflow par exemple \cite{PartialDifferentialEquations}) : on appelle cela l'\textbf{auto-différenciation}. \\
 
-L'auto-différenciation permet donc de dériver symboliquement l'erreur $\mathcal{L}$ par rapport aux paramètres du modèle et ainsi faire des descentes de gradients ou de Hessiennes. Plusieurs optimiseurs existent et font cela en boite noire. En particulier, on 
+L'auto-différenciation permet donc de dériver symboliquement l'erreur $\mathcal{L}$ par rapport aux paramètres du modèle et ainsi faire des descentes de gradients ou de Hessiennes. Plusieurs optimiseurs existent et font cela en boite noire. En particulier, on utilise dans le projet l'optimiseur Adam \cite{kingmaAdamMethodStochastic2017}. Mais l'auto-différentiation permet en particulier de dériver des quantités en sortie ($\Tilde{u}_{DNN}$ par exemple) par rapport aux variables d'entrée $x$ qui sont, dans un PINN, les coordonnées physiques. \\
+
+Cette dérivation symbolique par rapport aux coordonnées physiques est un des points importants de la méthode PINN puisque l'on travaille avec des problèmes régis par des PDE souvent non linéaires. Ainsi pour un problème décrit par une PDE de la forme 
+\begin{equation}
+    \mathcal{N}_{x}(u) = 0
+\end{equation}
+où $\mathcal{N}_{x}$ est un opérateur (potentiellement non-linéaire), en pratique la PDE du problème. Une méthode classique est de linéariser $\mathcal{N}_{x}(u) \approx \mathcal{N}_{x}(u_0) + \pder[\mathcal{N}_x]{u} (u-u_0)$ et de faire converger la solution $u$ en inversant l'opérateur linéarisé $\pder[\mathcal{N}_x]{u}$. La méthode PINN permet de s'affranchir de cette linéarisation en calculant symboliquement $\mathcal{N}_x (u)$ et en le dérivant par rapport aux paramètres $\theta$  du modèle.\\
+
+Dans le cas d'un PINN, on décompose $\mathcal{L} = \mathcal{L}_{PDE} + \mathcal{L}_{BC} + \mathcal{L}_{data}$ :
+\begin{itemize}
+    \item le résidu des équations aux dérivées partielles sur un ensemble de points \textbf{choisis} dans le domaine de la PDE :
+    \begin{equation}
+        \mathcal{L}_{PDE} = \| \mathcal{N}_x(\Tilde{u}_{DNN})\|^2
+    \end{equation}
+    Par exemple, on peut les choisir aléatoirement dans le domaine. Il est important d'évaluer cette erreur sur un nombre de points représentatif de l'ensemble du domaine. En pratique, plus le problème est compliqué, plus il y a de paramètres $\theta$ et plus il faut de points de pénalisation dans les zones "pathogènes". D'autre part, d'un point de vue mathématique, on se trouve souvent dans un problème sur-contraint, c'est-à-dire que l'on veut imposer $\mathcal{N}_x(\Tilde{u}_{DNN})=0$ en davantage de points qu'il n'y a de degrés de liberté.
+    \item La pénalisation des conditions aux frontières, spatiales comme temporelles (conditions initiales ou finales). Cela permet de mettre en place "simplement" l'équivalent d'une méthode de tir traditionnelle
+        \begin{equation}
+        \mathcal{L}_{BC} = \| \Tilde{u}_{DNN}(x_{BC}) - u_{BC}\|^2
+    \end{equation}
+    \item L'écart à une série de données. Par exemple des données de mesure si l'on en dispose 
+        \begin{equation}
+        \mathcal{L}_{data} = \| \Tilde{u}_{DNN}(x_{data}) - u_{data}\|^2
+    \end{equation}
+\end{itemize}
 
 
 
 \subsection{Adaptation au problème du projet et limites}
+
+Pour résoudre ce problème, on cherche à approximer avec la méthode PINN le titre $x$, la pression $p$ ainsi que le taux de vide $\epsilon$ comme des fonctions de $z \in [z_e,z_s]$. On construit alors trois réseaux de neurones dont les poids et biais sont les inconnues du modèle à optimiser. On aurait d'ailleurs pu faire le choix d'utiliser un seul réseau de neurones dont la couche de sortie est dans $\mathbb{R}^3$, ce qui est discuté chez \cite{haghighatDeepLearningFramework2020}.\\
+\begin{equation}
+    \begin{array}{cc}
+        \text{DNN}_{\epsilon} : z \in \mathbb{R} & \rightarrow \Tilde{\epsilon}_{DNN}(z) \in \mathbb{R}  \\
+        \text{DNN}_{x} : z \in \mathbb{R} & \rightarrow \Tilde{x}_{DNN}(z) \in \mathbb{R}  \\
+        \text{DNN}_{p} : z \in \mathbb{R} & \rightarrow \Tilde{p}_{DNN}(z) \in \mathbb{R} 
+    \end{array}
+\end{equation}
+
+Par la suite on désignera les fonctions $\Tilde{\epsilon}_{DNN} , \Tilde{x}_{DNN}$ et $, \Tilde{p}_{DNN}$ respectivement par $\epsilon,x$ et $p$ par souci d'alléger les notations. On construit l'erreur en sommant les écarts quadratiques aux trois équations, à l'écart à la pression de sortie. Il faut également rajouter une pénalisation pour $\epsilon \in [0,1]$. En effet cette dernière contrainte est codée en dur dans l'algorithme classique. Pour le PINN on choisit de lui donner cette information par une pénalisation.\\
+
+\begin{equation}
+    \mathcal{L} = \underbrace{\mathcal{L}_{\text{Énergie}} + \mathcal{L}_{\text{Momentum}} + \mathcal{L}_{\text{Drift Flux Model}}}_{\mathcal{L}_{\text{PDE}}} + \mathcal{L}_{\text{BC}} + \mathcal{L}_{\text{Pénalisation}}
+\end{equation}
+
+Dans le cas du projet on n'utilise pas de données de mesure, ainsi $\mathcal{L}_{data} = 0$. D'autre part, les conditions aux frontières sont incomplètes. On travaille avec un ensemble de coordonnées $z$ qui vont permettre d'évaluer l'erreur sur des points générés dans $[z_e,z_s]$. On appelle cet ensemble $V^{\text{int}}$ de cardinal $N^{\text{int}}$.
+
+\begin{equation}
+    \mathcal{L}_{\text{Pénalisation}} = \frac{1}{N^{\text{int}}}\sum_{z\in V^{\text{int}}} \left| \max(0,-\epsilon(z)) + \max(0,\epsilon-1) \right|^2
+\end{equation}
+Pour l'erreur associé aux conditions aux bords, on a fait le choix de ne pénaliser seulement la condition en pression en sortie $P_s$. L'idée est de tester s'il est nécessaire de donner l'information sur le titre en sortie $x_s$ sachant que celui-ci est calculé à partir de l'intégration de l'équation d'énergie. Néanmoins on ne donne pas la température en entrée qui est contenu dans le $x_s$.
+
+\begin{equation}
+    \mathcal{L}_{\text{BC}} = \left| p(z_s) - P_s\right|^2
+\end{equation}
+
+Pour les trois équations constituant $\mathcal{L}_{\text{PDE}}$, il faut reconstruire toutes les fonctions et les coefficients de corrélation avec des fonctions de tensorflow de telle manière qu'on puisse dériver ces quantités par rapport à $z$ ainsi qu'aux paramètres du modèle $\theta$. Notamment pour l'équation d'énergie, on a voulu prendre en compte les variations d'enthalpie avec $z$, c'est-à-dire ne pas faire l'approximation formalisée à l'équation \ref{eq:titreapprox}. Pour ce faire, il faut pouvoir dériver $\pder[h_{l,sat}(p)]{p}$, ce qui n'est pas possible avec la bibliothèque \verb|XSteam| puisque celle-ci ne propose qu'une interpolation de points. On a donc créé des réseaux de neurones auxiliaires qui approximent avec une précision largement suffisante les fonctions thermodynamiques comme $\text{DDN}_{h_{l,sat}} : p \rightarrow h_{l,sat}(p)$. On a fait de même pour $h_{v,sat}(p),\rho_l(p),\rho_m(p),\mu_l(p),\mu_v(p)$ et $\sigma(p)$. Ces modèles ont été entraînés au préalable avec des données générées par \verb|pyXSteam| puis les poids et biais sont stockés sous forme d'archive \verb|pickle| (dans le dossier \verb|Python/Models|). Il suffit alors de les importer dans le code principal et de définir ces paramètres comme des réseaux \textbf{constants}, c'est à dire qu'on ne touchera pas à ces réseaux lors de l'optimisation de $\mathcal{L}$.\\
+
+Ainsi, pour l'équation d'énergie, on est capable de construire un graphe d'opérations dérivables 
+\begin{equation}
+    H : z \rightarrow h_{l,sat}(p(z)) + x(z)h_{vl,sat}(p(z))
+\end{equation}
+Avec $\pder[H]{z}$ obtenu en un bloc. Concrètement, on utilise \verb|tf.gradients(H,z)| avec Tensorflow qui sera évalué pour tous les points de $V^{\text{int}}$. Ainsi :
+
+\begin{equation}
+    \mathcal{L}_{\text{Energie}} =\frac{1}{N^{\text{int}}}\sum_{z\in V^{\text{int}}} \left( \frac{DG}{4q''}\pder{z}\left[ h_{l,sat}(p(z)) + x(z)h_{vl,sat}(p(z)) \right] -1  \right)^2
+    \label{eq:titrednn}
+\end{equation}
+
+La même structure d'erreur est constituée pour les deux autres équations. A ce titre, il faut aborder le point de la \textbf{normalisation}. En effet, on travaille avec des grandeurs dimensionnées qui peuvent être d'un ordre de grandeur très différent : $x$ varie usuellement entre $0$ et $1$ et donc on s'attend à ce que $\mathcal{L}_{\text{Drift Flux Model}}\sim 1$. En revanche, $4q''/DG \sim 10^2$ donc $\mathcal{L}_{\text{Energie}}$ peut être de l'ordre de $10^4$ si on l'implémente comme dans l'équation \ref{eq:titre}. Cela explique pourquoi l'équation \ref{eq:titrednn} a un $-1$ comme terme de droite. En effet, il est difficile d'optimiser simultanément une somme de plusieurs termes qui sont d'ordre de grandeurs très différents. Une solution plus simple aurait été de travailler dès le début avec des grandeurs adimensionnés. Cela ne s'est pas fait car il y a beaoucp de relations thermodynamiques et de coefficients dimensionnés définis implicitement.\\
+
+Enfin, la question de l'initialisation des réseaux de neurones pour la résolution de $\epsilon, x$ et $p$ est un sujet compliqué dont on ne traitera pas en profondeur dans ce rapport. En pratique, après une initialisation aléatoire, on effectue une pré-optimisation vers un set de fonctions affines afin de gommer l'"indéterminisme". Pour plus de détails, vous pouvez nous contacter.
+
 
