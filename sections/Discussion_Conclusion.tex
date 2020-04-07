@@ -2,7 +2,9 @@
 D'après les différentes sections précédentes présentant les modèles et les méthodes de résolutions, ainsi que des graphes des résultats nous pouvons nous interroger sur les résultats obtenus.\\ \par
 Nous avons réalisés pour les deux jeux de donnés des expériences, une résolution avec l'algorithme classique et l'algorithme PINN. Pour chacune de ces méthodes, les modèles de Chexal et Inoue on été testés. Nous avons ainsi 8 cas que nous pouvons comparer pour en tirer des conclusions.
 \subsection{Commentaires sur les résultats obtenus}
-Les premières comparaisons que nous pouvons faire sont entre les deux 
+Les premières comparaisons que nous pouvons faire sont entre les deux algorithmes. La principale différence que l'on remarque entre les résultats, est la discontinuité pour le taux de vide que l'on obtient en utilisant l'algorithme classique. La manière dont nous avons travaillé est de le contraindre égal à zéro dans toute la zone précédent la saturation (lorsque $x<0$), d'où le fait qu'il n'augmente qu'après. Cela a pour conséquence de créer une discontinuité pour ce paramètre.\\ \par
+
+
 \subsection{Discussion  de la littérature}
 
 \subsection{Conclusion}
