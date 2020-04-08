@@ -138,7 +138,9 @@ def Pressure_equation(x,eps,p):
     
     dp_grav = rho_m*g
     
-    dp_acc = (G**2) * np.dot(x*(rho_l-rho_g)/(rho_l*rho_g),Dz)  # Pas certain de l'ordre du produit matrice vecteur avec np.dot
+    dp_acc_test = (G**2) * np.dot(x*(rho_l-rho_g)/(rho_l*rho_g),Dz)  # Pas certain de l'ordre du produit matrice vecteur avec np.dot
+    
+    dp_acc = np.where(x>0.,dp_acc_test,0.)
     
     integrande = -phi2*dp_dz_l0 - dp_grav - dp_acc
     
