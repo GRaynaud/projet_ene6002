@@ -22,7 +22,7 @@ steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 #################### Constantes du Problème #########################
 #####################################################################
 
-exp = '65BV' # '19' or '65BV'
+exp = '19' # '19' or '65BV'
 choix_corr = 'Inoue' #'Chexal' or 'Inoue'
 
 # Exp 19
@@ -103,28 +103,28 @@ w_muL_p,b_muL_p = DNN.restore_NN_as_constant([1,10,1],filename_muL_p)
 w_muV_p,b_muV_p = DNN.restore_NN_as_constant([1,10,1],filename_muV_p)
 
 def Tsat_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_tsat_p,b_tsat_p,layers_fn)
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_tsat_p,b_tsat_p,layers_fn)
 
 def hL_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_hL_p,b_hL_p,layers_fn)
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_hL_p,b_hL_p,layers_fn)
 
 def hV_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_hV_p,b_hV_p,[tf.nn.elu])
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_hV_p,b_hV_p,[tf.nn.elu])
 
 def rhoV_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_rhoV_p,b_rhoV_p,layers_fn)
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_rhoV_p,b_rhoV_p,layers_fn)
 
 def rhoL_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_rhoL_p,b_rhoL_p,layers_fn)
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_rhoL_p,b_rhoL_p,layers_fn)
 
 def st_p(p_input_tf):
-    return DNN.neural_net(p_input_tf,w_st_p,b_st_p,[tf.nn.elu])
+    return DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_st_p,b_st_p,[tf.nn.elu])
 
 def muL_p(p_input_tf):
-    return 1e-4*DNN.neural_net(p_input_tf,w_muL_p,b_muL_p,[tf.nn.elu])
+    return 1e-4*DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_muL_p,b_muL_p,[tf.nn.elu])
 
 def muV_p(p_input_tf):
-    return 1e-5*DNN.neural_net(p_input_tf,w_muV_p,b_muV_p,[tf.nn.elu])
+    return 1e-5*DNN.neural_net(tf.nn.relu(p_input_tf+1.),w_muV_p,b_muV_p,[tf.nn.elu])
 
 ## Vérification
 #
@@ -177,7 +177,7 @@ def muV_p(p_input_tf):
 #####################################################################
 
 # P = f(z)
-layers_P = [1,10,10,1]
+layers_P = [1,20,1]
 layers_fn_P = [tf.tanh,tf.tanh]
 w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
@@ -194,7 +194,7 @@ def P_z(z):
 
 # x = f(z) à déterminer
 
-layers_x = [1,10,10,1]
+layers_x = [1,20,1]
 layers_fn_x = [tf.tanh,tf.tanh]
 w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
@@ -208,7 +208,7 @@ def x_z(z):
 
 # eps = f(z) à déterminer
 
-layers_eps = [1,20,20,1]
+layers_eps = [1,20,10,1]
 layers_fn_eps = [tf.nn.sigmoid,tf.tanh]
 w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
@@ -343,7 +343,7 @@ def loss_pressure_equation(z):
 #    
     dp_acc_test = G**2*tf.gradients(x*(rho_l-rho_g)/(rho_l*rho_g),z)[0] #eq (10.2)
     
-    dp_acc = np.where(z>L_sc, dp_acc_test,0.)
+    dp_acc = tf.where(tf.less(L_sc*ones,z), dp_acc_test,0.*z)
     
     dp_grav = rho_m*g # eq (10.17)
     
@@ -368,10 +368,10 @@ def loss_BC():
     #P_e_guess = P_z(z_e_tf)
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
-    #x_s_guess = x_z(z_s_tf)
+    x_s_guess = x_z(z_s_tf)
     
     
-    err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
+    err = tf.square(P_s_guess/P_s - 1.)  +  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
     return tf.reduce_mean(err)
 
 
@@ -412,7 +412,7 @@ Loss =  1e3*loss_BC() \
         + loss_energy_equation(z_tf) \
         + loss_eps_01(z_tf) + loss_signe_eps_x(z_tf) \
         + loss_pressure_equation(z_tf) \
-        + 1e-1*loss_Model(z_tf) \
+        + loss_Model(z_tf) \
        
 Loss_preinit = tf.reduce_mean(tf.square(eps_z(z_tf)- (0.4 + (0.6-0.4)*(z_tf-z_e)/(z_s-z_e)))) \
             + tf.reduce_mean(tf.square( x_z(z_tf) - (0.05 + (0.8-0.05)*(z_tf-z_e)/(z_s-z_e)) )) \
@@ -471,19 +471,19 @@ tf_dict_train = {z_tf : np.reshape(z_train,(Ntrain,1))}
 #####################################################################  
 print('Debut du pre entrainement')
 
-optimizer_preinit.minimize(sess,
-                fetches = [Loss_preinit],
-                feed_dict = tf_dict_train,
-                loss_callback = DNN.callback)
+#optimizer_preinit.minimize(sess,
+#                fetches = [Loss_preinit],
+#                feed_dict = tf_dict_train,
+#                loss_callback = DNN.callback)
 
 loss_value_preinit = sess.run(Loss_preinit,tf_dict_train)
-#it = 0
-#while loss_value_preinit>1e-5:
-#    sess.run(train_op_Adam_preinit, tf_dict_train)
-#    loss_value_preinit = sess.run(Loss_preinit, tf_dict_train)
-#    if it%1000 == 0:
-#        print('Pre init %d - Loss %.3e' % (it,loss_value_preinit))
-#    it += 1
+it = 0
+while loss_value_preinit>1e-2:
+    sess.run(train_op_Adam_preinit, tf_dict_train)
+    loss_value_preinit = sess.run(Loss_preinit, tf_dict_train)
+    if it%1000 == 0:
+        print('Pre init %d - Loss %.3e' % (it,loss_value_preinit))
+    it += 1
 
 print('Fin du préentrainement : loss pr-init %.3e' % (sess.run(Loss_preinit,tf_dict_train)))
 
@@ -569,8 +569,8 @@ plt.legend()
 plt.tight_layout()
 
 
-plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.png')
-plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.pgf')
+#plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.png')
+#plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.pgf')
 print('Figure sauvergardée')
 print('Ok, normal End')
 
