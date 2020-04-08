@@ -8,19 +8,19 @@ from pyXSteam.XSteam import XSteam
 steamTable = XSteam(XSteam.UNIT_SYSTEM_MKS)
 
 
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
-#plt.rc('font', size=14)
-#plt.rc('axes',titlesize=16)
-#plt.rc('legend',fontsize=14)
-#plt.rc('figure',titlesize=20)
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.rc('font', size=14)
+plt.rc('axes',titlesize=16)
+plt.rc('legend',fontsize=14)
+plt.rc('figure',titlesize=20)
 
 #####################################################################
 #################### Constantes du Problème #########################
 #####################################################################
 
 exp = '19' # '19' or '65BV'
-choix_corr = 'Inoue' #'Chexal' or 'Inoue'
+choix_corr = 'Chexal' #'Chexal' or 'Inoue'
 
 # Exp 19
 if exp == '19':
@@ -58,7 +58,7 @@ q = P_th / (np.pi * D*L_c)
 # Discretisation
 # =============================================================================
 # Nombre de points de discretisation
-Nz = 20000
+Nz = 1000
 
 z = np.linspace(z_e,z_s,Nz)
 
@@ -171,35 +171,35 @@ while err > target_err:
     plt.close()
     plt.figure(figsize=(7,6))
     plt.subplot(211)
-#    plt.plot(z,x,label='$x$',c='black')
-#    plt.plot(z,eps,label='$\\epsilon$',c='orange')
-    plt.plot(z,x,label='x',c='black')
-    plt.plot(z,eps,label='eps',c='orange')
+    plt.plot(z,x,label='$x$',c='black')
+    plt.plot(z,eps,label='$\\epsilon$',c='orange')
+#    plt.plot(z,x,label='x',c='black')
+#    plt.plot(z,eps,label='eps',c='orange')
     plt.hlines(0.,0.,L_c,linestyle='dotted')
     plt.hlines(1.,0.,L_c,linestyle='dotted')
     if exp == '19':
-#        plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
-        plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps_data', c='orange')
+        plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+#        plt.plot(experiences.z_eps_19,experiences.eps_19,linestyle='none',marker='s',label='eps_data', c='orange')
     elif exp == '65BV':
-#        plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
-        plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps_data', c='orange')
+        plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='$\\epsilon_{data}$', c='orange')
+#        plt.plot(experiences.z_eps_65,experiences.eps_65,linestyle='none',marker='s',label='eps_data', c='orange')
     plt.vlines(z_LC,-0.1,1.1,linestyle='dashed',color='red')    
-    plt.xlabel('z axis (m)')
-#    plt.xlabel('$z$ axis (m)')
+#    plt.xlabel('z axis (m)')
+    plt.xlabel('$z$ axis (m)')
     plt.ylabel('Dimensionless quantities')
     plt.legend()
     plt.subplot(212)
-#    plt.plot(z,p,label='$p$',c='blue')   
-    plt.plot(z,p,label='p',c='blue')   
+    plt.plot(z,p,label='$p$',c='blue')   
+#    plt.plot(z,p,label='p',c='blue')   
     if exp == '19':      
-#        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='$p_{data}$',c='blue')
-        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='p_data',c='blue')
+        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='$p_{data}$',c='blue')
+#        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_19,linestyle='none',marker='^',label='p_data',c='blue')
     elif exp == '65BV':
         plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='$p_{data}$',c='blue')
-        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='p_data',c='blue')
+#        plt.plot(experiences.z_p,P_s+1e-2*experiences.p_65,linestyle='none',marker='^',label='p_data',c='blue')
     plt.vlines(z_LC,np.min(p),np.max(p),linestyle='dashed',color='red')
-    plt.xlabel('z axis (m)')
-#    plt.xlabel('$z$ axis (m)')
+#    plt.xlabel('z axis (m)')
+    plt.xlabel('$z$ axis (m)')
     plt.ylabel('Pressure (bars)')
     plt.legend()
     plt.tight_layout()
@@ -221,7 +221,7 @@ else:
 err_rel = np.abs(exp_drop-pdrop)/exp_drop
 print('Erreur relative avec les exp : %.3e' % (err_rel))
 #Save fig ...
-#plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
-#plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
+plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.png')
+plt.savefig('Resultats/Output_classique_'+choix_corr+'_'+exp+'.pgf')
 print('Figure sauvergardée')
 print('Ok, normal End')
