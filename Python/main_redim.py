@@ -341,8 +341,9 @@ def loss_pressure_equation(z):
 #                + ( tf.square(eps)*tf.square(1.-eps)/rho_l - tf.square(1.-eps)*tf.square(x)/rho_g )*tf.gradients(eps,z)[0]
 #    
 #    
-    dp_acc = G**2*tf.gradients(x*(rho_l-rho_g)/(rho_l*rho_g),z)[0] #eq (10.2)
+    dp_acc_test = G**2*tf.gradients(x*(rho_l-rho_g)/(rho_l*rho_g),z)[0] #eq (10.2)
     
+    dp_acc = np.where(z>L_sc, dp_acc_test,0.)
     
     dp_grav = rho_m*g # eq (10.17)
     

@@ -44,7 +44,11 @@ q = P_th / (np.pi * D*L_c)
 # Debut boucle Nz
 # =============================================================================
 
-listeNz = [10,20,50,100,200,500,1000,2000,5000,10000,20000]
+choix_corr = 'Inoue'
+
+listeNz = np.logspace(1,np.log10(20000),15)
+listeNz = np.asarray([int(k) for k in listeNz])
+#[10,18,35,50,100,180,350,500,1000,1500,3500,5000,10000,20000]
 listedrop= []
 listit = []
 listtime = []
@@ -84,7 +88,6 @@ for Nz in listeNz:
         return np.sqrt(err)
     
     
-    
     def DeuxphiModel(x,eps,p):
     
         rho_g = np.asarray([steamTable.rhoV_p(k) for k in p])
@@ -93,8 +96,12 @@ for Nz in listeNz:
         mu_l = np.asarray([steamTable.my_ph(k, steamTable.hL_p(k))for k in p])
         sigma = np.asarray([steamTable.st_p(k)for k in p])
         
-
-        C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
+        if choix_corr == 'Chexal':
+            C0,Vgj = correlations.chexal_np(eps,x,G,D,p,sigma,rho_g,rho_l,mu_g,mu_l)
+        elif choix_corr == 'Inoue':
+            C0,Vgj = correlations.InoueDriftModel_np(eps,x,p,G,D,rho_g,rho_l)
+        else:
+            print('Erreur : correlation mal definie')       
         
         new_eps_diphasique = x/(rho_g*Vgj/G + C0*(rho_g*(1-x)/rho_l+x))
         
@@ -130,7 +137,9 @@ for Nz in listeNz:
         
         dp_grav = rho_m*g
         
-        dp_acc = (G**2) * np.dot(x*(rho_l-rho_g)/(rho_l*rho_g),Dz)  # Pas certain de l'ordre du produit matrice vecteur avec np.dot
+        dp_acc_test = (G**2) * np.dot(x*(rho_l-rho_g)/(rho_l*rho_g),Dz)  # Pas certain de l'ordre du produit matrice vecteur avec np.dot
+        
+        dp_acc = np.where(x>0.,dp_acc_test,0.)
         
         integrande = -phi2*dp_dz_l0 - dp_grav - dp_acc
         
@@ -185,7 +194,8 @@ plt.xscale('log')
 plt.ylabel('$-\\Delta p$')
 plt.subplot(222)
 plt.plot(listeNz[:-1],errrelative[:-1],marker='o',linestyle='dashed')
-plt.plot([215.,2150.,2150.,215.],[1e-3,1e-4,1e-3,1e-3],color='black')
+delta = 2.
+plt.plot([215.*delta,2150.*delta,2150.*delta,215.*delta],[1e-3,1e-4,1e-3,1e-3],color='black')
 plt.text(300,2e-3,'slope $1/N_z$')
 plt.xlabel('$N_z$')
 plt.xscale('log')
@@ -196,7 +206,7 @@ plt.plot(listeNz,listit,marker='o',linestyle='dashed')
 plt.xlabel('$N_z$')
 plt.xscale('log')
 plt.ylabel('Iterations')
-plt.ylim((4.,8.))
+plt.ylim((4.5,7.5))
 plt.subplot(224)
 plt.plot(listeNz,listtime,marker='o',linestyle='dashed')
 plt.plot([100.,1000.,100.,100.],[1.,10.,10.,1.],color='black')
