@@ -147,7 +147,7 @@ def muV_p(p_input_tf):
 #tf_dict = {p_tf : np.reshape(ptest,(400,1))}
 #hL_guess = sess.run(hL_p(p_tf),tf_dict)[:,0]
 #
-#print('hL_p Normalised std : %.3e' % (np.std(hL_guess-hL_data)/np.mean(hL_data)))
+#print('hL_p Normalised std : %.3e' % (np.sqrt(np.mean(np.square(hL_guess-hL_data)))/np.mean(hL_data)))
 #
 #plt.figure()
 #plt.plot(ptest,hL_data,label='pyXSteam data')
