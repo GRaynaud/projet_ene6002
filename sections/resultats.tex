@@ -44,10 +44,11 @@ On trouvera à la table \ref{PressureDrop} un tableau synthétisant les pertes d
 
 \subsection{Résultats détaillés}
 
-Enfin les figures \ref{fig:Result_classique_19}, \ref{fig:Result_classique_65BV}, \ref{fig:Result_PINN_19} et \ref{fig:Result_PINN_65BV} présentent graphiquement l'évolution du titre $x$, du taux de vide $\varepsilon$ ainsi que de la pression $p$ avec l'abscisse $z$ pour la méthode classique puis la PINN respectivement.
+Enfin les figures \ref{fig:Result_classique_19}, \ref{fig:Result_classique_65BV}, \ref{fig:Result_PINN_19} et \ref{fig:Result_PINN_65BV} présentent graphiquement l'évolution du titre $x$, du taux de vide $\varepsilon$ ainsi que de la pression $p$ avec l'abscisse $z$ pour la méthode classique puis la PINN respectivement.\\
 
 
-Les lignes en pointillés rouge sur les figures suivantes correspondent à la position où le fluide est à saturation ($x=0$). La partie précédent cette position n'est pas prise en compte dans l'algorithme classique. Dans le cas de l'algorithme PINN, il n'est pas possible de fixer cette condition, c'est pour cette raison que le titre n'est pas nul au niveau de la zone de saturation.
+Les lignes en pointillés rouge sur les figures suivantes correspondent à la position où le fluide est à saturation ($x=0$). La partie précédent cette position n'est pas prise en compte dans l'algorithme classique. Dans le cas de l'algorithme PINN, il n'est pas possible de fixer cette condition, c'est pour cette raison que le titre n'est pas nul au niveau de la zone de saturation. Cela résulte du choix d'implanter $\varepsilon$ comme une inconnue supplémentaire et pas une conséquence directe de l'équation du modèle de corrélation.\\
+
 \afterpage{%
 \begin{figure}
     \centering
