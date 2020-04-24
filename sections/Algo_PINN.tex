@@ -104,7 +104,7 @@ Ces modèles ont été entraînés au préalable avec des données générées p
 \begin{figure}
     \centering
 %    \includegraphics[width=0.5\linewidth]{Python/Models/DNN_Model_h_lsat.png}
-    \resizebox{0.6\linewidth}{!}{\input{Python/Models/DNN_Model_h_lsat.pgf}}
+    \resizebox{0.5\linewidth}{!}{\input{Python/Models/DNN_Model_h_lsat.pgf}}
     \caption{Entraînement d'un réseau de neurones annexe pour l'enthalpie massique du liquide à saturation à partir de données issues de pyXSteam. Le \textit{root mean square} (RMS) de l'écart relatif vaut $ \text{RMS}\left(\frac{h_{DNN}-h_{XSteam}}{h_{XSteam}}\right)  = \num{6.29e-5}$.}
     \label{fig:DNN_enthalpy}
 \end{figure}
@@ -129,7 +129,7 @@ A travers cette section nous avons tenté d'introduire le formalisme PINN et que
 
 \subsection{Limites rencontrées}
 
-Dans le cadre du projet, nous avons rencontré plusieurs difficultés à adapter la méthode PINN pour des raisons parfois spécifiques à la nature du problème. En particulier les modèles de corrélation complexes avec des seuils, des conditions posent des soucis de différentiation. De même il faut bien veiller à n'appliquer les équations du modèle diphasique lorsque $0<x<1$ et veiller à ce que l'on retombe sur des équations monophasiques aux bords ce qui créé d'autres sources d'instabilités avec des gradients infinis. Enfin nous avons tenté de supprimer toute les possibilités d'obtenir un numérateur nul en écrivant les équations de la manière la plus adéquat. Il demeure quelques sources de problèmes tout de même.\\
+Dans le cadre du projet, nous avons rencontré plusieurs difficultés à adapter la méthode PINN pour des raisons parfois spécifiques à la nature du problème. En particulier les modèles de corrélation complexes avec des seuils, des conditions posent des soucis de différentiation. De même il faut bien veiller à n'appliquer les équations du modèle diphasique lorsque $0<x<1$ et veiller à ce que l'on retombe sur des équations monophasiques aux bords ce qui créé d'autres sources d'instabilités avec des gradients infinis. Enfin nous avons tenté de supprimer toute les possibilités d'obtenir un numérateur nul en écrivant les équations de la manière la plus adéquat. Il demeure quelques sources de problèmes tout de même. En particulier nous n'avons pas pu résoudre correctement le problème du sueil $x=0$ dans le modèle de corrélation (où on pénalise l'écart à $\varepsilon = 0$ quand $x<0$).\\
 
 De manière plus générale, le choix des fonctions d'activation et de la taille des réseaux est encore assez empirique et sujet à discussion. Ceci dit, il reste un grand nombre de possibilités à explorer tant dans les détails que dans la méthode. L'une d'entre elle serait d'établir des modèles de corrélation directement avec des réseaux de neurones en utilisant des données expérimentales dans davantage de cas.
 

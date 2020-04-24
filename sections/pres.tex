@@ -2,25 +2,28 @@
 
 \subsection{Introduction}
 
-Dans les applications industrielles, dès lors que l'on travaille avec un écoulement dans un conduite chauffée, on peut se retrouver dans le cas d'un écoulement diphasique. Si la conduite est suffisamment longue, la prise en compte des pertes de charges risque d'être peu représentatif de la réalité, les pertes liées à l'ébullition n'étant pas négligeables.\\
-Cette sous-estimation de la perte de pression lors du dimensionnement pourrait avoir des répercussions sur le rendement de l'installation ou bien la sécurité de celle-ci. Dans le cas d'un réacteur à eau pressurisé, il est important de connaître les conditions de l'écoulement à tous les endroits de la conduite. On ne souhaite pas se retrouver avec un fluide diphasique dans une zone où cela n'était pas prévu. Les conséquences pourrait être grave dans le cas d'une installation pour un réacteur nucléaire par exemple.\\
+Dans les applications industrielles, dès lors que l'on travaille avec un écoulement dans un conduite chauffée, on peut observer en parallèle de la phase liquide l'apparition de vapeur. Entre ces deux phases il s'échange de la masse, de l'énergie et de la quantité de mouvement et le désordre généré s'accompagne généralement d'une chute de pression. Si la conduite est suffisamment longue, la prise en compte des pertes de charges dans un modèle monophasique risque d'être peu représentatif de la réalité, les pertes liées à l'ébullition n'étant pas négligeables.\\
 
-Micro or mini-head spreaders --> cf intro article Revellin\\
+Cette sous-estimation de la perte de pression lors du dimensionnement peut avoir des répercussions sur le rendement de l'installation ou bien sa sécurité. Dans le cas d'un réacteur à eau pressurisé, il est important de connaître les conditions de l'écoulement à tous les endroits de la conduite. On ne souhaite pas se retrouver avec un écoulement diphasique dans une zone où cela n'était pas prévu, avec des conséquences majeures pour la sécurité. De plus les différents scénarios d'accidents (brèche, fusion du coeur...) peuvent placer le système dans des configurations favorables à l'apparition de vapeur qu'il s'agit d'anticiper et de designer convenablement pour s'assurer des marges.\\
 
-Petroleum engineering cite Shi et al 2005 cf. \href{http://folk.ntnu.no/preisig/HAP_Specials/AdvancedSimulation_files/2014/AdvSim-2014__Matovu_Fahad_Drift-flux\%20models.pdf}{Lien}\\
 
-Intro de https://doi.org/10.1016/S0017-9310(03)00309-0 
+Dans le domaine des nouvelles technologies, la micro électronique peut tirer parti d'une bonne utilisation de micro canaux pour dissiper l'énergie lorsque ceci est compliqué (satellites, micro puces...). Ceux-ci possèdent en effet de bien meilleurs coefficients de transfert thermique que les méthodes conventionnelles ce qui permet d'en réduire la taille et potentiellement le coût \cite{revellinAdiabaticTwophaseFrictional2007}. Néanmoins la chute de pression doit être évaluée précisément pour assurer un fonctionnement optimal du système de dissipation et cela se traduit par des modèles uni-dimensionnel pour des écoulements diphasiques. \\
+
+%Petroleum engineering cite Shi et al 2005 cf. \href{http://folk.ntnu.no/preisig/HAP_Specials/AdvancedSimulation_files/2014/AdvSim-2014__Matovu_Fahad_Drift-flux\%20models.pdf}{Lien}\\
+
+%Intro de https://doi.org/10.1016/S0017-9310(03)00309-0 
 
 %Citer des applications utiles du calcul de perte de pression dans des écoulements diphasiques, exemples industriels, effet sur le rendement,catastrophes... 
-\textcolor{red}{Parler des codes de calcul courants et des modèles existants}
+%\textcolor{red}{Parler des codes de calcul courants et des modèles existants}
+
 
 \subsection{Présentation de l'étude}
 
 Pour ce projet, nous nous intéressons à la perte de pression ainsi qu'au taux de vide moyen pour un écoulement bouillant dans une conduite chauffée. Une représentation d'un banc d'essai typique pour ce type de mesures est disponible à la fig. \ref{fig:instal}
 
-\begin{figure}[htbp]
+\begin{figure}[ht]%[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/schema_instal.png}
+    \includegraphics[width=0.7\textwidth]{images/schema_instal.png}
     \caption{Installation pour mesure de perte de pression et du taux de vide - D'après l'énoncé}
     \label{fig:instal}
 \end{figure}
