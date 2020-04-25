@@ -52,7 +52,7 @@ Les mises à jour des paramètres se font avec les équations qui régissent not
 
 \subsection{Convergence en discrétisation spatiale}
 
-Afin de vérifier que la discrétisation spatiale engendre des erreurs qui convergent vers 0 avec $N_z$, on effectue une série de simulations et on considérera le paramètre scalaire $\Delta p = \left| P(z_s)-P(z_e) \right|$.  On se limitera au cadre de l'expérience 19 avec le modèle de corrélation d'Inoue \cite{inoueInbundleVoidMeasurement1993}. Le seuil d'arrêt est fixé dans tous les cas à $tol = \num{1e-7}$ pour le RMS de la variation entre deux itérations consécutives. Enfin on s'intéressera à l'écart relatif entre la chute de pression pour une discrétisation $N_z$ avec la discrétisation la plus fine obtenue, défini par :
+Afin de vérifier que la discrétisation spatiale engendre des erreurs qui convergent vers 0 avec $N_z$, on effectue une série de simulations et on considèrera le paramètre scalaire $\Delta p = \left| P(z_s)-P(z_e) \right|$.  On se limitera au cadre de l'expérience 19 avec le modèle de corrélation d'Inoue \cite{inoueInbundleVoidMeasurement1993}. Le seuil d'arrêt est fixé dans tous les cas à $tol = \num{1e-7}$ pour le RMS de la variation entre deux itérations consécutives. Enfin on s'intéressera à l'écart relatif entre la chute de pression pour une discrétisation $N_z$ avec la discrétisation la plus fine obtenue, défini par :
 
 \begin{equation}
     err_{\Delta p} = \left|\frac{ \Delta p^{N_z} - \Delta p ^{\max{N_z}} }{\Delta p ^{\max{N_z}}}\right|

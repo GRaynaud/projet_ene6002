@@ -1,6 +1,5 @@
 \section{Zone de saturation\label{section:sat}}
-Comme nous négligeons la zone où l'ébullition est sous-refroidie (\textbf{H1}), il nous faut calculer la position où le fluide est à température de saturation. Cela correspond d'ailleurs à l'endroit où le titre thermodynamique devient nul. Pour cela plusieurs méthodes sont possibles.
-
+Comme nous négligeons la perte de pression par accélération dans la zone où l'ébullition est sous-refroidie (\textbf{H2}), il nous faut calculer la position où le fluide est à température de saturation. Cela correspond d'ailleurs à l'endroit où le titre thermodynamique devient nul. Pour cela plusieurs méthodes sont possibles.
 
 \subsection{Puissance chauffage}
 On peut écrire que la puissance nécessaire pour arriver à la température de saturation en partant de la température d'entrée. Cette puissance dépend du flux massique et de la capacité thermique massique de l'eau. Il s'agit donc de faire un bilan énergétique sur le fluide qui passe dans la conduite. On a :
@@ -115,5 +114,5 @@ Après application numérique on a alors :
     \label{donnes}
 \end{table}
 
-On remarque que les résultats avec les deux méthodes donnent des valeurs du même ordre de grandeur, ce qui confirme que les deux comparent bien les mêmes choses. De plus les résultats pour les enthalpies, qu'elles soient corrigés ou non sont très proche, l'hypothèse \textbf{H4} est donc cohérente.\\ \par
-La différence des résultats entre les deux méthodes est que dans la première, on ne prend pas en compte le changement des propriétés thermiques ($Cp$) du fluide dans la conduite et on travaille seulement avec la valeur à saturation. Il pourrait être plus réaliste de moyenner avec la valeur à l'entrée ou bien de faire l'intégrale sur toute ka zone en considérant que le gradient de température est constant dans la conduite.
+On remarque que les résultats avec les deux méthodes donnent des valeurs du même ordre de grandeur, ce qui confirme que les deux comparent bien les mêmes choses. De plus les résultats pour les enthalpies, qu'elles soient corrigées ou non sont très proche, l'hypothèse \textbf{H4} est donc cohérente.\\ \par
+La différence des résultats entre les deux méthodes est que dans la première, on ne prend pas en compte le changement des propriétés thermiques ($Cp$) du fluide dans la conduite et on travaille seulement avec la valeur à saturation. Il pourrait être plus réaliste de moyenner avec la valeur à l'entrée ou bien de faire l'intégrale sur toute la zone en considérant que le gradient de température est constant dans la conduite.
