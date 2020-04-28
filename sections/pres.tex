@@ -6,7 +6,7 @@ Dans les applications industrielles, dès lors que l'on travaille avec un écoul
 
 Cette sous-estimation de la perte de pression lors du dimensionnement peut avoir des répercussions sur le rendement de l'installation ou bien sa sécurité. Dans le cas d'un réacteur à eau pressurisé, il est important de connaître les conditions de l'écoulement à tous les endroits de la conduite. On ne souhaite pas se retrouver avec un écoulement diphasique dans une zone où cela n'était pas prévu, avec des conséquences majeures pour la sécurité. De plus les différents scénarios d'accidents (brèche, fusion du coeur...) peuvent placer le système dans des configurations favorables à l'apparition de vapeur qu'il s'agit d'anticiper et de designer convenablement pour s'assurer des marges.\\
 
-Dans le domaine des nouvelles technologies, la micro électronique peut tirer parti d'une bonne utilisation de micro canaux pour dissiper l'énergie lorsque ceci est compliqué (satellites, micro puces...). Ceux-ci possèdent en effet de bien meilleurs coefficients de transfert thermique que les méthodes conventionnelles ce qui permet d'en réduire la taille et potentiellement le coût de fabrication \cite{revellinAdiabaticTwophaseFrictional2007}. Néanmoins la chute de pression doit être évaluée précisément pour assurer un fonctionnement optimal du système de dissipation et cela se traduit par des modèles uni-dimensionnel pour des écoulements diphasiques. \\
+Dans le domaine des nouvelles technologies, la micro électronique peut tirer parti d'une bonne utilisation de micro canaux diphasiques pour dissiper l'énergie lorsque ceci est compliqué (satellites, micro puces...). Ceux-ci possèdent en effet de bien meilleurs coefficients de transfert thermique que les méthodes conventionnelles ce qui permet d'en réduire la taille et potentiellement le coût de fabrication \cite{revellinAdiabaticTwophaseFrictional2007}. Néanmoins la chute de pression doit être évaluée précisément pour assurer un fonctionnement optimal du système de dissipation et cela se traduit par des modèles uni-dimensionnel pour des écoulements diphasiques. \\
 
 %Petroleum engineering cite Shi et al 2005 cf. \href{http://folk.ntnu.no/preisig/HAP_Specials/AdvancedSimulation_files/2014/AdvSim-2014__Matovu_Fahad_Drift-flux\%20models.pdf}{Lien}\\
 
@@ -28,6 +28,7 @@ Pour ce projet, nous nous intéressons à la perte de pression ainsi qu'au taux 
 \end{figure}
 
 Le but de ce projet est de réaliser un modèle numérique et de déterminer les différents paramètres le long de la conduite. L'analyse des résultats se fait en comparant à des tables de données expérimentales. On travaille dans le cas d'un écoulement vertical ascendant.\\ \par
+
 Pour réaliser cela, plusieurs hypothèses ont été réalisées :
 \begin{itemize}
     \item \textbf{H1} : L'écoulement est incompressible.
@@ -38,6 +39,7 @@ Pour réaliser cela, plusieurs hypothèses ont été réalisées :
 \vspace{12pt}
 \par
 La détermination des propriétés thermodynamiques a été faite avec \texttt{pyXSteam}, qui est une librairie Python sur la base de \texttt{X-Steam} disponible sur Excel et Matlab.\\
+
 Le titre et le taux de vide moyen sont déterminés à l'aide des corrélations de \textsc{Chexal-Lellouche} et de \textsc{Inoue}. Le multiplicateur diphasique ainsi que les facteurs de frottements qui servent au calcul de la perte de pression proviennent eux de la corrélation de \textsc{Friedel}.\\ \par
 
 

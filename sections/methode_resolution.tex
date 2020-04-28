@@ -38,7 +38,7 @@ Le terme de frottement pouvant être écrit comme la perte de pression (par frot
     \left(\pder[p]{z} \right)_{f} = f\frac{G^2}{2 \rho_l}\frac{1}{D} \phi_{lo}^2
 \end{equation}
 
-Comme rappelé par \cite{revellinAdiabaticTwophaseFrictional2007}, le facteur de frottement $f$ est défini par :
+où $f$ est défini par :
 \begin{equation}
     f = 0.316 \left[\text{Re}_L\right]^{-0.25} = 0.316 \left[\frac{G D}{\mu_l}\right]^{-0.25} 
 \end{equation}
@@ -54,11 +54,10 @@ On dispose ensuite d'une relation entre le taux de vide moyen $\varepsilon$ et l
 \label{eq:DriftFluxModel}
 \end{equation}
 \begin{align*}
-         C_0 &\textnormal{ fonction des paramètres de l'écoulement}\\
-        <V_{gj}>_{2g} &\textnormal{ fonction des paramètres de l'écoulement}   
+         C_0 \text{ et } <V_{gj}>_{2g} \textnormal{ fonctions des paramètres de l'écoulement selon un modèle} 
 \end{align*}
 
-En pratique on l'utilisera de deux manières. Dans l'algorithme classique, on s'en sert pour obtenir $\varepsilon$ à partir de $x$ et $p$ en inversant l'équation \ref{eq:DriftFluxModel}. Dans le PINN, on utilise plutôt la forme suivante où on retourne $x$ à partir d'un set initial de $\varepsilon,x$ et $p$ :
+En pratique on l'utilisera de deux manières. Dans l'algorithme classique, on s'en sert pour obtenir $\varepsilon$ à partir de $x$ et $p$ avec l'inverse de l'équation \ref{eq:DriftFluxModel}. Dans le PINN, on utilise plutôt la forme suivante où on retourne $x$ à partir d'un set initial de $\varepsilon,x$ et $p$ :
 
 \begin{equation}
     x = \varepsilon \left[ \frac{\rho_g}{G}<V_{gj}>_{2g} + C_0 \left( \frac{1-x}{\rho_l}\rho_g + x\right) \right]
