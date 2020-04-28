@@ -183,14 +183,8 @@ w_P,b_P = DNN.initialize_NN(layers_P,'Pressure')
 
 def P_z(z):
     p_z_temp = P_s * DNN.neural_net(z,w_P,b_P,layers_fn_P)
-#    pmin = z*0. + P_s*0.8
-#    pmax = z*0 + P_s*1.2
-#    return tf.minimum(pmax,tf.maximum(pmin,p_z_temp))
     return p_z_temp
 
-# T = f(P) @ saturation --> Hypothèse à vérifier
-
-#T_z = Tsat_p(P_z)
 
 # x = f(z) à déterminer
 
@@ -200,9 +194,6 @@ w_x,b_x = DNN.initialize_NN(layers_x,'Quality')
 
 def x_z(z):
     x_z_temp = DNN.neural_net(z,w_x,b_x,layers_fn_x)
-#    ones = 0.*z + 1. - 1e-2
-#    zeroes = 0.*z + 1e-2
-#    return tf.minimum(ones,tf.maximum(zeroes,x_z_temp))
     return x_z_temp
 
 
@@ -214,9 +205,6 @@ w_eps,b_eps = DNN.initialize_NN(layers_eps,'Epsilon')
 
 def eps_z(z):
     eps_z_temp = DNN.neural_net(z,w_eps,b_eps,layers_fn_eps)
-#    ones = 0.*z + 1. - 1e-2
-#    zeroes = 0.*z + 1e-2
-#    return tf.minimum(ones,tf.maximum(zeroes,eps_z_temp))
     return eps_z_temp
 
 
@@ -242,31 +230,16 @@ def loss_Model(z):
     P = P_z(z)
     x = x_z(z)
     eps = eps_z(z)
-#    
-#    rho_g = steamTable.rhoV_p(P_s) + 0.*z #rhoV_p(P)
-#    rho_l = steamTable.rhoL_p(P_s) + 0.*z #rhoL_p(P) #--> est-ce qu on les fait dépendre de z aussi ?
-#    
+
     rho_g = rhoV_p(P)
     rho_l = rhoL_p(P) 
-#    
-#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
-    
     mu_g =  muV_p(P)
     mu_l = muL_p(P)
     sigma = st_p(P)
 
-#    x_z_guess = correlations.InoueDriftModel(eps,x,P,G,D,rho_g,rho_l)
-#    x_z_guess = correlations.chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
-#    
     x_z_guess = correlation_function(rho_g,rho_l,mu_g,mu_l,x,G,D,P,sigma,eps)
-##    x_z_guess = correlations.HomogeneousModel(eps,rho_g,rho_l)
     err = x_z_guess - x
-
-#    eps_z_guess = tf.where(tf.less(0.*z,x),correlations.InoueDriftModel_tf_eps(x,P,G,D,rho_g,rho_l),0.*z)
-#    
-#    err = eps_z_guess - eps
+    
     return tf.reduce_mean(tf.square(err))
 
 def loss_energy_equation(z):
@@ -278,13 +251,12 @@ def loss_energy_equation(z):
     
     P = P_z(z)
     x = x_z(z)
-#    A = hL_p(P)+x*(hV_p(P)-hL_p(P))
     
     A = (1-x)*hL_p(P) + x*hV_p(P)
     
     dA_dz = tf.gradients(A,z)[0]
     
-    err = dA_dz*D*G/(4.*q) - 1. # --> Reflechir sur le signe +/-1. A priori c'est un -
+    err = dA_dz*D*G/(4.*q) - 1.
     return tf.reduce_mean(tf.square(err))
     
     
@@ -295,83 +267,55 @@ def loss_pressure_equation(z):
     celui obtenu avec le facteur de correlation de Fridel
     '''
     ones = 0.*z + 1. - 1e-4
-    zeroes = 0.*z + 1e-4
     
     P = P_z(z)
     x = x_z(z)
     eps = eps_z(z)
        
-#    rho_g = steamTable.rhoV_p(P_s) + 0.*z 
     rho_l_s = steamTable.rhoL_p(P_s)
    
     rho_g = rhoV_p(P)
     rho_l = rhoL_p(P) 
     
-#    condition_rho_m = tf.math.logical_and(tf.less(eps,ones),tf.less(zeroes,eps))
-#    rho_m = tf.where( condition_rho_m,, tf.where(tf.less(eps,zeroes), rho_l, rho_g) )
-#    
+    
     rho_m =  tf.nn.relu(eps)*rho_g + tf.nn.relu((1.-eps))*rho_l
-#    rho_m = tf.maximum(rho_g , tf.minimum(rho_m_normal, rho_l))
-#    
-#    mu_g = steamTable.my_ph(P_s, steamTable.hV_p(P_s))  + 0.*z  # muV_p(P)
-#    mu_l = steamTable.my_ph(P_s, steamTable.hL_p(P_s))  + 0.*z  #muL_p(P)
-#    sigma = steamTable.st_p(P_s)  + 0.*z  #st_p(P)
-# 
+    
     mu_g =  muV_p(P)
     mu_l = muL_p(P)
     sigma = st_p(P)
     
     phi2 = correlations.friedel_tf(x, rho_g, rho_l, mu_g, mu_l, G, sigma, D)
     
-#    f = 0.316*tf.pow(tf.abs(1-x)*G*D/mu_l + 1e-4, -0.25)
-#    Re_l = tf.abs((1-x))*G*D/mu_l 
-#    Re_g = tf.abs(x)*G*D/mu_g
-#    f= tf.where(tf.less(x,ones), 0.316*tf.pow(Re_l,-0.25),  0.316*tf.pow(Re_g,-0.25)) # eq (10.13) --> A verifier dans le cas x>1
-#    
-    
-#    f = 0.316*tf.pow(G*D/mu_l*tf.exp(-x), -0.25) # --> Idée smoother le 1-x afin de ne pas passer en négatif
-        #dp_dz_l0 = f*0.5*(G**2)/(rho_m*D) #eq (10.8)
-    
     f = 0.079*tf.pow(G*D/mu_l,-0.25)
     dp_dz_l0 = f*2*G**2/(D*rho_l)
-    
-    # dp_acc * eps^2*(1-eps)^2
-#    Fac_dp_acc = tf.abs(eps)*tf.square(1.-eps)*tf.gradients(tf.square(x)/rho_g,z)[0] \
-#                + tf.square(eps)*tf.abs((1.-eps))*tf.gradients(tf.square(1-eps)/rho_l, z)[0] \
-#                + ( tf.square(eps)*tf.square(1.-eps)/rho_l - tf.square(1.-eps)*tf.square(x)/rho_g )*tf.gradients(eps,z)[0]
-#    
-#    
+       
     dp_acc_test = G**2*tf.gradients(x*(rho_l-rho_g)/(rho_l*rho_g),z)[0] #eq (10.2)
-    
     dp_acc = tf.where(tf.less(L_sc*ones,z), dp_acc_test,0.*z)
     
     dp_grav = rho_m*g # eq (10.17)
     
     dP_dz = 1e5*tf.gradients(P,z)[0] # Attention conversion bar --> Pa
     
-    
-#    err = tf.square(eps)*tf.square(1.-eps)*( dP_dz + phi2*dp_dz_l0 + dp_grav ) + Fac_dp_acc # Attention aux signes des termes --> A priori ok
     err = dP_dz + phi2*dp_dz_l0 + dp_grav + dp_acc
     err_norm = err/(rho_l_s*g)
+    
     return tf.reduce_mean(tf.square(err_norm))
 
 
 def loss_BC():
     '''
     Erreur sur les conditions aux limites 
-    Entrée : T = T_e (°C) à z = z_e
     Sortie : P = P_s (bar) à z = z_s
     '''
-    z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
+    #z_e_tf = z_e*tf.ones(shape=[1,1],dtype=tf.float32)
     z_s_tf = z_s*tf.ones(shape=[1,1],dtype=tf.float32)
     
     #P_e_guess = P_z(z_e_tf)
     #T_e_guess = Tsat_p(P_e_guess)
     P_s_guess = P_z(z_s_tf)
-    x_s_guess = x_z(z_s_tf)
+    #x_s_guess = x_z(z_s_tf)
     
-    
-    err = tf.square(P_s_guess/P_s - 1.)  +  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
+    err = tf.square(P_s_guess/P_s - 1.)  #+  tf.square(x_s_guess-x_s) # + tf.square(x_e) 
     return tf.reduce_mean(err)
 
 
@@ -394,15 +338,6 @@ def loss_signe_eps_x(z):
     return tf.reduce_mean(tf.square(err))
     
     
-#def loss_x_01(z):
-#    '''
-#    Impose au titre de rester borné entre 0 et 1
-#    '''
-#    x = x_z(z)
-#        
-#    err = tf.nn.relu(-1.*x) + tf.nn.relu(x-1.)
-#    
-#    return tf.reduce_mean(tf.square(err))
 #####################################################################
 #######################  Fns Coûts du PB  ###########################
 #####################################################################
@@ -518,7 +453,9 @@ for k in range(3):
         
 
     
-### Output
+# =============================================================================
+# Output
+# =============================================================================
 
 
 print('Répartition des erreurs résiduelles')
@@ -527,7 +464,6 @@ print('Erreur Drift flux model : %.3e' % (sess.run(loss_Model(z_tf),tf_dict_trai
 print('Erreur Energy : %.3e' % (sess.run(loss_energy_equation(z_tf),tf_dict_train)))
 print('Erreur chute pression : %.3e' % (sess.run(loss_pressure_equation(z_tf),tf_dict_train)))
 print('Erreur pénalisation eps : %.3e' % (sess.run(loss_eps_01(z_tf),tf_dict_train)))
-#print('Erreur pénalisation x : %.3e' % (sess.run(loss_x_01(z_tf),tf_dict_train)))
 print('Erreur pénalisation x*eps : %.3e' % (sess.run(loss_signe_eps_x(z_tf),tf_dict_train)))
 pdrop = sess.run(P_z(tf.constant(z_e,shape=[1,1])))[0,0]-P_s
 print('Saut de pression total : %.3e bar' % (pdrop))
@@ -539,6 +475,9 @@ err_rel = np.abs(exp_drop-pdrop)/exp_drop
 print('Erreur relative avec les exp : %.3e' % (err_rel))
 
 
+# =============================================================================
+# Figure
+# =============================================================================
 
 z_o,p_o,eps_o,x_o = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
 
@@ -571,38 +510,5 @@ plt.tight_layout()
 
 #plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.png')
 #plt.savefig('Resultats/Output_PINN_'+choix_corr+'_'+exp+'.pgf')
-print('Figure sauvergardée')
+#print('Figure sauvergardée')
 print('Ok, normal End')
-
-#while it<itmin:
-##    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-#    grads = optimizer_Adam.compute_gradients(Loss)
-#    mg = tf.reduce_min(tf.convert_to_tensor([tf.reduce_min(k) for k in grads]))
-#    op = tf.where(tf.math.equal(mg,mg),tf.ones(shape=[1,1]),0.*tf.ones(shape = [1,1]))
-#    a = sess.run(op, tf_dict_train)
-#    if a[0,0] == 0. :
-#        print('Err')
-#        break
-#    elif a[0,0] == 1. :
-#        sess.run(train_op_Adam,tf_dict_train)
-#        print('.',end='')
-#    else :
-#        print('Err autre')
-#        
-#    loss_value = sess.run(Loss, tf_dict_train)
-#    if it%10 == 0:
-#        print('Adam it %e - Training Loss :  %.6e' % (it, loss_value))
-#    it += 1
-#    
-#    
-
-if False:
-    z,p,eps,x = sess.run([z_tf,P_z(z_tf),eps_z(z_tf),x_z(z_tf)],tf_dict_train)
-    np.min(p),np.max(p),np.min(eps),np.max(eps),np.min(x),np.max(x)
-    p
-    eps
-    x
-    z
-    [ sess.run(loss_pressure_equation(z_tf),tf_dict_train), sess.run(loss_energy_equation(z_tf),tf_dict_train), sess.run(loss_Model(z_tf),tf_dict_train) ]
-    np.min(x),np.max(x)
-    np.min(eps),np.max(eps) 

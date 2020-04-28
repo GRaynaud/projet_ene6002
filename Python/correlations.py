@@ -81,7 +81,6 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 
     boolean_L1 = tf.less(80.*ones,C1*txVide)
     L1 = tf.where(boolean_L1,1.-tf.exp(-C1*txVide),ones) #--> A verifier la condition
-#    L1 = tf.where(tf.less(80.*ones,C1*txVide),ones,1.-tf.exp(-C1*txVide))
 
     boolean_L2 = tf.less(80.*ones,C1)
     L2 = tf.where(boolean_L2, 1. - tf.exp(-C1),ones)
@@ -90,12 +89,9 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
 
     C0 = L_cor / (K0 + (1 - K0) * tf.pow(tf.abs(txVide),r))# Si eps<0 --> C0 = exp(-eps)-1 pour pénaliser un eps <0
 
-#    C0 = ones # L_cor / (K0 + (1 - K0) * tf.pow(txVide,r))
 
     # Calcul de Vgj
 
-#    K1_2 = tf.minimum(0.65*ones, 0.5*tf.exp(-tf.abs(Re_g)/4000.)) ### --> Problème : exp(Re_g/4000.) = +INF
-#    K1 = B1 #tf.where(tf.less(Re_g,zeroes), K1_2, B1)
     C9 = tf.where(tf.greater_equal(Re_g,zeroes),tf.pow(tf.abs(1-txVide),B1),tf.minimum(0.7,tf.pow(tf.abs(1-txVide),0.65)))
 
     C5 = tf.sqrt(150 * rho_g / rho_l)
@@ -111,13 +107,9 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     C4 = tf.where(boolean_C4, 1./(1.-tf.exp(-C8)), ones)
 
 
-#    Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * tf.pow(1 - txVide, K1) * C2 * C3 * C4
     Vgj = 1.41 * tf.pow((rho_l - rho_g)* sigma * g / rho_l**2,0.25) * C9 * C2 * C3 * C4
-#    Vgj = -0.01*ones
 
-#    txVide = 1./(rho_g/(G*x)*Vgj + C0*(rho_l/rho_g*(1-x)/x+1.))
-#
-#    return txVide
+
 
     condition_xguess1 = tf.math.logical_and(tf.less(txVide,ones),tf.less(zeroes,txVide))
     condition_xguess2 = tf.math.logical_and(tf.less(x,ones),tf.less(zeroes,x))
@@ -126,7 +118,6 @@ def chexal_tf(rho_g,rho_l,mu_g,mu_l,x,G,D,p,sigma,txVide):
     xguess_normal = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
 
     xguess = tf.where(condition_xguess, xguess_normal, x + tf.exp(-1.*x))
-#    xguess = txVide*rho_g*Vgj/G + txVide*C0*( (1.-x)*rho_g/rho_l + x )
 
     return xguess
 

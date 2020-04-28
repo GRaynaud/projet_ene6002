@@ -19,9 +19,7 @@ def gen_data_p_t(N_p):
     t = np.asarray([steamTable.tsat_p(k) for k in p])
     return p,t
 
-#p_tf = tf.constant(p,dtype=tf.float32,shape=[len(p),1])
-#tsat_data_tf = tf.constant(tsat_data,dtype=tf.float32,shape=[len(tsat_data),1])
-#
+
     
 p_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
 tsat_data_tf = tf.placeholder(dtype=tf.float32,shape=[None,1])
